@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load shop_extras %}
+{% block title %}پروفایل کاربری | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-5xl px-4 py-10">
+  <div class="grid gap-6 lg:grid-cols-3">
+
+    {# --------- کارت کاربر --------- #}
+    <aside class="lg:col-span-1">
+      <div class="rounded-3xl border border-slate-100 bg-white p-6 text-center">
+        {% if user.profile.avatar %}
+          <img src="{{ user.profile.avatar.url }}" alt="" class="mx-auto h-24 w-24 rounded-full object-cover">
+        {% else %}
+          <span class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-brand-50 text-3xl font-extrabold text-brand-600">
+            {{ user.get_short_name|slice:":1" }}
+          </span>
+        {% endif %}
+        <h2 class="mt-4 font-extrabold text-slate-900">{{ user.full_name|default:"کاربر جدید" }}</h2>
+
+        <div class="mt-2 flex items-center justify-center gap-2">
+          <span class="text-sm text-slate-500" dir="ltr">{{ user.phone|fa_number }}</span>
+          {% if user.phone_verified %}
+            <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-600">تایید شده</span>
+          {% endif %}
+        </div>
+
+        <a href="{% url 'accounts:change_phone' %}" class="mt-4 block rounded-xl border border-slate-200 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+          تغییر شماره موبایل
+        </a>
+        <a href="{% url 'accounts:logout' %}" class="mt-2 block rounded-xl py-2.5 text-sm text-rose-600 transition hover:bg-rose-50">خروج از حساب</a>
+      </div>
+
+      <div class="mt-4 rounded-3xl border border-slate-100 bg-white p-6">
+        <p class="text-sm font-bold text-slate-700">وضعیت پروفایل</p>
+        {% if user.profile.is_complete %}
+          <p class="mt-2 text-sm text-emerald-600">اطلاعات شما کامل است.</p>
+        {% else %}
+          <p class="mt-2 text-sm text-amber-600">برای تسریع در ثبت سفارش، نام و آدرس خود را کامل کنید.</p>
+        {% endif %}
+      </div>
+    </aside>
+
+    {# --------- فرم اطلاعات --------- #}
+    <div class="lg:col-span-2">
+      <div class="rounded-3xl border border-slate-100 bg-white p-6">
+        <h1 class="mb-5 text-lg font-extrabold text-slate-900">اطلاعات حساب کاربری</h1>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <div class="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.full_name.label }}</label>
+              {{ form.full_name }}
+              {% for error in form.full_name.errors %}<p class="mt-1 text-xs text-rose-600">{{ error }}</p>{% endfor %}
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.email.label }}</label>
+              {{ form.email }}
+              {% for error in form.email.errors %}<p class="mt-1 text-xs text-rose-600">{{ error }}</p>{% endfor %}
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-bold text-slate-700">شماره موبایل (نام کاربری)</label>
+              <input type="text" value="{{ user.phone }}" dir="ltr" disabled
+                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-slate-500">
+              <p class="mt-1 text-xs text-slate-400">تغییر شماره فقط از طریق تایید پیامکی ممکن است.</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.province.label }}</label>
+              {{ form.province }}
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.city.label }}</label>
+              {{ form.city }}
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.postal_code.label }}</label>
+              {{ form.postal_code }}
+            </div>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.address.label }}</label>
+            {{ form.address }}
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.avatar.label }}</label>
+            {{ form.avatar }}
+          </div>
+
+          <label class="flex items-center gap-2 text-sm text-slate-600">
+            {{ form.newsletter }} {{ form.newsletter.label }}
+          </label>
+
+          <button type="submit" class="rounded-2xl bg-brand-500 px-8 py-3 text-sm font-extrabold text-white transition hover:bg-brand-600">
+            ذخیره تغییرات
+          </button>
+        </form>
+      </div>
+
+      {# --------- سفارش‌ها --------- #}
+      <div class="mt-6 rounded-3xl border border-slate-100 bg-white p-6">
+        <h2 class="mb-4 text-lg font-extrabold text-slate-900">سفارش‌های من</h2>
+        {% if orders %}
+          <div class="space-y-3">
+            {% for order in orders %}
+              <a href="{% url 'orders:order_detail' order.ref_code %}" class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 p-4 transition hover:border-brand-200 hover:bg-brand-50/40">
+                <div>
+                  <p class="text-sm font-bold text-slate-800">کد پیگیری: <span dir="ltr">{{ order.ref_code|fa_number }}</span></p>
+                  <p class="mt-1 text-xs text-slate-500">{{ order.created_at|date:"Y/m/d H:i" }} — {{ order.items.count|fa_number }} قلم کالا</p>
+                </div>
+                <div class="text-left">
+                  <p class="text-sm font-extrabold text-slate-900">{{ order.total_price|toman }} تومان</p>
+                  <span class="mt-1 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-bold
+                    {% if order.status == 'pending' %}bg-amber-50 text-amber-600
+                    {% elif order.status == 'canceled' %}bg-rose-50 text-rose-600
+                    {% else %}bg-emerald-50 text-emerald-600{% endif %}">{{ order.get_status_display }}</span>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">هنوز سفارشی ثبت نکرده‌اید.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

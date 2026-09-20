@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load shop_extras %}
+{% block title %}
+  {% if category %}{{ category.name }}{% elif gender_label %}پوشاک {{ gender_label }}{% else %}محصولات{% endif %} | {{ site.site_name }}
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 py-8">
+
+  <nav class="mb-5 flex items-center gap-2 text-xs text-slate-500">
+    <a href="{% url 'core:home' %}" class="hover:text-brand-600">خانه</a>
+    <span>/</span>
+    <a href="{% url 'catalog:product_list' %}" class="hover:text-brand-600">محصولات</a>
+    {% if category %}<span>/</span><span class="text-slate-800">{{ category.name }}</span>{% endif %}
+  </nav>
+
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-900">
+        {% if category %}{{ category.name }} ({{ category.get_gender_display }})
+        {% elif gender_label %}پوشاک {{ gender_label }}
+        {% elif request.GET.q %}نتایج جستجو برای «{{ request.GET.q }}»
+        {% else %}همه محصولات{% endif %}
+      </h1>
+      <p class="mt-1 text-sm text-slate-500">{{ total_count|fa_number }} کالا</p>
+    </div>
+
+    <form method="get" class="flex items-center gap-2">
+      {% for key, value in current.items %}{% if key != 'sort' and key != 'page' %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+      {% endif %}{% endfor %}
+      <label class="text-sm text-slate-500">مرتب‌سازی:</label>
+      <select name="sort" onchange="this.form.submit()"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-400">
+        {% for key, label in sort_options %}
+          <option value="{{ key }}" {% if current.sort == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-4">
+
+    {# ----------------------- ستون فیلترها ----------------------- #}
+    <aside class="lg:col-span-1">
+      <details class="rounded-2xl border border-slate-100 bg-white lg:open" open>
+        <summary class="cursor-pointer list-none px-5 py-4 text-sm font-extrabold text-slate-900 lg:cursor-default">فیلترها</summary>
+        <form method="get" class="space-y-5 border-t border-slate-100 p-5">
+          {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+
+          <div>
+            <p class="mb-2 text-xs font-bold text-slate-500">دسته‌بندی</p>
+            <select name="category" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-400">
+              <option value="">همه دسته‌ها</option>
+              {% for cat in categories %}
+                <option value="{{ cat.slug }}" {% if current.category == cat.slug %}selected{% endif %}>{{ cat.get_gender_display }} / {{ cat.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div>
+            <p class="mb-2 text-xs font-bold text-slate-500">جنسیت</p>
+            <div class="flex flex-wrap gap-2">
+              <label class="option-chip"><input type="radio" name="gender" value="" {% if not current.gender %}checked{% endif %}><span class="block rounded-lg border border-slate-200 px-3 py-1.5 text-xs">همه</span></label>
+              {% for value, label in genders %}
+                <label class="option-chip"><input type="radio" name="gender" value="{{ value }}" {% if current.gender == value %}checked{% endif %}><span class="block rounded-lg border border-slate-200 px-3 py-1.5 text-xs">{{ label }}</span></label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div>
+            <p class="mb-2 text-xs font-bold text-slate-500">نوع کالا</p>
+            <div class="flex flex-wrap gap-2">
+              <label class="option-chip"><input type="radio" name="kind" value="" {% if not current.kind %}checked{% endif %}><span class="block rounded-lg border border-slate-200 px-3 py-1.5 text-xs">همه</span></label>
+              {% for value, label in kinds %}
+                <label class="option-chip"><input type="radio" name="kind" value="{{ value }}" {% if current.kind == value %}checked{% endif %}><span class="block rounded-lg border border-slate-200 px-3 py-1.5 text-xs">{{ label }}</span></label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div>
+            <p class="mb-2 text-xs font-bold text-slate-500">برند</p>
+            <select name="brand" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-400">
+              <option value="">همه برندها</option>
+              {% for brand in brands %}
+                <option value="{{ brand.slug }}" {% if current.brand == brand.slug %}selected{% endif %}>{{ brand.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div>
+            <p class="mb-2 text-xs font-bold text-slate-500">سایز</p>
+            <div class="flex flex-wrap gap-2">
+              {% for size in sizes %}
+                <label class="option-chip">
+                  <input type="radio" name="size" value="{{ size.pk }}" {% if current.size == size.pk|stringformat:"s" %}checked{% endif %}>
+                  <span class="block min-w-10 rounded-lg border border-slate-200 px-2 py-1.5 text-center text-xs">{{ size.label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div>
+            <p class="mb-2 text-xs font-bold text-slate-500">رنگ</p>
+            <div class="flex flex-wrap gap-2">
+              {% for color in colors %}
+                <label class="option-chip color-chip" title="{{ color.name }}">
+                  <input type="radio" name="color" value="{{ color.pk }}" {% if current.color == color.pk|stringformat:"s" %}checked{% endif %}>
+                  <span class="block h-7 w-7 rounded-full border border-slate-200" style="background: {{ color.hex_code }}"></span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div>
+            <p class="mb-2 text-xs font-bold text-slate-500">محدوده قیمت (تومان)</p>
+            <div class="flex items-center gap-2">
+              <input type="number" name="min_price" value="{{ current.min_price|default:'' }}" placeholder="از" dir="ltr"
+                     class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-400">
+              <input type="number" name="max_price" value="{{ current.max_price|default:'' }}" placeholder="تا" dir="ltr"
+                     class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-400">
+            </div>
+          </div>
+
+          <label class="flex items-center gap-2 text-sm text-slate-600">
+            <input type="checkbox" name="available" value="1" {% if current.available == '1' %}checked{% endif %}
+                   class="h-4 w-4 rounded border-slate-300 text-brand-500">
+            فقط کالاهای موجود
+          </label>
+
+          <div class="flex gap-2 pt-2">
+            <button type="submit" class="flex-1 rounded-xl bg-brand-500 py-2.5 text-sm font-bold text-white transition hover:bg-brand-600">اعمال فیلتر</button>
+            <a href="{% url 'catalog:product_list' %}" class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-600 transition hover:bg-slate-50">حذف</a>
+          </div>
+        </form>
+      </details>
+    </aside>
+
+    {# ----------------------- لیست محصولات ----------------------- #}
+    <div class="lg:col-span-3">
+      {% if products %}
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+          {% for product in products %}{% include "partials/product_card.html" %}{% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <nav class="mt-8 flex items-center justify-center gap-2">
+          {% if page_obj.has_previous %}
+            <a href="?{% query_replace page=page_obj.previous_page_number %}" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">قبلی</a>
+          {% endif %}
+          {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+              <span class="rounded-lg bg-brand-500 px-3.5 py-2 text-sm font-bold text-white">{{ num|fa_number }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="?{% query_replace page=num %}" class="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm">{{ num|fa_number }}</a>
+            {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+            <a href="?{% query_replace page=page_obj.next_page_number %}" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">بعدی</a>
+          {% endif %}
+        </nav>
+        {% endif %}
+      {% else %}
+        <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
+          <p class="font-bold text-slate-700">محصولی با این مشخصات پیدا نشد.</p>
+          <a href="{% url 'catalog:product_list' %}" class="mt-4 inline-block rounded-full bg-brand-500 px-5 py-2.5 text-sm font-bold text-white">حذف فیلترها</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

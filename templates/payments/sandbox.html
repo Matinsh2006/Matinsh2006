@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load shop_extras %}
+{% block title %}درگاه پرداخت آزمایشی{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-md px-4 py-16">
+  <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div class="bg-slate-900 p-5 text-center text-white">
+      <p class="text-sm font-bold">درگاه پرداخت اینترنتی (حالت آزمایشی)</p>
+      <p class="mt-1 text-xs text-slate-400">این صفحه شبیه‌سازی درگاه بانکی است و تراکنش واقعی انجام نمی‌شود.</p>
+    </div>
+
+    <div class="space-y-3 p-6 text-sm">
+      <div class="flex justify-between"><span class="text-slate-500">پذیرنده</span><span class="font-bold">{{ site.site_name }}</span></div>
+      <div class="flex justify-between"><span class="text-slate-500">کد سفارش</span><span class="font-bold" dir="ltr">{{ order.ref_code|fa_number }}</span></div>
+      <div class="flex justify-between border-t border-slate-100 pt-3">
+        <span class="text-slate-500">مبلغ قابل پرداخت</span>
+        <span class="text-base font-extrabold text-emerald-600">{{ payment.amount|toman }} تومان</span>
+      </div>
+
+      <form method="post" class="space-y-2 pt-4">
+        {% csrf_token %}
+        <button type="submit" name="action" value="pay" class="w-full rounded-2xl bg-emerald-600 py-3.5 font-extrabold text-white transition hover:bg-emerald-700">پرداخت موفق</button>
+        <button type="submit" name="action" value="cancel" class="w-full rounded-2xl border border-slate-200 py-3 text-slate-600 transition hover:bg-slate-50">انصراف از پرداخت</button>
+      </form>
+    </div>
+  </div>
+
+  <p class="mt-4 text-center text-xs leading-6 text-slate-400">
+    برای اتصال درگاه واقعی، مقدار <code dir="ltr">PAYMENT_GATEWAY=zarinpal</code> و شناسه پذیرنده را در فایل <code dir="ltr">.env</code> تنظیم کنید.
+  </p>
+</div>
+{% endblock %}

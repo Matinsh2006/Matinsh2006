@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load shop_extras %}
+{% block title %}تغییر شماره موبایل{% endblock %}
+
+{% block content %}
+<div class="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
+  <div class="rounded-3xl border border-slate-100 bg-white p-8 shadow-sm">
+    <h1 class="text-xl font-extrabold text-slate-900">تغییر نام کاربری (شماره موبایل)</h1>
+    <p class="mt-2 text-sm leading-7 text-slate-500">
+      شماره فعلی شما <span class="font-bold text-slate-700" dir="ltr">{{ user.phone|fa_number }}</span> است.
+      پس از وارد کردن شماره جدید، یک کد تایید به آن پیامک می‌شود و شماره فقط پس از تایید کد تغییر می‌کند.
+    </p>
+
+    <form method="post" class="mt-6 space-y-4">
+      {% csrf_token %}
+      <div>
+        <label for="{{ form.phone.id_for_label }}" class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.phone.label }}</label>
+        {{ form.phone }}
+        {% for error in form.phone.errors %}<p class="mt-1.5 text-xs text-rose-600">{{ error }}</p>{% endfor %}
+      </div>
+      <button type="submit" class="w-full rounded-2xl bg-brand-500 py-3.5 text-sm font-extrabold text-white transition hover:bg-brand-600">ارسال کد تایید</button>
+      <a href="{% url 'accounts:profile' %}" class="block text-center text-sm text-slate-500">بازگشت به پروفایل</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

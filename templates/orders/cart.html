@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load shop_extras %}
+{% block title %}سبد خرید | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-6xl px-4 py-10">
+  <h1 class="mb-6 text-2xl font-extrabold text-slate-900">سبد خرید</h1>
+
+  {% if cart and cart.items.exists %}
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="space-y-3 lg:col-span-2">
+      {% for item in cart.items.all %}
+        <div class="flex gap-4 rounded-2xl border border-slate-100 bg-white p-4">
+          {% with image=item.variant.product.main_image %}
+            <a href="{{ item.variant.product.get_absolute_url }}" class="h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-slate-100">
+              {% if image %}<img src="{{ image.image.url }}" alt="" class="h-full w-full object-cover">{% endif %}
+            </a>
+          {% endwith %}
+
+          <div class="flex flex-1 flex-col">
+            <a href="{{ item.variant.product.get_absolute_url }}" class="text-sm font-bold text-slate-800 hover:text-brand-600">{{ item.variant.product.title }}</a>
+            <p class="mt-1 text-xs text-slate-500">{{ item.variant.label }}</p>
+            {% if item.variant.product.brand %}<p class="mt-0.5 text-xs text-slate-400">برند {{ item.variant.product.brand.name }}</p>{% endif %}
+
+            <div class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-3">
+              <form method="post" action="{% url 'orders:cart_update' item.pk %}" class="flex items-center gap-2">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.variant.stock }}" dir="ltr"
+                       class="w-16 rounded-lg border border-slate-200 px-2 py-1.5 text-center text-sm outline-none focus:border-brand-400">
+                <button type="submit" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:bg-slate-50">به‌روزرسانی</button>
+              </form>
+
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-extrabold text-slate-900">{{ item.total_price|toman }} تومان</span>
+                <form method="post" action="{% url 'orders:cart_remove' item.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="text-xs text-rose-600 hover:text-rose-700">حذف</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <aside class="lg:col-span-1">
+      <div class="sticky top-24 rounded-3xl border border-slate-100 bg-white p-6">
+        <h2 class="mb-4 font-extrabold text-slate-900">خلاصه سفارش</h2>
+        <dl class="space-y-3 text-sm">
+          <div class="flex justify-between"><dt class="text-slate-500">جمع کالاها</dt><dd class="font-bold">{{ cart.total_price|toman }} تومان</dd></div>
+          <div class="flex justify-between">
+            <dt class="text-slate-500">هزینه ارسال</dt>
+            <dd class="font-bold">{% if shipping_cost %}{{ shipping_cost|toman }} تومان{% else %}رایگان{% endif %}</dd>
+          </div>
+          {% if site.free_shipping_threshold and shipping_cost %}
+            <p class="rounded-xl bg-amber-50 p-3 text-xs leading-5 text-amber-700">
+              با خرید بیش از {{ site.free_shipping_threshold|toman }} تومان، ارسال رایگان می‌شود.
+            </p>
+          {% endif %}
+          <div class="flex justify-between border-t border-slate-100 pt-3 text-base">
+            <dt class="font-bold">مبلغ قابل پرداخت</dt>
+            <dd class="font-extrabold text-brand-600">{{ grand_total|toman }} تومان</dd>
+          </div>
+        </dl>
+
+        <a href="{% url 'orders:checkout' %}" class="mt-5 block rounded-2xl bg-brand-500 py-3.5 text-center text-sm font-extrabold text-white transition hover:bg-brand-600">
+          ادامه و تکمیل خرید
+        </a>
+        <a href="{% url 'catalog:product_list' %}" class="mt-2 block py-2 text-center text-sm text-slate-500">ادامه خرید</a>
+      </div>
+    </aside>
+  </div>
+  {% else %}
+    <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-16 text-center">
+      <p class="font-bold text-slate-700">سبد خرید شما خالی است.</p>
+      <a href="{% url 'catalog:product_list' %}" class="mt-5 inline-block rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white">مشاهده محصولات</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

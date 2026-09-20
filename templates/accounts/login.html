@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}ورود به {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
+  <div class="rounded-3xl border border-slate-100 bg-white p-8 shadow-sm">
+    <div class="mb-6 text-center">
+      <span class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+        <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
+      </span>
+      <h1 class="text-xl font-extrabold text-slate-900">ورود یا ثبت‌نام</h1>
+      <p class="mt-2 text-sm text-slate-500">شماره موبایل شما همان نام کاربری شماست.</p>
+    </div>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label for="{{ form.phone.id_for_label }}" class="mb-1.5 block text-sm font-bold text-slate-700">{{ form.phone.label }}</label>
+        {{ form.phone }}
+        {% for error in form.phone.errors %}<p class="mt-1.5 text-xs text-rose-600">{{ error }}</p>{% endfor %}
+      </div>
+      <button type="submit" class="w-full rounded-2xl bg-brand-500 py-3.5 text-sm font-extrabold text-white transition hover:bg-brand-600">
+        دریافت کد تایید
+      </button>
+    </form>
+
+    <p class="mt-5 text-center text-xs leading-6 text-slate-400">
+      با ورود به سایت، <a href="{% url 'core:about' %}" class="text-brand-600">قوانین فروشگاه</a> را می‌پذیرید.
+    </p>
+  </div>
+</div>
+{% endblock %}

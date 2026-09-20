@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load shop_extras %}
+{% block title %}نتیجه پرداخت | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-lg px-4 py-16">
+  <div class="rounded-3xl border border-slate-100 bg-white p-8 text-center">
+    {% if payment and payment.status == 'success' %}
+      <span class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+      </span>
+      <h1 class="text-xl font-extrabold text-slate-900">پرداخت با موفقیت انجام شد</h1>
+      <p class="mt-2 text-sm text-slate-500">سفارش شما ثبت شد و به‌زودی آماده ارسال می‌شود.</p>
+      {% if payment.ref_id %}
+        <p class="mt-4 rounded-xl bg-slate-50 p-3 text-sm">کد رهگیری بانک: <span class="font-bold" dir="ltr">{{ payment.ref_id|fa_number }}</span></p>
+      {% endif %}
+    {% else %}
+      <span class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>
+      </span>
+      <h1 class="text-xl font-extrabold text-slate-900">پرداخت ناموفق بود</h1>
+      <p class="mt-2 text-sm text-slate-500">{{ payment.error_message|default:"تراکنش تایید نشد. در صورت کسر وجه، مبلغ تا ۷۲ ساعت آینده برمی‌گردد." }}</p>
+    {% endif %}
+
+    <div class="mt-6 space-y-2 rounded-2xl bg-slate-50 p-4 text-sm">
+      <div class="flex justify-between"><span class="text-slate-500">کد پیگیری سفارش</span><span class="font-bold" dir="ltr">{{ order.ref_code|fa_number }}</span></div>
+      <div class="flex justify-between"><span class="text-slate-500">مبلغ</span><span class="font-bold">{{ order.total_price|toman }} تومان</span></div>
+      <div class="flex justify-between"><span class="text-slate-500">وضعیت سفارش</span><span class="font-bold">{{ order.get_status_display }}</span></div>
+    </div>
+
+    <div class="mt-6 flex flex-col gap-2">
+      <a href="{% url 'orders:order_detail' order.ref_code %}" class="rounded-2xl bg-slate-900 py-3 text-sm font-bold text-white transition hover:bg-slate-800">جزئیات سفارش</a>
+      {% if order.status == 'pending' %}
+        <a href="{% url 'payments:start' order.ref_code %}" class="rounded-2xl bg-brand-500 py-3 text-sm font-bold text-white transition hover:bg-brand-600">تلاش دوباره برای پرداخت</a>
+      {% endif %}
+      <a href="{% url 'catalog:product_list' %}" class="py-2 text-sm text-slate-500">بازگشت به فروشگاه</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

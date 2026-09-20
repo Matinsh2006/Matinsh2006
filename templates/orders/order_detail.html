@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load shop_extras %}
+{% block title %}سفارش {{ order.ref_code }} | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl px-4 py-10">
+  <div class="rounded-3xl border border-slate-100 bg-white p-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-5">
+      <div>
+        <h1 class="text-xl font-extrabold text-slate-900">سفارش <span dir="ltr">{{ order.ref_code|fa_number }}</span></h1>
+        <p class="mt-1 text-sm text-slate-500">ثبت شده در {{ order.created_at|date:"Y/m/d H:i" }}</p>
+      </div>
+      <span class="rounded-full px-3 py-1 text-sm font-bold
+        {% if order.status == 'pending' %}bg-amber-50 text-amber-600
+        {% elif order.status == 'canceled' %}bg-rose-50 text-rose-600
+        {% else %}bg-emerald-50 text-emerald-600{% endif %}">{{ order.get_status_display }}</span>
+    </div>
+
+    <ul class="divide-y divide-slate-100">
+      {% for item in order.items.all %}
+        <li class="flex items-center justify-between gap-3 py-4 text-sm">
+          <div>
+            <p class="font-bold text-slate-800">{{ item.product_title }}</p>
+            <p class="mt-1 text-xs text-slate-500">{{ item.variant_label }} — تعداد {{ item.quantity|fa_number }}</p>
+          </div>
+          <span class="font-extrabold text-slate-900">{{ item.total_price|toman }} تومان</span>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <dl class="space-y-2 border-t border-slate-100 pt-4 text-sm">
+      <div class="flex justify-between"><dt class="text-slate-500">جمع کالاها</dt><dd>{{ order.items_price|toman }} تومان</dd></div>
+      <div class="flex justify-between"><dt class="text-slate-500">ارسال</dt><dd>{% if order.shipping_cost %}{{ order.shipping_cost|toman }} تومان{% else %}رایگان{% endif %}</dd></div>
+      <div class="flex justify-between text-base"><dt class="font-bold">مبلغ کل</dt><dd class="font-extrabold text-brand-600">{{ order.total_price|toman }} تومان</dd></div>
+    </dl>
+
+    <div class="mt-6 rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-600">
+      <p class="font-bold text-slate-800">آدرس تحویل</p>
+      <p>{{ order.full_name }} — <span dir="ltr">{{ order.phone|fa_number }}</span></p>
+      <p>{{ order.province }} {{ order.city }}، {{ order.address }}</p>
+      {% if order.postal_code %}<p>کد پستی: <span dir="ltr">{{ order.postal_code|fa_number }}</span></p>{% endif %}
+    </div>
+
+    {% if order.status == 'pending' %}
+      <a href="{% url 'payments:start' order.ref_code %}" class="mt-6 block rounded-2xl bg-emerald-600 py-3.5 text-center text-sm font-extrabold text-white transition hover:bg-emerald-700">پرداخت سفارش</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

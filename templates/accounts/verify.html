@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load shop_extras %}
+{% block title %}تایید کد پیامکی{% endblock %}
+
+{% block content %}
+<div class="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
+  <div class="rounded-3xl border border-slate-100 bg-white p-8 shadow-sm">
+    <div class="mb-6 text-center">
+      <span class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+        <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M21 8v8a2 2 0 0 1-2 2H7l-4 3V6a2 2 0 0 1 2-2h8"/><path d="m16 6 2 2 4-4"/></svg>
+      </span>
+      <h1 class="text-xl font-extrabold text-slate-900">
+        {% if is_change_phone %}تایید شماره جدید{% else %}کد تایید را وارد کنید{% endif %}
+      </h1>
+      <p class="mt-2 text-sm text-slate-500">
+        کد پیامک‌شده به شماره <span class="font-bold text-slate-700" dir="ltr">{{ phone|fa_number }}</span> را وارد کنید.
+      </p>
+    </div>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.code }}
+      {% for error in form.code.errors %}<p class="text-xs text-rose-600">{{ error }}</p>{% endfor %}
+
+      <p data-otp-countdown="{{ seconds_left }}" class="text-center text-sm text-slate-500"></p>
+
+      <button type="submit" class="w-full rounded-2xl bg-brand-500 py-3.5 text-sm font-extrabold text-white transition hover:bg-brand-600">
+        {% if is_change_phone %}ثبت شماره جدید{% else %}ورود به حساب{% endif %}
+      </button>
+    </form>
+
+    <div class="mt-5 flex items-center justify-between text-sm">
+      <a href="{% if is_change_phone %}{% url 'accounts:change_phone' %}{% else %}{% url 'accounts:login' %}{% endif %}" class="text-slate-500 hover:text-slate-700">تغییر شماره</a>
+      <a href="{{ resend_url }}" data-otp-resend class="font-bold text-brand-600 hover:text-brand-700">ارسال دوباره کد</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
