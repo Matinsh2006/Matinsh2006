@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>مگا منو با افکت بلور</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #070b1a;
+    --bg-2: #0d1330;
+    --glass: rgba(255, 255, 255, .05);
+    --stroke: rgba(255, 255, 255, .12);
+    --text: #eef1ff;
+    --muted: #b9c0e0;
+    --accent: #6c5ce7;
+    --blur: 14px;          /* شدت بلور پس‌زمینه */
+    --speed: .35s;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Vazirmatn, system-ui, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(900px 600px at 50% -10%, #17204d 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg), var(--bg-2));
+  }
+
+  /* ---------- هدر و منو ---------- */
+  .nav-wrap {
+    position: sticky;
+    top: 12px;
+    z-index: 30;            /* بالاتر از لایه‌ی بلور */
+    padding: 0 16px;
+    max-width: 960px;
+    margin-inline: auto;
+  }
+
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 22px;
+    border: 1px solid var(--stroke);
+    border-radius: 999px;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  .brand { font-weight: 700; font-size: 20px; }
+
+  .burger {
+    width: 46px; height: 40px;
+    display: grid; align-content: center; gap: 6px;
+    padding: 0 8px;
+    border: 0; border-radius: 12px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .burger span {
+    display: block; height: 3px; border-radius: 3px;
+    background: var(--text);
+    transition: transform var(--speed), opacity var(--speed);
+  }
+  .burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+  .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+  .mega-menu {
+    margin-top: 12px;
+    padding: 26px 22px;
+    border: 1px solid var(--stroke);
+    border-radius: 26px;
+    background: rgba(255, 255, 255, .04);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+
+    /* انیمیشن باز/بسته شدن */
+    opacity: 0;
+    transform: translateY(-12px);
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity var(--speed), transform var(--speed), visibility var(--speed);
+  }
+  .mega-menu.is-open {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .mega-menu a {
+    display: block;
+    padding: 16px 8px;
+    color: var(--muted);
+    font-size: 18px;
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .mega-menu a:hover { color: var(--text); }
+
+  .mega-menu .cta {
+    margin-top: 10px;
+    text-align: center;
+    color: #fff;
+    background: var(--accent);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 10px 30px rgba(108, 92, 231, .45);
+  }
+
+  /* ---------- لایه‌ی بلور روی بقیه‌ی صفحه ---------- */
+  .blur-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 20;            /* زیر منو، روی محتوا */
+    background: rgba(5, 8, 20, .35);
+    -webkit-backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--blur));
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--speed), visibility var(--speed);
+  }
+  .blur-layer.is-open { opacity: 1; visibility: visible; }
+
+  /* قفل اسکرول هنگام باز بودن منو */
+  body.menu-open { overflow: hidden; }
+
+  /* ---------- محتوای نمونه ---------- */
+  main { max-width: 960px; margin: 40px auto; padding: 0 16px; text-align: center; }
+  .avatar {
+    width: 220px; height: 220px; border-radius: 50%;
+    margin-inline: auto;
+    background: linear-gradient(160deg, #2c3566, #131a3d);
+    border: 1px solid var(--stroke);
+  }
+  main p { color: var(--muted); line-height: 2; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="nav-wrap">
+    <nav class="nav-bar">
+      <span class="brand">شروین</span>
+      <button class="burger" id="burger" aria-expanded="false" aria-controls="megaMenu" aria-label="باز کردن منو">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <div class="mega-menu" id="megaMenu">
+      <a href="#">خانه</a>
+      <a href="#">خدمات</a>
+      <a href="#">تماس با من</a>
+      <a href="#" class="cta">وبلاگ ها</a>
+    </div>
+  </div>
+
+  <div class="blur-layer" id="blurLayer"></div>
+
+  <main>
+    <div class="avatar"></div>
+    <h1>سلام، من شروین هستم</h1>
+    <p>این متن و بقیه‌ی صفحه وقتی منو باز می‌شود بلور می‌شوند.<br />روی دکمه‌ی همبرگری بزنید تا نتیجه را ببینید.</p>
+  </main>
+
+<script>
+  const burger = document.getElementById('burger');
+  const menu   = document.getElementById('megaMenu');
+  const layer  = document.getElementById('blurLayer');
+
+  function setMenu(open) {
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'بستن منو' : 'باز کردن منو');
+    menu.classList.toggle('is-open', open);
+    layer.classList.toggle('is-open', open);
+    document.body.classList.toggle('menu-open', open);
+  }
+
+  burger.addEventListener('click', () => {
+    setMenu(burger.getAttribute('aria-expanded') !== 'true');
+  });
+
+  // کلیک بیرون منو → بستن
+  layer.addEventListener('click', () => setMenu(false));
+
+  // کلید Esc → بستن
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setMenu(false);
+  });
+
+  // انتخاب یک آیتم → بستن
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+</script>
+</body>
+</html>
