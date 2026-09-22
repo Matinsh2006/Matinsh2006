@@ -153,18 +153,14 @@
 
   <div class="nav-wrap">
     <nav class="nav-bar">
-      <span class="brand">شروین</span>
+      <span class="brand" id="brand">شروین</span>
       <button class="burger" id="burger" aria-expanded="false" aria-controls="megaMenu" aria-label="باز کردن منو">
         <span></span><span></span><span></span>
       </button>
     </nav>
 
-    <div class="mega-menu" id="megaMenu">
-      <a href="#">خانه</a>
-      <a href="#">خدمات</a>
-      <a href="#">تماس با من</a>
-      <a href="#" class="cta">وبلاگ ها</a>
-    </div>
+    <!-- آیتم‌ها از menu-data.js ساخته می‌شوند -->
+    <div class="mega-menu" id="megaMenu"></div>
   </div>
 
   <div class="blur-layer" id="blurLayer"></div>
@@ -175,10 +171,32 @@
     <p>این متن و بقیه‌ی صفحه وقتی منو باز می‌شود بلور می‌شوند.<br />روی دکمه‌ی همبرگری بزنید تا نتیجه را ببینید.</p>
   </main>
 
+<script src="menu-data.js"></script>
 <script>
   const burger = document.getElementById('burger');
   const menu   = document.getElementById('megaMenu');
   const layer  = document.getElementById('blurLayer');
+
+  // ---------- ساخت منو از روی داده ----------
+  const data = window.MENU_DATA || { brand: '', items: [], cta: null };
+
+  if (data.brand) document.getElementById('brand').textContent = data.brand;
+
+  data.items.forEach(item => {
+    const a = document.createElement('a');
+    a.href = item.href;
+    a.textContent = item.label;
+    if (item.desc) a.title = item.desc;
+    menu.appendChild(a);
+  });
+
+  if (data.cta) {
+    const a = document.createElement('a');
+    a.href = data.cta.href;
+    a.textContent = data.cta.label;
+    a.className = 'cta';
+    menu.appendChild(a);
+  }
 
   function setMenu(open) {
     burger.setAttribute('aria-expanded', String(open));
