@@ -1,0 +1,79 @@
+{% extends "dashboard/base.html" %}
+{% block title %}داشبورد{% endblock %}
+{% block page_heading %}داشبورد — {{ today_label }}{% endblock %}
+
+{% block content %}
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <a href="{% url 'dashboard:appointments' %}?status=pending" class="rounded-2xl border border-amber-200 bg-amber-50 p-5 transition hover:shadow-md">
+    <p class="text-sm font-bold text-amber-700">در انتظار تایید</p>
+    <p class="mt-2 text-3xl font-black text-amber-900">{{ stats.pending|fa }}</p>
+  </a>
+  <a href="{% url 'dashboard:appointments' %}?status=confirmed" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 transition hover:shadow-md">
+    <p class="text-sm font-bold text-emerald-700">تایید شده</p>
+    <p class="mt-2 text-3xl font-black text-emerald-900">{{ stats.confirmed|fa }}</p>
+  </a>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5">
+    <p class="text-sm font-bold text-slate-500">بیعانه ماه اخیر</p>
+    <p class="mt-2 text-2xl font-black text-slate-900">{{ stats.deposit_month|toman_label }}</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5">
+    <p class="text-sm font-bold text-slate-500">مجموع بیعانه دریافتی</p>
+    <p class="mt-2 text-2xl font-black text-slate-900">{{ stats.deposit_total|toman_label }}</p>
+  </div>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+  <section class="rounded-2xl border border-slate-200 bg-white p-6">
+    <h2 class="mb-4 font-black text-slate-900">نوبت‌های امروز</h2>
+    {% if today_appointments %}
+      <div class="grid gap-3">
+        {% for appointment in today_appointments %}
+          <a href="{% url 'dashboard:appointment_manage' appointment.tracking_code %}" class="flex items-center justify-between rounded-xl border border-slate-200 p-4 transition hover:border-slate-900">
+            <div>
+              <p class="font-bold text-slate-900">{{ appointment.start_time|time:"H:i"|fa }} — {{ appointment.service.title }}</p>
+              <p class="mt-1 text-xs text-slate-500">{{ appointment.user.display_name }} — {{ appointment.car_model|default:"—" }}</p>
+            </div>
+            <span class="rounded-lg px-3 py-1 text-xs font-bold ring-1 {{ appointment.status_color }}">{{ appointment.get_status_display }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">امروز نوبتی ثبت نشده است.</p>
+    {% endif %}
+  </section>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-6">
+    <h2 class="mb-4 font-black text-slate-900">درخواست‌های در انتظار تایید</h2>
+    {% if pending_appointments %}
+      <div class="grid gap-3">
+        {% for appointment in pending_appointments %}
+          <a href="{% url 'dashboard:appointment_manage' appointment.tracking_code %}" class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50/60 p-4 transition hover:border-amber-500">
+            <div>
+              <p class="font-bold text-slate-900">{{ appointment.service.title }}</p>
+              <p class="mt-1 text-xs text-slate-600">{{ appointment.jalali_date_short|fa }} — ساعت {{ appointment.start_time|time:"H:i"|fa }}</p>
+            </div>
+            <span class="text-xs font-bold text-slate-500" dir="ltr">{{ appointment.tracking_code }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">درخواست تاییدنشده‌ای ندارید.</p>
+    {% endif %}
+  </section>
+</div>
+
+<div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <a href="{% url 'dashboard:service_create' %}" class="rounded-2xl border border-slate-200 bg-white p-5 text-center transition hover:border-amber-500 hover:shadow-md">
+    <p class="text-2xl">🔧</p><p class="mt-2 font-bold text-slate-900">افزودن خدمت</p>
+  </a>
+  <a href="{% url 'dashboard:portfolio_create' %}" class="rounded-2xl border border-slate-200 bg-white p-5 text-center transition hover:border-amber-500 hover:shadow-md">
+    <p class="text-2xl">🖼</p><p class="mt-2 font-bold text-slate-900">افزودن نمونه‌کار</p>
+  </a>
+  <a href="{% url 'dashboard:banner_create' %}" class="rounded-2xl border border-slate-200 bg-white p-5 text-center transition hover:border-amber-500 hover:shadow-md">
+    <p class="text-2xl">🏷</p><p class="mt-2 font-bold text-slate-900">درج بنر</p>
+  </a>
+  <a href="{% url 'dashboard:article_create' %}" class="rounded-2xl border border-slate-200 bg-white p-5 text-center transition hover:border-amber-500 hover:shadow-md">
+    <p class="text-2xl">📝</p><p class="mt-2 font-bold text-slate-900">نوشتن مقاله</p>
+  </a>
+</div>
+{% endblock %}

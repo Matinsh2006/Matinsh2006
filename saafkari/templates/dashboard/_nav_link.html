@@ -1,0 +1,5 @@
+{% url url_name as target_url %}
+<a href="{{ target_url }}"
+   class="flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if request.path == target_url %}bg-amber-500 font-bold text-slate-900{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+  <span>{{ icon }}</span>{{ label }}
+</a>

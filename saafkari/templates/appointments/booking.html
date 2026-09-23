@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}رزرو نوبت — {{ site.brand_name }}{% endblock %}
+
+{% block content %}
+{% with page_title="رزرو نوبت" page_subtitle="خدمت، تاریخ شمسی و ساعت را انتخاب کنید و عکس‌های خودرو را بفرستید." %}
+  {% include "partials/page_header.html" %}
+{% endwith %}
+
+<section class="mx-auto max-w-5xl px-4 py-10">
+  <form method="post" enctype="multipart/form-data" class="grid gap-6" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-700">
+        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- گام ۱: خدمت -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="flex items-center gap-3 text-lg font-black text-slate-900">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-sm font-black text-slate-900">۱</span>
+        خدمت موردنظر
+      </h2>
+      <div class="mt-5">
+        <label for="{{ form.service.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-700">{{ form.service.label }}</label>
+        {{ form.service }}
+        {% for error in form.service.errors %}<p class="mt-2 text-sm text-rose-600">{{ error }}</p>{% endfor %}
+        <p data-service-info class="mt-3 hidden rounded-xl bg-slate-50 p-4 text-sm text-slate-600"></p>
+      </div>
+    </div>
+
+    <!-- گام ۲: تاریخ و ساعت -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="flex items-center gap-3 text-lg font-black text-slate-900">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-sm font-black text-slate-900">۲</span>
+        تاریخ و ساعت (تقویم شمسی)
+      </h2>
+      <div class="mt-5 grid gap-5 md:grid-cols-2">
+        <div>
+          <label for="{{ form.date.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-700">{{ form.date.label }}</label>
+          {{ form.date }}
+          {% for error in form.date.errors %}<p class="mt-2 text-sm text-rose-600">{{ error }}</p>{% endfor %}
+          <p class="mt-2 text-xs text-slate-500">تا {{ booking_days|fa }} روز آینده می‌توانید نوبت بگیرید.</p>
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-bold text-slate-700">{{ form.start_time.label }}</label>
+          <div data-slots class="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:grid-cols-4">
+            <p class="col-span-full py-3 text-center text-sm text-slate-500">ابتدا خدمت و تاریخ را انتخاب کنید.</p>
+          </div>
+          <input type="hidden" name="start_time" data-slot-input value="{{ form.start_time.value|default:'' }}">
+          {% for error in form.start_time.errors %}<p class="mt-2 text-sm text-rose-600">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- گام ۳: مشخصات خودرو -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="flex items-center gap-3 text-lg font-black text-slate-900">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-sm font-black text-slate-900">۳</span>
+        مشخصات خودرو و شرح آسیب
+      </h2>
+      <div class="mt-5 grid gap-5 md:grid-cols-2">
+        <div>
+          <label for="{{ form.car_model.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-700">{{ form.car_model.label }}</label>
+          {{ form.car_model }}
+        </div>
+        <div>
+          <label for="{{ form.plate_number.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-700">{{ form.plate_number.label }}</label>
+          {{ form.plate_number }}
+        </div>
+        <div>
+          <label for="{{ form.contact_phone.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-700">{{ form.contact_phone.label }}</label>
+          {{ form.contact_phone }}
+          {% for error in form.contact_phone.errors %}<p class="mt-2 text-sm text-rose-600">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+      <div class="mt-5">
+        <label for="{{ form.description.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-700">{{ form.description.label }}</label>
+        {{ form.description }}
+        {% if form.description.help_text %}<p class="mt-1 text-xs text-slate-500">{{ form.description.help_text }}</p>{% endif %}
+        {% for error in form.description.errors %}<p class="mt-2 text-sm text-rose-600">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <!-- گام ۴: عکس‌های خودرو -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="flex items-center gap-3 text-lg font-black text-slate-900">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-sm font-black text-slate-900">۴</span>
+        عکس‌های خودرو از زاویه‌های مختلف
+      </h2>
+      <p class="mt-3 text-sm leading-7 text-slate-600">
+        برای هر زاویه یک باکس جدا در نظر گرفته‌ایم. حداکثر {{ max_photos|fa }} عکس و هر عکس تا {{ max_photo_mb|fa }} مگابایت.
+      </p>
+
+      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {% for value, label in angles %}
+          <label class="group relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-5 text-center transition hover:border-amber-500 hover:bg-amber-50"
+                 data-photo-box>
+            <img data-photo-preview alt="" class="hidden h-28 w-full rounded-xl object-cover">
+            <span data-photo-placeholder class="text-3xl">📷</span>
+            <span class="text-sm font-bold text-slate-700">{{ label }}</span>
+            <span data-photo-name class="text-xs text-slate-500">برای انتخاب عکس کلیک کنید</span>
+            <input type="file" name="photo_{{ value }}" accept="image/*" class="hidden" data-photo-input>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ثبت -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p class="text-sm text-slate-600">پس از ثبت، نوبت شما در وضعیت «در انتظار تایید» قرار می‌گیرد.</p>
+          {% if site.online_payment_enabled %}
+            <p class="mt-1 text-sm text-slate-600">برای قطعی‌شدن نوبت، بیعانه را آنلاین پرداخت کنید.</p>
+          {% endif %}
+        </div>
+        <button type="submit" class="rounded-xl bg-amber-500 px-8 py-3.5 font-extrabold text-slate-900 transition hover:bg-amber-400">ثبت نوبت</button>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.BOOKING_CONFIG = {
+    slotsUrl: "{% url 'appointments:slots' %}",
+    minDate: "{{ min_date }}",
+    maxDate: "{{ max_date }}",
+    openWeekdays: {{ open_weekdays|safe }},
+    holidays: {{ holidays|safe }},
+    selectedTime: "{{ form.start_time.value|default:'' }}"
+  };
+</script>
+<script src="{% static 'js/persian-datepicker.js' %}" defer></script>
+<script src="{% static 'js/booking.js' %}" defer></script>
+{% endblock %}

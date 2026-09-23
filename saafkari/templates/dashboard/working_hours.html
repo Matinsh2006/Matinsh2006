@@ -1,0 +1,62 @@
+{% extends "dashboard/base.html" %}
+{% block title %}ساعت کاری{% endblock %}
+{% block page_heading %}ساعت کاری و روزهای تعطیل{% endblock %}
+
+{% block content %}
+<div class="grid gap-6 lg:grid-cols-3">
+  <form method="post" class="rounded-2xl border border-slate-200 bg-white p-6 lg:col-span-2">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <h2 class="mb-2 font-black text-slate-900">ساعت کاری هفته</h2>
+    <p class="mb-5 text-sm text-slate-600">نوبت‌های خالی سایت بر اساس همین ساعت‌ها ساخته می‌شوند.</p>
+
+    <div class="grid gap-3">
+      {% for hour_form in formset %}
+        <div class="rounded-xl border border-slate-200 p-4">
+          {% for hidden in hour_form.hidden_fields %}{{ hidden }}{% endfor %}
+          <div class="grid items-end gap-3 sm:grid-cols-6">
+            <p class="font-bold text-slate-900 sm:col-span-1">{{ hour_form.instance.get_weekday_display }}</p>
+            <label class="flex items-center gap-2 text-sm text-slate-700 sm:col-span-1">
+              {{ hour_form.is_open }} باز
+            </label>
+            <div><label class="mb-1 block text-xs text-slate-500">شروع</label>{{ hour_form.open_time }}</div>
+            <div><label class="mb-1 block text-xs text-slate-500">پایان</label>{{ hour_form.close_time }}</div>
+            <div><label class="mb-1 block text-xs text-slate-500">فاصله (دقیقه)</label>{{ hour_form.slot_minutes }}</div>
+            <div><label class="mb-1 block text-xs text-slate-500">ظرفیت هم‌زمان</label>{{ hour_form.capacity }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="mt-6 rounded-xl bg-amber-500 px-6 py-3 font-extrabold text-slate-900 transition hover:bg-amber-400">ذخیره ساعت‌های کاری</button>
+  </form>
+
+  <aside class="rounded-2xl border border-slate-200 bg-white p-6">
+    <h2 class="mb-4 font-black text-slate-900">روزهای تعطیل</h2>
+    <form method="post" action="{% url 'dashboard:holiday_create' %}" class="grid gap-3">
+      {% csrf_token %}
+      {% for field in holiday_form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="mb-1 block text-xs font-bold text-slate-600">{{ field.label }}</label>
+          {{ field }}
+        </div>
+      {% endfor %}
+      <button type="submit" class="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800">افزودن تعطیلی</button>
+    </form>
+
+    <div class="mt-5 grid gap-2">
+      {% for holiday in holidays %}
+        <div class="flex items-center justify-between rounded-xl border border-slate-200 p-3 text-sm">
+          <span class="text-slate-700">{{ holiday.jalali_date }}</span>
+          <form method="post" action="{% url 'dashboard:holiday_delete' holiday.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="text-xs font-bold text-rose-600 hover:underline">حذف</button>
+          </form>
+        </div>
+      {% empty %}
+        <p class="rounded-xl border border-dashed border-slate-300 p-4 text-center text-xs text-slate-500">روز تعطیلی ثبت نشده است.</p>
+      {% endfor %}
+    </div>
+  </aside>
+</div>
+{% endblock %}

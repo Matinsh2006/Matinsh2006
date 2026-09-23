@@ -1,0 +1,24 @@
+# پایتون
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# جنگو
+db.sqlite3
+db.sqlite3-journal
+/media/
+/staticfiles/
+*.log
+
+# تنظیمات محلی
+.env
+.env.local
+
+# ابزارها
+node_modules/
+.DS_Store
+.idea/
+.vscode/

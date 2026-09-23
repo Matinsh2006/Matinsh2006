@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ----------------------------------------------------------------
+   تنظیمات پایه‌ی راست‌چین و فارسی
+----------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: Vazirmatn, Tahoma, system-ui, sans-serif;
+  }
+
+  /* اعداد لاتین در فیلدهای انگلیسی خواناتر دیده شوند */
+  [dir="ltr"] {
+    font-feature-settings: "ss02";
+  }
+
+  /* نوار اسکرول ظریف */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* حذف فلش‌های پیش‌فرض ورودی عددی */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  /* ورودی‌های فرم جنگو که کلاس تیلویند ندارند */
+  .form-input-fallback {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm
+           focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200;
+  }
+
+  .badge {
+    @apply rounded-lg px-3 py-1 text-xs font-bold ring-1;
+  }
+}
+
+/* چاپ رسید پرداخت بدون منو و فوتر */
+@media print {
+  header,
+  footer,
+  aside,
+  a[href^="tel"] {
+    display: none !important;
+  }
+}

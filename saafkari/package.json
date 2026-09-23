@@ -1,0 +1,13 @@
+{
+  "name": "saafkari-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "سایت مغازه صافکاری — استایل‌های تیلویند",
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/css/src.css -o ./static/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./static/css/src.css -o ./static/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

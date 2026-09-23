@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}درگاه پرداخت آزمایشی{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-lg px-4 py-14">
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+    <div class="bg-slate-900 p-5 text-center text-white">
+      <p class="text-sm text-slate-400">درگاه پرداخت آزمایشی</p>
+      <p class="mt-1 text-lg font-black">شبیه‌ساز پرداخت بانکی</p>
+    </div>
+
+    <div class="p-7">
+      <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-800">
+        این صفحه فقط برای آزمایش است. پس از گرفتن مرچنت‌کد، مقدار
+        <code class="rounded bg-white px-1.5 py-0.5 text-xs" dir="ltr">PAYMENT_GATEWAY</code>
+        را در فایل <code class="rounded bg-white px-1.5 py-0.5 text-xs" dir="ltr">.env</code> به درگاه واقعی تغییر دهید.
+      </div>
+
+      <dl class="mt-6 grid gap-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <dt class="text-sm text-slate-500">شماره فاکتور</dt>
+          <dd class="font-bold text-slate-900" dir="ltr">{{ payment.invoice_number }}</dd>
+        </div>
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <dt class="text-sm text-slate-500">بابت</dt>
+          <dd class="text-sm font-bold text-slate-900">{{ payment.description }}</dd>
+        </div>
+        <div class="flex items-center justify-between">
+          <dt class="text-sm text-slate-500">مبلغ قابل پرداخت</dt>
+          <dd class="text-xl font-black text-amber-600">{{ payment.amount|toman_label }}</dd>
+        </div>
+      </dl>
+
+      <form method="post" class="mt-7 grid gap-3">
+        {% csrf_token %}
+        <button type="submit" name="action" value="pay" class="rounded-xl bg-emerald-600 px-5 py-3.5 font-extrabold text-white transition hover:bg-emerald-500">پرداخت موفق (تست)</button>
+        <button type="submit" name="action" value="cancel" class="rounded-xl border border-slate-300 px-5 py-3 font-bold text-slate-700 transition hover:border-rose-400 hover:text-rose-600">انصراف از پرداخت</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

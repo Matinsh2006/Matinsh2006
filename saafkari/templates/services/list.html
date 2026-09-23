@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}خدمات — {{ site.brand_name }}{% endblock %}
+
+{% block content %}
+{% with page_title="خدمات مغازه" page_subtitle="از صافکاری بدون رنگ تا نقاشی و پولیش؛ خدمت موردنظرتان را انتخاب و همان لحظه نوبت بگیرید." %}
+  {% include "partials/page_header.html" %}
+{% endwith %}
+
+<section class="mx-auto max-w-7xl px-4 py-10">
+  {% if categories %}
+    <div class="mb-8 flex flex-wrap gap-2">
+      <a href="{% url 'services:list' %}"
+         class="rounded-xl px-4 py-2 text-sm font-bold transition {% if not active_category %}bg-slate-900 text-white{% else %}border border-slate-300 bg-white text-slate-700 hover:border-slate-900{% endif %}">همه</a>
+      {% for category in categories %}
+        <a href="?cat={{ category.slug }}"
+           class="rounded-xl px-4 py-2 text-sm font-bold transition {% if active_category.pk == category.pk %}bg-slate-900 text-white{% else %}border border-slate-300 bg-white text-slate-700 hover:border-slate-900{% endif %}">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if services %}
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {% for service in services %}{% include "partials/service_card.html" %}{% endfor %}
+    </div>
+  {% else %}
+    <p class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">خدمتی در این دسته ثبت نشده است.</p>
+  {% endif %}
+</section>
+{% endblock %}

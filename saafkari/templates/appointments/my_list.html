@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}نوبت‌های من{% endblock %}
+
+{% block content %}
+{% with page_title="نوبت‌های من" page_subtitle="وضعیت هر نوبت و پرداخت بیعانه را اینجا دنبال کنید." %}
+  {% include "partials/page_header.html" %}
+{% endwith %}
+
+<section class="mx-auto max-w-4xl px-4 py-10">
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <p class="text-slate-600">در مجموع {{ appointments|length|fa }} نوبت ثبت کرده‌اید.</p>
+    <a href="{% url 'appointments:booking' %}" class="rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-extrabold text-slate-900 transition hover:bg-amber-400">رزرو نوبت تازه</a>
+  </div>
+
+  {% if appointments %}
+    <div class="grid gap-4">
+      {% for appointment in appointments %}{% include "appointments/_card.html" %}{% endfor %}
+    </div>
+  {% else %}
+    <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
+      <p class="text-4xl">📅</p>
+      <p class="mt-3 text-slate-600">هنوز نوبتی ثبت نکرده‌اید.</p>
+      <a href="{% url 'appointments:booking' %}" class="mt-5 inline-block rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800">رزرو اولین نوبت</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

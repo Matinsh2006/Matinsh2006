@@ -1,0 +1,36 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site.brand_name|default:"مغازه صافکاری" }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ site.meta_description|default:site.tagline }}{% endblock %}">
+  <meta name="theme-color" content="#0f172a">
+  {% if site.logo %}<link rel="icon" href="{{ site.logo.url }}">
+  {% else %}<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f59e0b'/%3E%3Ctext x='16' y='23' font-size='20' font-family='sans-serif' text-anchor='middle' fill='%230f172a'%3E%D8%B5%3C/text%3E%3C/svg%3E">{% endif %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
+  {% include "partials/header.html" %}
+
+  <main class="min-h-[60vh]">
+    {% include "partials/messages.html" %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "partials/footer.html" %}
+
+  <a href="{% url 'appointments:booking' %}"
+     class="fixed bottom-5 left-5 z-40 flex items-center gap-2 rounded-full bg-amber-500 px-5 py-3 font-bold text-slate-900 shadow-lg shadow-amber-500/30 transition hover:bg-amber-400 md:hidden">
+    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+    رزرو نوبت
+  </a>
+
+  <script src="{% static 'js/main.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

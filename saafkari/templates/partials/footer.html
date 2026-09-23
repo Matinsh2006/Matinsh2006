@@ -1,0 +1,45 @@
+<footer class="mt-16 bg-slate-900 text-slate-300">
+  <div class="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <h3 class="mb-3 text-lg font-extrabold text-white">{{ site.brand_name|default:"مغازه صافکاری" }}</h3>
+      <p class="text-sm leading-7 text-slate-400">{{ site.tagline }}</p>
+      {% if site.working_hours %}
+        <p class="mt-4 flex items-center gap-2 text-sm text-slate-400">🕘 {{ site.working_hours }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <h4 class="mb-3 font-bold text-white">دسترسی سریع</h4>
+      <ul class="grid gap-2 text-sm text-slate-400">
+        <li><a class="transition hover:text-amber-400" href="{% url 'services:list' %}">خدمات مغازه</a></li>
+        <li><a class="transition hover:text-amber-400" href="{% url 'gallery:list' %}">نمونه‌کارها (قبل و بعد)</a></li>
+        <li><a class="transition hover:text-amber-400" href="{% url 'blog:list' %}">مقالات آموزشی</a></li>
+        <li><a class="transition hover:text-amber-400" href="{% url 'appointments:booking' %}">رزرو نوبت</a></li>
+        <li><a class="transition hover:text-amber-400" href="{% url 'appointments:track' %}">پیگیری نوبت</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="mb-3 font-bold text-white">آدرس و تماس</h4>
+      {% if shop_location %}
+        <p class="text-sm leading-7 text-slate-400">📍 {{ shop_location.address }}</p>
+        {% if shop_location.directions_url %}
+          <a href="{{ shop_location.directions_url }}" target="_blank" rel="noopener"
+             class="mt-2 inline-block rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold text-amber-400 transition hover:bg-slate-700">مسیریابی روی نقشه</a>
+        {% endif %}
+      {% endif %}
+      {% if site.phone %}<p class="mt-3 text-sm text-slate-400" dir="ltr">📞 {{ site.phone|phone_display }}</p>{% endif %}
+      {% if site.second_phone %}<p class="text-sm text-slate-400" dir="ltr">📞 {{ site.second_phone|phone_display }}</p>{% endif %}
+    </div>
+
+    <div>
+      <h4 class="mb-3 font-bold text-white">ما را دنبال کنید</h4>
+      {% include "partials/social_links.html" %}
+      {% if site.enamad_code %}<div class="mt-4">{{ site.enamad_code|safe }}</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="border-t border-slate-800 py-5 text-center text-xs text-slate-500">
+    © {% now "Y" %} — تمام حقوق برای {{ site.brand_name|default:"این مغازه" }} محفوظ است.
+  </div>
+</footer>

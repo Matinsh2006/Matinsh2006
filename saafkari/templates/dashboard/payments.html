@@ -1,0 +1,48 @@
+{% extends "dashboard/base.html" %}
+{% block title %}پرداخت‌ها{% endblock %}
+{% block page_heading %}تراکنش‌های بیعانه{% endblock %}
+
+{% block content %}
+<div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+  <div class="flex flex-wrap gap-2">
+    <a href="{% url 'dashboard:payments' %}"
+       class="rounded-xl px-4 py-2 text-sm font-bold transition {% if not active_status %}bg-slate-900 text-white{% else %}border border-slate-300 bg-white text-slate-700 hover:border-slate-900{% endif %}">همه</a>
+    {% for value, label in statuses %}
+      <a href="?status={{ value }}"
+         class="rounded-xl px-4 py-2 text-sm font-bold transition {% if active_status == value %}bg-slate-900 text-white{% else %}border border-slate-300 bg-white text-slate-700 hover:border-slate-900{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </div>
+  <p class="rounded-xl bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700">مجموع دریافتی: {{ paid_total|toman_label }}</p>
+</div>
+
+<div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+  <table class="w-full text-right text-sm">
+    <thead class="bg-slate-50 text-xs font-bold text-slate-500">
+      <tr>
+        <th class="px-4 py-3">فاکتور</th>
+        <th class="px-4 py-3">مشتری</th>
+        <th class="px-4 py-3">نوبت</th>
+        <th class="px-4 py-3">مبلغ</th>
+        <th class="px-4 py-3">درگاه</th>
+        <th class="px-4 py-3">زمان</th>
+        <th class="px-4 py-3">وضعیت</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for payment in payments %}
+        <tr class="transition hover:bg-slate-50">
+          <td class="px-4 py-3 font-bold text-slate-900" dir="ltr">{{ payment.invoice_number }}</td>
+          <td class="px-4 py-3 text-slate-700">{{ payment.user.display_name }}</td>
+          <td class="px-4 py-3 text-slate-600" dir="ltr">{{ payment.appointment.tracking_code|default:"—" }}</td>
+          <td class="px-4 py-3 font-bold text-slate-900">{{ payment.amount|toman }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ payment.gateway }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ payment.created_at|jalali_datetime }}</td>
+          <td class="px-4 py-3"><span class="rounded-lg px-3 py-1 text-xs font-bold ring-1 {{ payment.status_color }}">{{ payment.get_status_display }}</span></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="px-4 py-10 text-center text-slate-500">تراکنشی ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}پنل مدیریت{% endblock %} — {{ site.brand_name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+</head>
+<body class="min-h-screen bg-slate-100 font-sans text-slate-800 antialiased">
+<div class="flex min-h-screen">
+  <!-- منوی کناری -->
+  <aside data-mobile-menu class="fixed inset-y-0 right-0 z-50 hidden w-72 overflow-y-auto bg-slate-900 p-5 lg:static lg:block">
+    <a href="{% url 'core:home' %}" class="mb-6 flex items-center gap-3">
+      <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 font-black text-slate-900">ص</span>
+      <span>
+        <span class="block text-sm font-extrabold text-white">{{ site.brand_name }}</span>
+        <span class="block text-xs text-slate-400">پنل مدیریت</span>
+      </span>
+    </a>
+
+    <nav class="grid gap-1 text-sm">
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:home" label="داشبورد" icon="🏠" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:appointments" label="نوبت‌ها" icon="📅" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:payments" label="پرداخت‌ها" icon="💳" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:customers" label="مشتریان" icon="👥" %}
+
+      <p class="mt-4 px-3 text-xs font-bold uppercase text-slate-500">محتوای سایت</p>
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:services" label="خدمات" icon="🔧" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:service_categories" label="دسته‌بندی خدمات" icon="🗂" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:portfolio" label="نمونه‌کارها" icon="🖼" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:banners" label="بنرها" icon="🏷" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:articles" label="مقالات" icon="📝" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:article_categories" label="دسته‌بندی مقالات" icon="🗃" %}
+
+      <p class="mt-4 px-3 text-xs font-bold uppercase text-slate-500">تنظیمات مغازه</p>
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:working_hours" label="ساعت کاری و تعطیلات" icon="🕘" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:locations" label="لوکیشن مغازه" icon="📍" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:socials" label="شبکه‌های اجتماعی" icon="🔗" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:messages" label="پیام‌های تماس" icon="✉️" %}
+      {% include "dashboard/_nav_link.html" with url_name="dashboard:settings" label="تنظیمات سایت" icon="⚙️" %}
+    </nav>
+
+    <div class="mt-6 border-t border-slate-800 pt-4">
+      <a href="/admin/" class="block rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-white">پنل پیشرفته جنگو</a>
+      <a href="{% url 'accounts:logout' %}" class="block rounded-lg px-3 py-2 text-sm text-rose-400 transition hover:bg-slate-800">خروج</a>
+    </div>
+  </aside>
+
+  <!-- محتوا -->
+  <div class="flex-1">
+    <header class="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-5 py-3">
+      <div class="flex items-center gap-3">
+        <button type="button" data-menu-toggle class="rounded-lg border border-slate-300 p-2 lg:hidden" aria-label="منو">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <h1 class="text-lg font-black text-slate-900">{% block page_heading %}پنل مدیریت{% endblock %}</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'core:home' %}" target="_blank" class="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-slate-900">دیدن سایت</a>
+        <span class="hidden text-sm font-bold text-slate-700 sm:block">{{ user.display_name }}</span>
+      </div>
+    </header>
+
+    <main class="p-5">
+      {% if messages %}
+        <div class="mb-5 grid gap-2">
+          {% for message in messages %}
+            <div class="rounded-xl border px-4 py-3 text-sm font-bold
+              {% if message.tags == 'success' %}border-emerald-200 bg-emerald-50 text-emerald-800
+              {% elif message.tags == 'error' %}border-rose-200 bg-rose-50 text-rose-800
+              {% else %}border-sky-200 bg-sky-50 text-sky-800{% endif %}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+<script src="{% static 'js/main.js' %}" defer></script>
+<script src="{% static 'js/persian-datepicker.js' %}" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,69 @@
+<header class="sticky top-0 z-50 border-b border-slate-800/50 bg-slate-900/95 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+    <a href="{% url 'core:home' %}" class="flex items-center gap-3">
+      {% if site.logo %}
+        <img src="{{ site.logo.url }}" alt="{{ site.brand_name }}" class="h-11 w-11 rounded-xl object-cover">
+      {% else %}
+        <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500 text-xl font-black text-slate-900">ص</span>
+      {% endif %}
+      <span class="min-w-0 leading-tight">
+        <span class="block truncate text-sm font-extrabold text-white sm:text-base">{{ site.brand_name|default:"مغازه صافکاری" }}</span>
+        <span class="hidden truncate text-xs text-slate-400 sm:block">{{ site.tagline|truncatechars:38 }}</span>
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-1 lg:flex">
+      {% url 'core:home' as home_url %}
+      {% url 'services:list' as services_url %}
+      {% url 'gallery:list' as gallery_url %}
+      {% url 'blog:list' as blog_url %}
+      {% url 'core:about' as about_url %}
+      {% url 'core:contact' as contact_url %}
+      <a href="{{ home_url }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white">خانه</a>
+      <a href="{{ services_url }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white">خدمات</a>
+      <a href="{{ gallery_url }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white">نمونه‌کارها</a>
+      <a href="{{ blog_url }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white">مقالات</a>
+      <a href="{{ about_url }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white">درباره ما</a>
+      <a href="{{ contact_url }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white">تماس و آدرس</a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      {% if site.phone %}
+        <a href="tel:{{ site.phone }}" class="hidden items-center gap-2 rounded-xl border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-amber-500 hover:text-amber-400 md:flex" dir="ltr">
+          {{ site.phone|phone_display }}
+        </a>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2 rounded-xl bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-700">
+          {% if user.avatar %}<img src="{{ user.avatar.url }}" class="h-6 w-6 rounded-full object-cover" alt="">{% endif %}
+          <span class="hidden sm:inline">{{ user.display_name }}</span>
+        </a>
+        {% if user.is_staff %}
+          <a href="{% url 'dashboard:home' %}" class="hidden rounded-xl bg-slate-700 px-3 py-2 text-sm font-semibold text-amber-300 transition hover:bg-slate-600 sm:block">پنل</a>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="rounded-xl border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-amber-500 hover:text-amber-400">ورود</a>
+      {% endif %}
+      <a href="{% url 'appointments:booking' %}" class="hidden rounded-xl bg-amber-500 px-4 py-2 text-sm font-extrabold text-slate-900 transition hover:bg-amber-400 md:block">رزرو نوبت</a>
+      <button type="button" data-menu-toggle class="rounded-xl border border-slate-700 p-2 text-slate-200 lg:hidden" aria-label="منو">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div data-mobile-menu class="hidden border-t border-slate-800 bg-slate-900 lg:hidden">
+    <div class="mx-auto grid max-w-7xl gap-1 px-4 py-3">
+      <a href="{% url 'core:home' %}" class="rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">خانه</a>
+      <a href="{% url 'services:list' %}" class="rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">خدمات</a>
+      <a href="{% url 'gallery:list' %}" class="rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">نمونه‌کارها</a>
+      <a href="{% url 'blog:list' %}" class="rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">مقالات</a>
+      <a href="{% url 'core:about' %}" class="rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">درباره ما</a>
+      <a href="{% url 'core:contact' %}" class="rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">تماس و آدرس</a>
+      <a href="{% url 'appointments:track' %}" class="rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">پیگیری نوبت</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'appointments:mine' %}" class="rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">نوبت‌های من</a>
+        <a href="{% url 'accounts:logout' %}" class="rounded-lg px-3 py-2 text-sm text-rose-300 hover:bg-slate-800">خروج</a>
+      {% endif %}
+    </div>
+  </div>
+</header>

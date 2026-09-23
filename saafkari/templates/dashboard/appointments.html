@@ -1,0 +1,68 @@
+{% extends "dashboard/base.html" %}
+{% block title %}نوبت‌ها{% endblock %}
+{% block page_heading %}مدیریت نوبت‌ها{% endblock %}
+
+{% block content %}
+<div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+  <div class="flex flex-wrap gap-2">
+    <a href="{% url 'dashboard:appointments' %}"
+       class="rounded-xl px-4 py-2 text-sm font-bold transition {% if not active_status %}bg-slate-900 text-white{% else %}border border-slate-300 bg-white text-slate-700 hover:border-slate-900{% endif %}">همه</a>
+    {% for value, label in statuses %}
+      <a href="?status={{ value }}"
+         class="rounded-xl px-4 py-2 text-sm font-bold transition {% if active_status == value %}bg-slate-900 text-white{% else %}border border-slate-300 bg-white text-slate-700 hover:border-slate-900{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </div>
+  <form method="get" class="flex gap-2">
+    {% if active_status %}<input type="hidden" name="status" value="{{ active_status }}">{% endif %}
+    <input type="search" name="q" value="{{ query }}" placeholder="کد پیگیری، شماره، پلاک..."
+           class="w-60 rounded-xl border border-slate-300 px-4 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200">
+    <button type="submit" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-800">جست‌وجو</button>
+  </form>
+</div>
+
+<div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+  <table class="w-full text-right text-sm">
+    <thead class="bg-slate-50 text-xs font-bold text-slate-500">
+      <tr>
+        <th class="px-4 py-3">کد پیگیری</th>
+        <th class="px-4 py-3">مشتری</th>
+        <th class="px-4 py-3">خدمت</th>
+        <th class="px-4 py-3">تاریخ شمسی</th>
+        <th class="px-4 py-3">ساعت</th>
+        <th class="px-4 py-3">عکس</th>
+        <th class="px-4 py-3">بیعانه</th>
+        <th class="px-4 py-3">وضعیت</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for appointment in appointments %}
+        <tr class="transition hover:bg-slate-50">
+          <td class="px-4 py-3 font-bold text-slate-900" dir="ltr">{{ appointment.tracking_code }}</td>
+          <td class="px-4 py-3">
+            <p class="font-bold text-slate-800">{{ appointment.user.display_name }}</p>
+            <p class="text-xs text-slate-500" dir="ltr">{{ appointment.contact_phone|phone_display }}</p>
+          </td>
+          <td class="px-4 py-3 text-slate-700">{{ appointment.service.title }}</td>
+          <td class="px-4 py-3 text-slate-700">{{ appointment.jalali_date_short|fa }}</td>
+          <td class="px-4 py-3 text-slate-700">{{ appointment.time_range|fa }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ appointment.photos.count|fa }}</td>
+          <td class="px-4 py-3">
+            {% if appointment.is_deposit_paid %}
+              <span class="text-xs font-bold text-emerald-600">✓ پرداخت شده</span>
+            {% else %}
+              <span class="text-xs text-slate-500">{{ appointment.deposit_amount|toman }}</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3"><span class="rounded-lg px-3 py-1 text-xs font-bold ring-1 {{ appointment.status_color }}">{{ appointment.get_status_display }}</span></td>
+          <td class="px-4 py-3">
+            <a href="{% url 'dashboard:appointment_manage' appointment.tracking_code %}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-slate-900">مدیریت</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="9" class="px-4 py-10 text-center text-slate-500">نوبتی با این فیلتر پیدا نشد.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

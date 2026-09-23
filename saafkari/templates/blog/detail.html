@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }} — {{ site.brand_name }}{% endblock %}
+{% block description %}{{ article.summary|truncatechars:150 }}{% endblock %}
+
+{% block content %}
+<article class="mx-auto max-w-4xl px-4 py-10">
+  <nav class="mb-6 text-sm text-slate-500">
+    <a href="{% url 'core:home' %}" class="hover:text-slate-900">خانه</a> ›
+    <a href="{% url 'blog:list' %}" class="hover:text-slate-900">مقالات</a> ›
+    <span class="text-slate-800">{{ article.title|truncatechars:40 }}</span>
+  </nav>
+
+  {% if article.category %}
+    <a href="{% url 'blog:list' %}?cat={{ article.category.slug }}" class="rounded-lg bg-amber-50 px-3 py-1 text-sm font-bold text-amber-700">{{ article.category.name }}</a>
+  {% endif %}
+  <h1 class="mt-4 text-3xl font-black leading-tight text-slate-900 md:text-4xl">{{ article.title }}</h1>
+
+  <div class="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-500">
+    <span>📅 {{ article.published_at|jalali }}</span>
+    <span>⏱ {{ article.reading_minutes|fa }} دقیقه مطالعه</span>
+    <span>👁 {{ article.views_count|fa }} بازدید</span>
+    {% if article.author %}<span>✍️ {{ article.author.display_name }}</span>{% endif %}
+  </div>
+
+  {% if article.cover %}
+    <img src="{{ article.cover.url }}" alt="{{ article.title }}" class="mt-7 h-80 w-full rounded-2xl object-cover">
+  {% endif %}
+
+  {% if article.summary %}
+    <p class="mt-7 rounded-2xl border-r-4 border-amber-500 bg-amber-50 p-5 leading-8 text-slate-700">{{ article.summary }}</p>
+  {% endif %}
+
+  <div class="mt-7 space-y-5 text-lg leading-9 text-slate-800">
+    {% for paragraph in article.paragraphs %}<p>{{ paragraph|linebreaksbr }}</p>{% endfor %}
+  </div>
+
+  {% if article.tag_list %}
+    <div class="mt-8 flex flex-wrap gap-2">
+      {% for tag in article.tag_list %}
+        <span class="rounded-lg bg-slate-100 px-3 py-1 text-sm text-slate-600">#{{ tag }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="mt-10 rounded-2xl bg-slate-900 p-8 text-center text-white">
+    <h3 class="text-xl font-black">برای خودروی خودتان نوبت بگیرید</h3>
+    <p class="mt-2 text-slate-300">کارشناسی رایگان، پس از ارسال عکس خودرو.</p>
+    <a href="{% url 'appointments:booking' %}" class="mt-5 inline-block rounded-xl bg-amber-500 px-6 py-3 font-extrabold text-slate-900 transition hover:bg-amber-400">رزرو نوبت</a>
+  </div>
+
+  {% if related_articles %}
+    <h2 class="mt-14 mb-6 text-xl font-black text-slate-900">مقالات مرتبط</h2>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {% for article in related_articles %}{% include "partials/article_card.html" %}{% endfor %}
+    </div>
+  {% endif %}
+</article>
+{% endblock %}

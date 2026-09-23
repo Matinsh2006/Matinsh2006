@@ -1,0 +1,22 @@
+{% extends "dashboard/base.html" %}
+{% block title %}تنظیمات سایت{% endblock %}
+{% block page_heading %}تنظیمات سایت{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="max-w-4xl rounded-2xl border border-slate-200 bg-white p-6">
+  {% csrf_token %}
+  <div class="grid gap-5 md:grid-cols-2">
+    {% for field in form %}
+      <div{% if field.name == 'about' or field.name == 'enamad_code' %} class="md:col-span-2"{% endif %}>
+        <label for="{{ field.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-700">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
+        {% for error in field.errors %}<p class="mt-1 text-sm text-rose-600">{{ error }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="mt-7 border-t border-slate-100 pt-5">
+    <button type="submit" class="rounded-xl bg-amber-500 px-8 py-3 font-extrabold text-slate-900 transition hover:bg-amber-400">ذخیره تنظیمات</button>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "dashboard/base.html" %}
+{% block title %}مشتریان{% endblock %}
+{% block page_heading %}مشتریان{% endblock %}
+
+{% block content %}
+<form method="get" class="mb-5 flex gap-2">
+  <input type="search" name="q" value="{{ query }}" placeholder="نام، شماره موبایل یا خودرو..."
+         class="w-72 rounded-xl border border-slate-300 px-4 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200">
+  <button type="submit" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-800">جست‌وجو</button>
+</form>
+
+<div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+  <table class="w-full text-right text-sm">
+    <thead class="bg-slate-50 text-xs font-bold text-slate-500">
+      <tr>
+        <th class="px-4 py-3">نام</th>
+        <th class="px-4 py-3">شماره موبایل</th>
+        <th class="px-4 py-3">خودرو</th>
+        <th class="px-4 py-3">تعداد نوبت</th>
+        <th class="px-4 py-3">عضویت</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for customer in customers %}
+        <tr class="transition hover:bg-slate-50">
+          <td class="px-4 py-3 font-bold text-slate-900">{{ customer.display_name }}</td>
+          <td class="px-4 py-3 text-slate-700" dir="ltr">{{ customer.phone|phone_display }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ customer.car_model|default:"—" }}</td>
+          <td class="px-4 py-3 text-slate-700">{{ customer.appointments_total|fa }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ customer.date_joined|jalali }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="px-4 py-10 text-center text-slate-500">مشتری‌ای پیدا نشد.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
