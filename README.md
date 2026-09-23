@@ -1,19 +1,90 @@
-<h1 align="center">Hi, I'm Matin Shirani</h1>
-<h3 align="center">A web developer from Iran</h3>
+# سایت نوبت‌دهی آنلاین آرایشگاه زنانه
 
-- 👨‍💻 All of my projects are available at [https://matin-shirani.chbkn.dev](https://matin-shirani.chbkn.dev)
+یک وب‌سایت کامل برای نوبت‌دهی آنلاین آرایشگاه‌های زنانه؛ بک‌اند با **Django** و فرانت‌اند با **HTML, CSS, JavaScript** (بدون فریم‌ورک فرانت‌اندی اضافه، رندر سمت سرور با تمپلیت‌های جنگو).
 
-- 📫 How to reach me **Matinshirani52@gmail.com**
+## امکانات پیاده‌سازی‌شده
 
-<h3 align="left">Connect with me:</h3>
-<p align="left">
-  <a href="https://t.me/iiamatindev" target="_blank">
-    Telegram: @iiamatindev
-  </a>
-</p>
+- **پروفایل کاربری با شماره موبایل**: ورود/ثبت‌نام مشتری فقط با شماره موبایل و کد یک‌بارمصرف پیامکی (بدون رمز عبور).
+- **ویرایش شماره موبایل با تایید پیامکی**: تغییر شماره حساب کاربری فقط پس از دریافت و تایید کد ارسالی به شماره جدید.
+- **لوکیشن مغازه**: ثبت آدرس و مختصات جغرافیایی از پنل مدیریت و نمایش نقشه در صفحه «تماس با ما».
+- **شبکه‌های اجتماعی**: ثبت لینک تلگرام، اینستاگرام، واتساپ، توییتر و شماره تماس، نمایش در هدر/فوتر و صفحه تماس.
+- **مدیریت خدمات**: افزودن/ویرایش خدمات با قیمت، مدت زمان، تصویر و مبلغ بیعانه اختصاصی هر خدمت.
+- **رزرو نوبت با تقویم شمسی**: انتخاب تاریخ با یک ویجت تقویم جلالی سفارشی (بدون وابستگی به jQuery)، بارگذاری ساعت‌های خالی به‌صورت آنی (AJAX) بر اساس ساعات کاری مغازه و نوبت‌های ثبت‌شده.
+- **درگاه پرداخت بیعانه**: پیش‌نیاز اتصال به درگاه پرداخت زرین‌پال (حالت sandbox به‌صورت پیش‌فرض فعال است) برای دریافت بیعانه نوبت‌هایی که نیاز به آن دارند.
+- **ثبت مشخصات نوبت**: فرم نام، شماره تماس و توضیحات برای هر رزرو.
+- **گالری نمونه‌کار (قبل/بعد)**: هر نمونه‌کار می‌تواند شامل تعداد دلخواه تصویر (بیشتر از دو تصویر) با برچسب «قبل» و «بعد» باشد.
+- **مقالات**: انتشار مقالات آموزشی/خبری با تصویر شاخص و صفحه‌بندی.
 
-<h3 align="left">Languages and Tools:</h3>
-<p align="left"> <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/> </a> <a href="https://git-scm.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/> </a> <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/> </a> </p>
+## پشته فنی
 
+- Python 3.11+ / Django 5
+- SQLite برای توسعه (به‌سادگی قابل تعویض با PostgreSQL برای محیط نهایی)
+- `jdatetime` برای تبدیل تاریخ میلادی↔شمسی در بک‌اند
+- تقویم شمسی سفارشی در `static/js/jalali-datepicker.js` (بدون کتابخانه خارجی)
+- فونت وزیرمتن (Vazirmatn) از Google Fonts
 
+## ساختار اپ‌ها
 
+| اپ | مسئولیت |
+|---|---|
+| `accounts` | کاربر سفارشی بر اساس شماره موبایل، کد تایید پیامکی، پروفایل |
+| `salon` | اطلاعات مغازه (آدرس/نقشه/شبکه‌های اجتماعی/ساعات کاری) - تک‌رکوردی |
+| `services` | خدمات آرایشگاه |
+| `bookings` | نوبت‌ها، محاسبه ساعت‌های خالی |
+| `payments` | اتصال به درگاه زرین‌پال برای بیعانه |
+| `gallery` | نمونه‌کارهای قبل/بعد |
+| `articles` | مقالات |
+| `core` | صفحات عمومی (خانه، تماس با ما)، قالب پایه، فیلترهای تاریخ شمسی |
+
+مدیریت محتوای مغازه (اطلاعات مغازه، خدمات، گالری، مقالات، مشاهده و تغییر وضعیت نوبت‌ها) از طریق **پنل مدیریت جنگو** در آدرس `/admin/` انجام می‌شود؛ نیازی به ساخت پنل مدیریت جداگانه نبود چون جنگو یکی از کامل‌ترین پنل‌های مدیریت محتوا را به‌صورت آماده در اختیار می‌گذارد.
+
+## راه‌اندازی روی سیستم توسعه
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env      # مقادیر واقعی را در .env قرار دهید
+
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py seed_demo   # اختیاری: پر کردن سایت با داده‌ی نمونه برای تست
+python manage.py runserver
+```
+
+سپس سایت روی `http://127.0.0.1:8000` و پنل مدیریت روی `http://127.0.0.1:8000/admin/` در دسترس است.
+
+## تنظیم پیامک (OTP)
+
+به‌صورت پیش‌فرض از `ConsoleSmsBackend` استفاده می‌شود که کد تایید را فقط در ترمینال/لاگ چاپ می‌کند (مناسب توسعه، بدون نیاز به حساب پنل پیامکی). برای اتصال به یک پنل واقعی:
+
+1. یک حساب پنل پیامکی تهیه کنید (مثلاً [کاوه‌نگار](https://kavenegar.com)).
+2. در فایل `.env` مقدار زیر را تنظیم کنید:
+   ```
+   SMS_BACKEND=accounts.sms.backends.KavenegarSmsBackend
+   KAVENEGAR_API_KEY=...
+   KAVENEGAR_OTP_TEMPLATE=verify
+   ```
+3. برای پنل دیگری، کلاسی مشابه در `accounts/sms/backends.py` بنویسید و مسیرش را در `SMS_BACKEND` قرار دهید (دقیقاً مانند الگوی `EMAIL_BACKEND` در جنگو).
+
+## تنظیم درگاه پرداخت (زرین‌پال)
+
+اتصال به API نسخه ۴ زرین‌پال در `payments/zarinpal.py` پیاده‌سازی شده و به‌صورت پیش‌فرض روی **sandbox** (بدون نیاز به پول واقعی) کار می‌کند. برای فعال‌سازی واقعی:
+
+```
+ZARINPAL_MERCHANT_ID=<مرچنت‌آیدی واقعی از zarinpal.com>
+ZARINPAL_SANDBOX=False
+```
+
+مبلغ بیعانه هر خدمت از فیلد «مبلغ بیعانه» همان خدمت در پنل مدیریت خوانده می‌شود؛ اگر صفر باشد نوبت بدون نیاز به پرداخت ثبت می‌شود.
+
+⚠️ چون این پیاده‌سازی «مقدمات» درگاه است، پیش از رفتن به حالت واقعی حتماً یک تراکنش آزمایشی با مرچنت واقعی و مستندات به‌روز زرین‌پال (`zarinpal.com/docs`) را چک کنید، چون APIهای درگاه‌های پرداخت گاهی به‌مرور تغییر می‌کنند.
+
+## نکات قبل از انتشار (Production)
+
+- `DJANGO_DEBUG=False` و مقداردهی `DJANGO_ALLOWED_HOSTS` در `.env`
+- تعویض `DJANGO_SECRET_KEY` با یک مقدار تصادفی و محرمانه
+- اجرای `python manage.py collectstatic`
+- استفاده از یک دیتابیس production-ready (مثل PostgreSQL) به‌جای SQLite
+- سرو فایل‌های آپلودی (`media/`) از طریق یک storage مناسب (یا حداقل با HTTPS پشت یک وب‌سرور واقعی)

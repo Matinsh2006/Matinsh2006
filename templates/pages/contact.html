@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}تماس با ما - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">تماس با ما</span>
+      <h2>راه‌های ارتباطی و لوکیشن مغازه</h2>
+    </div>
+
+    <div class="contact-layout">
+      <div class="contact-map">
+        {% if salon_profile.map_embed_url %}
+          <iframe src="{{ salon_profile.map_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        {% else %}
+          <div class="empty-state">لوکیشن هنوز در تنظیمات سایت ثبت نشده است.</div>
+        {% endif %}
+      </div>
+
+      <div class="contact-info-list">
+        {% if salon_profile.address %}
+          <div class="contact-info-item">
+            <span class="icon">📍</span>
+            <div>
+              <strong>آدرس مغازه</strong>
+              <p>{{ salon_profile.address }}</p>
+              {% if salon_profile.map_view_url %}
+                <a href="{{ salon_profile.map_view_url }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline">مسیریابی در نقشه</a>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if salon_profile.contact_phone %}
+          <div class="contact-info-item">
+            <span class="icon">☎</span>
+            <div>
+              <strong>تماس تلفنی</strong>
+              <p><a href="tel:{{ salon_profile.contact_phone }}">{{ salon_profile.contact_phone|persian_digits }}</a></p>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if salon_profile.social_links %}
+          <div class="contact-info-item">
+            <span class="icon">💬</span>
+            <div>
+              <strong>شبکه‌های اجتماعی</strong>
+              <div class="social-buttons">
+                {% for link in salon_profile.social_links %}
+                  <a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.label }}</a>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

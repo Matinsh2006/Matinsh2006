@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}پروفایل من - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container profile-grid">
+    <div>
+      <div class="panel" style="margin-bottom:20px;">
+        <h2>اطلاعات حساب</h2>
+        <div class="profile-phone-row">
+          <span>شماره موبایل</span>
+          <strong>{{ request.user.phone_number|persian_digits }}</strong>
+        </div>
+        <a href="{% url 'accounts:change_phone_request' %}" class="btn btn-outline btn-sm btn-block">تغییر شماره موبایل</a>
+      </div>
+
+      <div class="panel">
+        <h2>ویرایش نام</h2>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+            {{ form.full_name }}
+            {% if form.full_name.errors %}
+              <ul class="field-errors">{% for error in form.full_name.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">ذخیره تغییرات</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>نوبت‌های من</h2>
+      {% if appointments %}
+        <div style="overflow-x:auto">
+        <table class="appointments">
+          <thead>
+            <tr>
+              <th>خدمت</th>
+              <th>تاریخ</th>
+              <th>ساعت</th>
+              <th>وضعیت</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appointment in appointments %}
+              <tr>
+                <td>{{ appointment.service.name }}</td>
+                <td>{{ appointment.date|jalali }}</td>
+                <td style="direction:ltr">{{ appointment.start_time|time:"H:i" }}</td>
+                <td><span class="status-pill status-{{ appointment.status }}">{{ appointment.get_status_display }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p>هنوز نوبتی ثبت نکرده‌اید.</p>
+          <a href="{% url 'services:list' %}" class="btn btn-primary">رزرو نوبت جدید</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

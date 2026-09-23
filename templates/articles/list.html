@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}مقالات - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">وبلاگ</span>
+      <h2>مقالات آموزشی و زیبایی</h2>
+    </div>
+
+    {% if page_obj %}
+      <div class="grid grid-3">
+        {% for article in page_obj %}
+          <a href="{{ article.get_absolute_url }}" class="card">
+            <div class="card-media">
+              {% if article.cover_image %}<img src="{{ article.cover_image.url }}" alt="{{ article.title }}" loading="lazy">{% endif %}
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">{{ article.title }}</h3>
+              {% if article.summary %}<p class="text-muted">{{ article.summary }}</p>{% endif %}
+              <span class="text-muted" style="font-size:.85rem">{{ article.published_at|jalali }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">قبلی</a>
+          {% endif %}
+          {% for page_number in page_obj.paginator.page_range %}
+            {% if page_number == page_obj.number %}
+              <span class="current">{{ page_number|persian_digits }}</span>
+            {% else %}
+              <a href="?page={{ page_number }}">{{ page_number|persian_digits }}</a>
+            {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">بعدی</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="empty-state">مقاله‌ای هنوز منتشر نشده است.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

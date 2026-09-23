@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}نتیجه پرداخت - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card" style="max-width:520px; text-align:center;">
+    {% if success %}
+      <h1>پرداخت بیعانه موفق بود ✅</h1>
+      <p class="subtitle">
+        بیعانه به مبلغ {{ payment.amount|toman }} با کد پیگیری
+        <strong style="direction:ltr; display:inline-block">{{ payment.ref_id }}</strong>
+        با موفقیت دریافت شد و نوبت شما در انتظار تایید نهایی است.
+      </p>
+    {% else %}
+      <h1>پرداخت ناموفق بود ❌</h1>
+      <p class="subtitle">
+        {% if error %}{{ error }}{% else %}متاسفانه پرداخت بیعانه انجام نشد یا توسط شما لغو شد.{% endif %}
+      </p>
+      <a href="{% url 'payments:request_payment' payment.appointment_id %}" class="btn btn-primary btn-block">تلاش مجدد برای پرداخت</a>
+    {% endif %}
+    <a href="{% url 'accounts:profile' %}" class="btn btn-outline btn-block" style="margin-top:10px;">مشاهده نوبت‌های من</a>
+  </div>
+</div>
+{% endblock %}

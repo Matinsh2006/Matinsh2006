@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}خطا در اتصال به درگاه پرداخت - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card" style="max-width:520px; text-align:center;">
+    <h1>اتصال به درگاه پرداخت ناموفق بود ⚠️</h1>
+    <p class="subtitle">{{ error }}</p>
+    <a href="{% url 'payments:request_payment' appointment.pk %}" class="btn btn-primary btn-block">تلاش مجدد</a>
+    <a href="{% url 'accounts:profile' %}" class="btn btn-outline btn-block" style="margin-top:10px;">مشاهده نوبت‌های من</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static jalali_tags %}
+
+{% block title %}رزرو نوبت {{ service.name }} - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="booking-layout">
+      <div class="service-summary-card">
+        <div class="card-media">
+          {% if service.image %}<img src="{{ service.image.url }}" alt="{{ service.name }}">{% endif %}
+        </div>
+        <div class="card-body">
+          <h1 class="card-title" style="font-size:1.3rem">{{ service.name }}</h1>
+          <div class="summary-row"><span>قیمت</span><strong>{{ service.price|toman }}</strong></div>
+          <div class="summary-row"><span>مدت زمان</span><strong>{{ service.duration_minutes|persian_digits }} دقیقه</strong></div>
+          {% if service.requires_deposit %}
+            <div class="summary-row"><span>بیعانه رزرو</span><strong>{{ service.deposit_amount|toman }}</strong></div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>انتخاب تاریخ و ساعت</h2>
+        <form method="post" id="bookingForm" novalidate>
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <ul class="field-errors">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
+          {% endif %}
+
+          <div class="form-group">
+            <label>تاریخ نوبت (تقویم شمسی)</label>
+            <div class="jdp-root"
+                 data-jalali-datepicker
+                 data-today-year="{{ today_year }}"
+                 data-today-month="{{ today_month }}"
+                 data-today-day="{{ today_day }}"
+                 data-today-weekday="{{ today_weekday }}"
+                 data-max-advance-days="{{ max_advance_days }}"
+                 data-initial-value="{{ form.jalali_date.value|default:'' }}">
+              <input type="text" class="form-control" data-role="display" readonly
+                     placeholder="برای انتخاب تاریخ کلیک کنید" autocomplete="off">
+              <input type="hidden" name="jalali_date" data-role="value" id="id_jalali_date"
+                     value="{{ form.jalali_date.value|default:'' }}">
+              <div class="jdp-popup" data-role="popup" hidden></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>ساعت نوبت</label>
+            <div id="slotsContainer" class="slots-message">ابتدا یک تاریخ انتخاب کنید.</div>
+            <input type="hidden" name="start_time" id="id_start_time" value="{{ form.start_time.value|default:'' }}">
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+            {{ form.full_name }}
+            {% if form.full_name.errors %}<ul class="field-errors">{% for error in form.full_name.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}<ul class="field-errors">{% for error in form.phone_number.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+            {{ form.notes }}
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="submitBtn" disabled>ثبت نهایی نوبت</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/jalali-datepicker.js' %}"></script>
+<script>
+(function () {
+  var dateInput = document.getElementById('id_jalali_date');
+  var timeInput = document.getElementById('id_start_time');
+  var slotsContainer = document.getElementById('slotsContainer');
+  var submitBtn = document.getElementById('submitBtn');
+  var serviceId = {{ service.id }};
+  var apiUrl = '{% url "bookings:available_slots_api" %}';
+
+  function renderSlots(data) {
+    slotsContainer.innerHTML = '';
+    if (!data.slots.length) {
+      slotsContainer.className = 'slots-message';
+      slotsContainer.textContent = 'برای ' + data.date_display + ' ساعت خالی موجود نیست؛ لطفاً روز دیگری را انتخاب کنید.';
+      return;
+    }
+    slotsContainer.className = 'slots-grid';
+    data.slots.forEach(function (slot) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'slot-btn';
+      btn.textContent = slot;
+      if (timeInput.value === slot) {
+        btn.classList.add('selected');
+      }
+      btn.addEventListener('click', function () {
+        slotsContainer.querySelectorAll('.slot-btn').forEach(function (b) {
+          b.classList.remove('selected');
+        });
+        btn.classList.add('selected');
+        timeInput.value = slot;
+        updateSubmit();
+      });
+      slotsContainer.appendChild(btn);
+    });
+  }
+
+  function loadSlots() {
+    if (!dateInput.value) return;
+    timeInput.value = '';
+    updateSubmit();
+    slotsContainer.className = 'slots-message';
+    slotsContainer.textContent = 'در حال بارگذاری ساعت‌های خالی...';
+    fetch(apiUrl + '?service=' + serviceId + '&date=' + encodeURIComponent(dateInput.value))
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          renderSlots(data);
+        } else {
+          slotsContainer.className = 'slots-message';
+          slotsContainer.textContent = data.error || 'خطایی رخ داد.';
+        }
+      })
+      .catch(function () {
+        slotsContainer.className = 'slots-message';
+        slotsContainer.textContent = 'ارتباط با سرور برقرار نشد.';
+      });
+  }
+
+  function updateSubmit() {
+    submitBtn.disabled = !(dateInput.value && timeInput.value);
+  }
+
+  dateInput.addEventListener('change', loadSlots);
+  if (dateInput.value) {
+    loadSlots();
+  }
+  updateSubmit();
+})();
+</script>
+{% endblock %}

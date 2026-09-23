@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <h1>{{ salon_profile.name }}</h1>
+      <p>{{ salon_profile.tagline|default:"تجربه‌ای متفاوت از زیبایی و آرامش، ویژه بانوان" }}</p>
+      <div class="hero-actions">
+        <a href="{% url 'services:list' %}" class="btn btn-primary">رزرو نوبت</a>
+        <a href="{% url 'gallery:list' %}" class="btn btn-outline">مشاهده نمونه‌کارها</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      {% if salon_profile.hero_image %}
+        <img src="{{ salon_profile.hero_image.url }}" alt="{{ salon_profile.name }}">
+      {% else %}
+        <div class="hero-image-placeholder">{{ salon_profile.name|slice:":1" }}</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% if services %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">خدمات ما</span>
+      <h2>محبوب‌ترین خدمات آرایشگاه</h2>
+    </div>
+    <div class="grid grid-3">
+      {% for service in services %}
+        <div class="card">
+          <div class="card-media">
+            {% if service.image %}<img src="{{ service.image.url }}" alt="{{ service.name }}">{% endif %}
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">{{ service.name }}</h3>
+            <p class="text-muted">{{ service.short_description }}</p>
+            <div class="card-meta">
+              <span class="card-price">{{ service.price|toman }}</span>
+              <span>{{ service.duration_minutes|persian_digits }} دقیقه</span>
+            </div>
+          </div>
+          <div class="card-foot">
+            <a href="{{ service.get_absolute_url }}" class="btn btn-outline btn-block">مشاهده و رزرو</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="section-foot">
+      <a href="{% url 'services:list' %}" class="btn btn-primary">مشاهده همه خدمات</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if portfolio_items %}
+<section class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">نمونه‌کارها</span>
+      <h2>قبل و بعد از خدمات</h2>
+    </div>
+    <div class="grid grid-3">
+      {% for item in portfolio_items %}
+        <a href="{% url 'gallery:detail' item.pk %}" class="card">
+          <div class="card-media card-media-split">
+            {% for image in item.images.all|slice:":2" %}
+              <img src="{{ image.image.url }}" alt="{{ item.title }}">
+            {% endfor %}
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">{{ item.title }}</h3>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    <div class="section-foot">
+      <a href="{% url 'gallery:list' %}" class="btn btn-primary">مشاهده گالری کامل</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if articles %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">وبلاگ</span>
+      <h2>آخرین مقالات</h2>
+    </div>
+    <div class="grid grid-3">
+      {% for article in articles %}
+        <a href="{{ article.get_absolute_url }}" class="card">
+          <div class="card-media">
+            {% if article.cover_image %}<img src="{{ article.cover_image.url }}" alt="{{ article.title }}">{% endif %}
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">{{ article.title }}</h3>
+            <p class="text-muted">{{ article.summary }}</p>
+            <span class="text-muted" style="font-size:.85rem">{{ article.published_at|jalali }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">همین حالا وقت بگیرید</span>
+      <h2>نوبت خود را آنلاین رزرو کنید</h2>
+      <p class="text-muted">با انتخاب خدمت مورد نظر، تاریخ و ساعت دلخواه خود را روی تقویم شمسی مشاهده و رزرو کنید.</p>
+    </div>
+    <div class="section-foot">
+      <a href="{% url 'services:list' %}" class="btn btn-primary">شروع رزرو نوبت</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

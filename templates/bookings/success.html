@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}ثبت نوبت - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card" style="max-width:520px; text-align:center;">
+    <h1>نوبت شما ثبت شد ✅</h1>
+    <p class="subtitle">
+      نوبت «{{ appointment.service.name }}» برای
+      {{ appointment.date|jalali }}
+      ساعت
+      <span style="direction:ltr; display:inline-block">{{ appointment.start_time|time:"H:i" }}</span>
+      با وضعیت «{{ appointment.get_status_display }}» ثبت شد.
+    </p>
+    <a href="{% url 'accounts:profile' %}" class="btn btn-primary btn-block">مشاهده نوبت‌های من</a>
+    <a href="{% url 'core:home' %}" class="btn btn-outline btn-block" style="margin-top:10px;">بازگشت به صفحه اصلی</a>
+  </div>
+</div>
+{% endblock %}

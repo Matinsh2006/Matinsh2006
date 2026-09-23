@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ item.title }} - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>{{ item.title }}</h2>
+      {% if item.description %}<p class="text-muted">{{ item.description }}</p>{% endif %}
+    </div>
+
+    <div class="portfolio-item-images">
+      {% for image in item.images.all %}
+        <figure data-lightbox-item data-full="{{ image.image.url }}">
+          <img src="{{ image.image.url }}" alt="{{ item.title }}" loading="lazy">
+          {% if image.image_type == 'before' %}
+            <figcaption><span class="badge badge-before">قبل</span></figcaption>
+          {% elif image.image_type == 'after' %}
+            <figcaption><span class="badge badge-after">بعد</span></figcaption>
+          {% endif %}
+        </figure>
+      {% endfor %}
+    </div>
+
+    <div class="section-foot">
+      <a href="{% url 'gallery:list' %}" class="btn btn-outline">بازگشت به گالری</a>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="بستن">✕</button>
+  <img src="" alt="" id="lightboxImage">
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/lightbox.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}تغییر شماره موبایل - {{ salon_profile.name }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1>تغییر شماره موبایل</h1>
+    <p class="subtitle">شماره موبایل جدید خود را وارد کنید؛ کد تایید به همین شماره پیامک می‌شود.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="{{ form.phone_number.id_for_label }}">شماره موبایل جدید</label>
+        {{ form.phone_number }}
+        {% if form.phone_number.errors %}
+          <ul class="field-errors">{% for error in form.phone_number.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">دریافت کد تایید</button>
+    </form>
+    <p class="auth-foot"><a href="{% url 'accounts:profile' %}">بازگشت به پروفایل</a></p>
+  </div>
+</div>
+{% endblock %}

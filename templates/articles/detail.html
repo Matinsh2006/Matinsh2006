@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}{{ article.title }} - {{ salon_profile.name }}{% endblock %}
+{% block meta_description %}{{ article.summary|default:article.title }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="article-content">
+      <h1>{{ article.title }}</h1>
+      <p class="article-meta">{{ article.published_at|jalali }}</p>
+      {% if article.cover_image %}
+        <img src="{{ article.cover_image.url }}" alt="{{ article.title }}">
+      {% endif %}
+      <div class="article-body">{{ article.content|safe }}</div>
+    </div>
+    <div class="section-foot">
+      <a href="{% url 'articles:list' %}" class="btn btn-outline">بازگشت به مقالات</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
