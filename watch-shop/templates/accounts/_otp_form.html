@@ -1,0 +1,30 @@
+{% load shop_tags %}
+<form method="post" class="grid gap-6" novalidate>
+  {% csrf_token %}
+  <div class="field">
+    <label for="otp-code" class="label">کد {{ otp_length|fa }} رقمی ارسال‌شده به <span class="ltr text-sand-100">{{ masked_phone|fa }}</span></label>
+    <div data-otp class="relative mt-1 grid cursor-text gap-2" style="grid-template-columns: repeat({{ otp_length }}, minmax(0, 1fr))" dir="ltr">
+      <input id="otp-code" type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="{{ otp_length }}" autofocus required
+             class="absolute inset-0 z-10 size-full cursor-text bg-transparent text-transparent caret-transparent opacity-0 outline-none" aria-describedby="otp-help">
+      {% for i in ""|center:otp_length %}
+        <span data-otp-box class="otp-box grid h-16 place-items-center rounded-2xl border border-white/10 bg-white/[0.03] font-display text-3xl text-sand-50 transition duration-300"></span>
+      {% endfor %}
+    </div>
+    {% for error in form.code.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    {% for error in form.non_field_errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    <p id="otp-help" class="help">کد تا {{ otp_ttl|fa }} ثانیه معتبر است. می‌توانید اعداد را فارسی یا انگلیسی وارد کنید.</p>
+  </div>
+  <button type="submit" class="btn btn-gold h-14 text-base">{{ submit_label|default:"تایید و ورود" }}</button>
+</form>
+
+<div class="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm">
+  <form action="{% url 'accounts:resend' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="purpose" value="{{ purpose }}">
+    <button type="submit" id="resend-btn" class="text-gold-200 hover:underline disabled:cursor-not-allowed disabled:text-sand-500 disabled:no-underline" {% if resend_in %}disabled{% endif %}>ارسال مجدد کد</button>
+  </form>
+  {% if resend_in %}
+    <p data-countdown="{{ resend_in }}" data-target="#resend-btn" class="text-sand-500">ارسال مجدد تا <span data-countdown-label class="ltr">{{ resend_in|fa }}</span></p>
+  {% endif %}
+  <a href="{{ change_url }}" class="text-sand-400 hover:text-sand-100">{{ change_label|default:"ویرایش شماره" }}</a>
+</div>

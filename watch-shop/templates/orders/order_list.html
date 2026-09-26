@@ -1,0 +1,23 @@
+{% extends "accounts/_layout.html" %}
+{% load shop_tags %}
+
+{% block title %}سفارش‌های من | {{ shop.site_name }}{% endblock %}
+{% block account_title %}سفارش‌های من{% endblock %}
+
+{% block account_content %}
+  {% if orders %}
+    <ul class="grid gap-4">
+      {% for order in orders %}
+        <li class="card p-5 sm:p-6" data-reveal style="--delay: {{ forloop.counter0|stagger:5 }}">
+          {% include "orders/_order_summary.html" %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="card grid place-items-center px-6 py-16 text-center">
+      <div class="grid size-16 place-items-center rounded-full border border-white/10 text-gold-300">{% icon "package" "size-7" "1.3" %}</div>
+      <p class="mt-5 font-semibold">هنوز سفارشی ثبت نکرده‌اید</p>
+      <a href="{% url 'catalog:shop' %}" class="btn btn-gold mt-6">شروع خرید</a>
+    </div>
+  {% endif %}
+{% endblock %}

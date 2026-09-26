@@ -1,0 +1,41 @@
+{% load static shop_tags %}<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ shop.site_name }} | {{ shop.tagline }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ shop.meta_description|default:shop.tagline }}{% endblock %}">
+  <meta name="theme-color" content="#080706">
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <meta property="og:site_name" content="{{ shop.site_name }}">
+  <meta property="og:locale" content="fa_IR">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ shop.site_name }} | {{ shop.tagline }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ shop.meta_description|default:shop.tagline }}{% endblock %}">
+  {% block og_image %}{% endblock %}
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="preload" href="{% static 'fonts/vazirmatn-arabic.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script>document.documentElement.classList.add("js")</script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-svh {% block body_class %}{% endblock %}">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:right-4 focus:z-[200] focus:rounded-full focus:bg-sand-100 focus:px-5 focus:py-3 focus:text-ink-950">پرش به محتوای اصلی</a>
+
+  {% include "partials/header_banner.html" %}
+  {% include "partials/header.html" %}
+
+  <main id="main" class="{% block main_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "partials/footer.html" %}
+  {% include "partials/cart_drawer.html" %}
+  {% include "partials/search_overlay.html" %}
+  {% include "partials/mobile_menu.html" %}
+  {% include "partials/messages.html" %}
+
+  <script type="module" src="{% static 'js/app.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

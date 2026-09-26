@@ -1,0 +1,18 @@
+<div class="field">
+  <label for="{{ field.id_for_label }}" class="label">{{ field.label }}{% if field.field.required %} <span class="text-gold-300">*</span>{% endif %}</label>
+  {% if field.field.widget.input_type == "select" or field.field.choices and not field.field.widget.input_type %}
+    <select name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="input{% if field.errors %} border-danger/60{% endif %}">
+      {% for value, label in field.field.choices %}<option value="{{ value }}" {% if field.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  {% elif field.field.widget.input_type == "checkbox" %}
+    <label class="flex cursor-pointer items-center gap-3 text-sm text-sand-300"><input type="checkbox" name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="size-4 accent-[#df9570]" {% if field.value %}checked{% endif %}> {{ field.help_text|default:field.label }}</label>
+  {% elif field.field.widget.attrs.rows %}
+    <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" rows="{{ field.field.widget.attrs.rows }}" class="input{% if field.errors %} border-danger/60{% endif %}">{{ field.value|default_if_none:'' }}</textarea>
+  {% else %}
+    <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:'' }}"
+      {% for attr, value in field.field.widget.attrs.items %}{% if attr != "class" %} {{ attr }}="{{ value }}"{% endif %}{% endfor %}
+      class="input{% if field.errors %} border-danger/60{% endif %}">
+  {% endif %}
+  {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+  {% if help %}<p class="help">{{ help }}</p>{% endif %}
+</div>

@@ -1,0 +1,24 @@
+{% load shop_tags %}
+<div data-search data-suggest-url="{% url 'catalog:search_suggest' %}" class="overlay fixed inset-0 z-[90] overflow-y-auto bg-ink-950/95 backdrop-blur-2xl" aria-hidden="true" role="dialog" aria-label="جستجو" data-lenis-prevent>
+  <button type="button" class="icon-btn absolute top-5 left-5 size-12" data-search-close aria-label="بستن جستجو">{% icon "close" "size-6" %}</button>
+  <div class="container-x max-w-3xl pt-24 pb-16 sm:pt-32">
+    <p class="eyebrow">جستجو در فروشگاه</p>
+    <form action="{% url 'catalog:search' %}" method="get" class="relative mt-5" role="search">
+      <input type="search" name="q" autocomplete="off" placeholder="نام ساعت، برند یا مدل…" class="h-16 w-full border-b border-white/15 bg-transparent pe-14 font-display text-3xl text-sand-50 outline-none transition placeholder:text-sand-500 focus:border-gold-300 sm:text-4xl">
+      <button type="submit" class="absolute top-1/2 left-0 grid size-12 -translate-y-1/2 place-items-center rounded-full text-gold-200 hover:bg-white/5" aria-label="جستجو">{% icon "search" "size-6" %}</button>
+    </form>
+    <div data-search-results class="mt-8 grid gap-8"></div>
+    {% if nav_categories %}
+      <div class="mt-10">
+        <p class="mb-3 text-xs text-sand-500">دسته‌بندی‌های پرطرفدار</p>
+        <div class="flex flex-wrap gap-2">
+          {% for category in nav_categories %}
+            {% for child in category.children.all %}
+              <a href="{{ child.get_absolute_url }}" class="chip h-9">{{ child.title }}</a>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>

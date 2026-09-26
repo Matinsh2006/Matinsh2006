@@ -1,0 +1,86 @@
+{% extends "accounts/_layout.html" %}
+{% load shop_tags %}
+
+{% block title %}سفارش {{ order.number }} | {{ shop.site_name }}{% endblock %}
+{% block account_title %}سفارش <span class="ltr">{{ order.number|fa }}</span>{% endblock %}
+
+{% block account_content %}
+  <div class="panel" data-reveal>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="text-sm text-sand-400">ثبت شده در {{ order.created_at|jdate:"full" }}</p>
+        {% if order.paid_at %}<p class="mt-1 text-xs text-sand-500">پرداخت: {{ order.paid_at|jdate:"full" }}</p>{% endif %}
+      </div>
+      <span class="rounded-full px-3 py-1 text-xs {% if order.status == 'pending' %}bg-gold-300/10 text-gold-200{% elif order.status == 'canceled' %}bg-danger/10 text-danger{% else %}bg-success/10 text-success{% endif %}">{{ order.get_status_display }}</span>
+    </div>
+
+    {% if order.is_paid %}
+      <ol class="mt-8 grid grid-cols-4 gap-2 text-center text-[0.7rem] text-sand-500 sm:text-xs">
+        <li class="grid gap-2"><span class="h-1 rounded-full {% if order.status_step >= 1 %}bg-gold-300{% else %}bg-white/10{% endif %}"></span>پرداخت شده</li>
+        <li class="grid gap-2"><span class="h-1 rounded-full {% if order.status_step >= 2 %}bg-gold-300{% else %}bg-white/10{% endif %}"></span>آماده‌سازی</li>
+        <li class="grid gap-2"><span class="h-1 rounded-full {% if order.status_step >= 3 %}bg-gold-300{% else %}bg-white/10{% endif %}"></span>ارسال شده</li>
+        <li class="grid gap-2"><span class="h-1 rounded-full {% if order.status_step >= 4 %}bg-gold-300{% else %}bg-white/10{% endif %}"></span>تحویل</li>
+      </ol>
+      {% if order.tracking_code %}<p class="mt-6 text-sm text-sand-300">کد رهگیری مرسوله: <span class="ltr font-semibold text-sand-50">{{ order.tracking_code|fa }}</span></p>{% endif %}
+    {% endif %}
+
+    {% if order.is_payable %}
+      <form action="{% url 'payments:pay' order.number %}" method="post" class="mt-8 flex flex-wrap items-center gap-3 rounded-3xl border border-gold-300/25 bg-gold-300/[0.05] p-5">
+        {% csrf_token %}
+        <p class="flex-1 text-sm text-sand-200">این سفارش هنوز پرداخت نشده است.</p>
+        {% if gateways|length > 1 %}
+          <select name="gateway" class="input h-11 w-auto rounded-full text-sm">
+            {% for gateway in gateways %}<option value="{{ gateway.code }}">{{ gateway.title }}</option>{% endfor %}
+          </select>
+        {% endif %}
+        <button type="submit" class="btn btn-gold btn-sm">پرداخت {{ order.total|toman }} تومان</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="panel" data-reveal>
+      <h2 class="font-semibold">اقلام سفارش</h2>
+      <ul class="mt-5 divide-y divide-white/[0.06]">
+        {% for item in order.items.all %}
+          <li class="flex items-center gap-4 py-3">
+            <span class="size-14 shrink-0 overflow-hidden rounded-xl bg-ink-800">{% if item.product and item.product.main_image %}<img src="{{ item.product.main_image.image|thumb:160 }}" alt="" class="size-full object-cover">{% endif %}</span>
+            <div class="min-w-0 flex-1">
+              {% if item.product %}<a href="{{ item.product.get_absolute_url }}" class="line-clamp-1 text-sm hover:text-gold-100">{{ item.product_name }}</a>{% else %}<p class="line-clamp-1 text-sm">{{ item.product_name }}</p>{% endif %}
+              <p class="mt-1 text-xs text-sand-500">{{ item.quantity|fa }} × {{ item.unit_price|toman }} تومان</p>
+            </div>
+            <p class="text-sm text-sand-200">{{ item.total|toman }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+      <dl class="mt-4 grid gap-2 border-t border-white/[0.07] pt-4 text-sm">
+        <div class="flex justify-between text-sand-400"><dt>جمع کالاها</dt><dd>{{ order.subtotal|toman }} تومان</dd></div>
+        <div class="flex justify-between text-sand-400"><dt>هزینه ارسال</dt><dd>{% if order.shipping_cost %}{{ order.shipping_cost|toman }} تومان{% else %}رایگان{% endif %}</dd></div>
+        <div class="flex justify-between font-semibold"><dt>مبلغ کل</dt><dd class="text-gold-200">{{ order.total|toman }} تومان</dd></div>
+      </dl>
+    </div>
+    <div class="grid content-start gap-6">
+      <div class="panel" data-reveal>
+        <h2 class="font-semibold">ارسال به</h2>
+        <p class="mt-4 text-sm leading-7 text-sand-300">{{ order.address|fa }}</p>
+        <p class="mt-2 text-xs text-sand-500">{{ order.recipient_name }} · {{ order.recipient_phone|fa }} · کد پستی {{ order.postal_code|fa }}</p>
+        {% if order.note %}<p class="mt-4 rounded-2xl bg-white/[0.03] p-3 text-xs text-sand-400">{{ order.note }}</p>{% endif %}
+      </div>
+      {% with payments=order.payments.all %}
+      {% if payments %}
+        <div class="panel" data-reveal>
+          <h2 class="font-semibold">تراکنش‌ها</h2>
+          <ul class="mt-4 grid gap-3 text-sm">
+            {% for payment in payments %}
+              <li class="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-white/[0.03] px-4 py-3">
+                <span>{{ payment.get_gateway_display }} · {{ payment.created_at|jdate:"full" }}</span>
+                <span class="{% if payment.status == 'paid' %}text-success{% elif payment.status == 'failed' or payment.status == 'canceled' %}text-danger{% else %}text-sand-400{% endif %}">{{ payment.get_status_display }}{% if payment.ref_id %} · کد پیگیری <span class="ltr">{{ payment.ref_id|fa }}</span>{% endif %}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+{% endblock %}

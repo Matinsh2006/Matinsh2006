@@ -1,0 +1,10 @@
+{% load shop_tags %}
+<div data-toasts class="pointer-events-none fixed inset-x-0 top-4 z-[120] mx-auto grid max-w-md gap-2 px-4" aria-live="polite">
+  {% for message in messages %}
+    <div data-toast data-duration="{% if message.level_tag == 'info' %}16000{% else %}5200{% endif %}" class="toast pointer-events-auto flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-2xl backdrop-blur-xl {% if message.level_tag == 'error' %}border-danger/30 bg-ink-800/90{% else %}border-gold-300/25 bg-ink-800/90{% endif %}" role="status">
+      <span class="mt-1.5 size-2 shrink-0 rounded-full {% if message.level_tag == 'error' %}bg-danger{% elif message.level_tag == 'success' %}bg-success{% else %}bg-gold-300{% endif %}"></span>
+      <p class="flex-1 leading-6 text-sand-50">{{ message }}</p>
+      <button type="button" data-toast-close class="-m-1 rounded-full p-1 text-sand-500 hover:text-white" aria-label="بستن">{% icon "close" "size-4" %}</button>
+    </div>
+  {% endfor %}
+</div>

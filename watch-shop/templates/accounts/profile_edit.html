@@ -1,0 +1,25 @@
+{% extends "accounts/_layout.html" %}
+{% load shop_tags %}
+
+{% block title %}ویرایش اطلاعات | {{ shop.site_name }}{% endblock %}
+{% block account_title %}اطلاعات حساب{% endblock %}
+
+{% block account_content %}
+<form method="post" class="panel grid max-w-2xl gap-6" novalidate data-reveal>
+  {% csrf_token %}
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    {% include "partials/field.html" with field=form.first_name %}
+    {% include "partials/field.html" with field=form.last_name %}
+  </div>
+  {% include "partials/field.html" with field=form.email help="اختیاری؛ برای دریافت فاکتور و اطلاع‌رسانی‌ها." %}
+  <div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 text-sm text-sand-300">
+    نام کاربری شما شماره موبایل <span class="ltr font-semibold text-sand-50">{{ user.phone|fa }}</span> است.
+    <a href="{% url 'accounts:change_phone' %}" class="text-gold-200 hover:underline">تغییر شماره با تایید پیامکی</a>
+  </div>
+  <div class="flex gap-3">
+    <button type="submit" class="btn btn-gold">ذخیره تغییرات</button>
+    <a href="{% url 'accounts:profile' %}" class="btn btn-ghost">انصراف</a>
+  </div>
+</form>
+{% endblock %}

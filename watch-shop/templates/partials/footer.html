@@ -1,0 +1,117 @@
+{% load shop_tags %}
+<footer class="relative overflow-hidden border-t border-white/[0.06] bg-ink-900" data-footer>
+  <div aria-hidden="true" class="pointer-events-none absolute -top-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-gold-500/10 blur-[120px]"></div>
+
+  <div class="container-x relative grid grid-cols-1 gap-12 py-16 md:grid-cols-2 lg:grid-cols-12 lg:py-20">
+    <div class="lg:col-span-4" data-reveal>
+      <a href="{% url 'core:home' %}" class="inline-flex items-baseline gap-3">
+        <span class="font-display text-4xl font-bold text-gold-gradient">{{ shop.site_name }}</span>
+        {% if shop.site_name_en %}<span class="latin-caps text-[0.65rem] text-sand-400">{{ shop.site_name_en }}</span>{% endif %}
+      </a>
+      <p class="mt-5 max-w-sm text-sm leading-7 text-sand-400">{{ shop.footer_about|default:shop.tagline }}</p>
+
+      {% with socials=shop.social_links %}
+      {% if socials or shop.phone %}
+        <div class="mt-7">
+          <p class="mb-3 text-xs text-sand-500">ما را در شبکه‌های اجتماعی دنبال کنید</p>
+          <ul class="flex flex-wrap gap-2.5">
+            {% for link in socials %}
+              <li>
+                <a href="{{ link.url }}" target="_blank" rel="noopener" aria-label="{{ link.label }}" title="{{ link.label }}"
+                   class="group/s relative grid size-11 place-items-center overflow-hidden rounded-full border border-white/10 text-sand-200 transition duration-500 hover:-translate-y-1 hover:border-gold-300/60 hover:text-ink-950">
+                  <span class="absolute inset-0 scale-0 rounded-full bg-gold-300 transition duration-500 group-hover/s:scale-100"></span>
+                  {% social_icon link.key "relative size-[1.1rem]" %}
+                </a>
+              </li>
+            {% endfor %}
+            {% if shop.phone %}
+              <li>
+                <a href="{{ shop.phone_link }}" aria-label="تماس تلفنی" title="تماس: {{ shop.phone }}"
+                   class="group/s relative grid size-11 place-items-center overflow-hidden rounded-full border border-white/10 text-sand-200 transition duration-500 hover:-translate-y-1 hover:border-gold-300/60 hover:text-ink-950">
+                  <span class="absolute inset-0 scale-0 rounded-full bg-gold-300 transition duration-500 group-hover/s:scale-100"></span>
+                  {% icon "phone" "relative size-[1.1rem]" %}
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+
+    <nav class="lg:col-span-2" aria-label="دسترسی سریع" data-reveal style="--delay: 80">
+      <p class="mb-5 text-sm font-semibold text-sand-50">فروشگاه</p>
+      <ul class="grid gap-3 text-sm text-sand-400">
+        <li><a class="link-underline hover:text-sand-100" href="{% url 'catalog:shop' %}">همه ساعت‌ها</a></li>
+        <li><a class="link-underline hover:text-sand-100" href="{% url 'catalog:men' %}">ساعت مردانه</a></li>
+        <li><a class="link-underline hover:text-sand-100" href="{% url 'catalog:women' %}">ساعت زنانه</a></li>
+        {% for category in nav_categories|slice:":4" %}
+          <li><a class="link-underline hover:text-sand-100" href="{{ category.get_absolute_url }}">{{ category.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <nav class="lg:col-span-2" aria-label="خدمات مشتریان" data-reveal style="--delay: 140">
+      <p class="mb-5 text-sm font-semibold text-sand-50">راهنمای خرید</p>
+      <ul class="grid gap-3 text-sm text-sand-400">
+        {% for page in footer_pages %}
+          <li><a class="link-underline hover:text-sand-100" href="{{ page.get_absolute_url }}">{{ page.title }}</a></li>
+        {% endfor %}
+        <li><a class="link-underline hover:text-sand-100" href="{% url 'core:contact' %}">تماس با ما</a></li>
+        {% if user.is_authenticated %}
+          <li><a class="link-underline hover:text-sand-100" href="{% url 'orders:list' %}">پیگیری سفارش</a></li>
+        {% else %}
+          <li><a class="link-underline hover:text-sand-100" href="{% url 'accounts:login' %}">ورود / ثبت‌نام</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <div class="md:col-span-2 lg:col-span-4" data-reveal style="--delay: 200">
+      <p class="mb-5 text-sm font-semibold text-sand-50">ارتباط با ما</p>
+      <ul class="grid gap-3.5 text-sm text-sand-300">
+        {% if shop.phone %}
+          <li class="flex items-center gap-3">{% icon "phone" "size-4 text-gold-300" %}<a href="{{ shop.phone_link }}" class="ltr hover:text-gold-100">{{ shop.phone|fa }}</a></li>
+        {% endif %}
+        {% if shop.mobile %}
+          <li class="flex items-center gap-3">{% icon "headset" "size-4 text-gold-300" %}<a href="{{ shop.mobile_link }}" class="ltr hover:text-gold-100">{{ shop.mobile|fa }}</a></li>
+        {% endif %}
+        {% if shop.email %}
+          <li class="flex items-center gap-3">{% icon "mail" "size-4 text-gold-300" %}<a href="mailto:{{ shop.email }}" class="hover:text-gold-100">{{ shop.email }}</a></li>
+        {% endif %}
+        {% if shop.address %}
+          <li class="flex items-start gap-3">{% icon "map-pin" "mt-1 size-4 shrink-0 text-gold-300" %}<a href="{% url 'core:contact' %}" class="leading-7 hover:text-gold-100">{{ shop.address|fa }}</a></li>
+        {% elif primary_store %}
+          <li class="flex items-start gap-3">{% icon "map-pin" "mt-1 size-4 shrink-0 text-gold-300" %}<a href="{% url 'core:contact' %}" class="leading-7 hover:text-gold-100">{{ primary_store.address|fa }}</a></li>
+        {% endif %}
+        {% if shop.working_hours %}
+          <li class="flex items-center gap-3">{% icon "clock" "size-4 text-gold-300" %}<span>{{ shop.working_hours|fa }}</span></li>
+        {% endif %}
+      </ul>
+
+      {# Trust badges: Enamad (e-Namad) and Samandehi codes pasted from the admin #}
+      <div class="mt-8 flex flex-wrap items-start gap-3" aria-label="نمادهای اعتماد">
+        {% if shop.enamad_code %}
+          <div class="grid min-h-[7.5rem] min-w-[7rem] place-items-center rounded-2xl bg-white p-2 [&_img]:max-h-28 [&_img]:w-auto">{{ shop.enamad_code|safe }}</div>
+        {% elif user.is_staff or DEBUG %}
+          <a href="/admin/core/sitesettings/" class="grid h-[7.5rem] w-[7rem] place-items-center rounded-2xl border border-dashed border-gold-300/40 p-3 text-center text-[0.7rem] leading-5 text-sand-400 transition hover:border-gold-300 hover:text-gold-100">
+            <span>{% icon "shield" "mx-auto mb-1 size-6 text-gold-300" %}جایگاه نماد اعتماد الکترونیکی (اینماد)</span>
+          </a>
+        {% endif %}
+        {% if shop.samandehi_code %}
+          <div class="grid min-h-[7.5rem] min-w-[7rem] place-items-center rounded-2xl bg-white p-2 [&_img]:max-h-28 [&_img]:w-auto">{{ shop.samandehi_code|safe }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div aria-hidden="true" class="pointer-events-none relative select-none overflow-hidden" data-reveal="fade">
+    <p class="latin-caps translate-y-[18%] text-center text-[16vw] leading-none font-semibold text-gold-gradient opacity-[0.13]" data-parallax="0.08">{{ shop.site_name_en|default:shop.site_name }}</p>
+  </div>
+
+  <div class="relative border-t border-white/[0.06]">
+    <div class="container-x flex flex-col items-center justify-between gap-3 py-6 text-xs text-sand-500 sm:flex-row">
+      <p>© {% jalali_year %} — {{ shop.copyright_text|default:"تمامی حقوق این وب‌سایت محفوظ است." }}</p>
+      <p class="flex items-center gap-2">{% icon "shield" "size-4 text-gold-300" %} پرداخت امن از طریق درگاه‌های معتبر بانکی</p>
+    </div>
+  </div>
+</footer>

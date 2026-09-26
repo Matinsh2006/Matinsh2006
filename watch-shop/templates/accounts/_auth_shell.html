@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block content %}
+<div class="container-x grid grid-cols-1 min-h-[calc(100svh-var(--nav-h))] items-center gap-10 py-12 lg:grid-cols-2 lg:py-16">
+  <div class="relative hidden overflow-hidden rounded-[2.5rem] border border-white/[0.07] bg-ink-850 lg:block lg:h-[36rem]" data-reveal="clip">
+    <img src="{% static 'img/auth-watch.webp' %}" alt="" class="absolute inset-0 size-full object-cover opacity-90">
+    <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/20 to-transparent"></div>
+    <div class="absolute inset-x-10 bottom-10">
+      <p class="latin-caps text-xs text-gold-300">{{ shop.site_name_en }}</p>
+      <p class="mt-3 font-display text-4xl leading-tight font-semibold">{% block side_title %}یک حساب، برای تمام لحظه‌های ماندگار{% endblock %}</p>
+    </div>
+  </div>
+  <div class="mx-auto w-full max-w-md">
+    {% block auth_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}سبد خرید | {{ shop.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-x py-12 lg:py-16">
+  <p class="eyebrow" data-reveal>مرحله ۱ از ۳</p>
+  <h1 class="heading-lg mt-4" data-split>سبد خرید</h1>
+
+  {% if cart.lines %}
+    <div class="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12">
+      <ul class="grid gap-4 lg:col-span-8">
+        {% for line in cart.lines %}
+          {% with product=line.product image=line.product.main_image %}
+          <li class="card flex gap-4 p-4 sm:gap-6 sm:p-5" data-reveal style="--delay: {{ forloop.counter0|stagger:5 }}">
+            <a href="{{ product.get_absolute_url }}" class="size-24 shrink-0 overflow-hidden rounded-2xl bg-ink-800 sm:size-32">
+              {% if image %}<img src="{{ image.image|thumb:320 }}" alt="{{ image.alt_text }}" class="size-full object-cover">{% endif %}
+            </a>
+            <div class="flex min-w-0 flex-1 flex-col">
+              <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="latin-caps text-[0.6rem] text-sand-500">{{ product.brand.name_en|default:product.brand.name }}</p>
+                  <a href="{{ product.get_absolute_url }}" class="mt-1 line-clamp-2 text-sand-50 hover:text-gold-100">{{ product.name }}</a>
+                  <p class="mt-1 text-xs text-sand-500">{{ product.category.title }}</p>
+                </div>
+                <form action="{% url 'cart:remove' product.pk %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="icon-btn text-sand-500 hover:text-danger" aria-label="حذف {{ product.name }}">{% icon "trash" "size-4" %}</button>
+                </form>
+              </div>
+              <div class="mt-auto flex flex-wrap items-end justify-between gap-3 pt-4">
+                <form action="{% url 'cart:update' product.pk %}" method="post" class="flex items-center rounded-full border border-white/10">
+                  {% csrf_token %}
+                  <button type="submit" name="quantity" value="{{ line.quantity|add:1 }}" class="grid size-10 place-items-center text-sand-300 hover:text-white disabled:opacity-30" aria-label="افزایش" {% if line.quantity >= line.max_quantity %}disabled{% endif %}>{% icon "plus" "size-4" %}</button>
+                  <span class="min-w-8 text-center">{{ line.quantity|fa }}</span>
+                  <button type="submit" name="quantity" value="{{ line.quantity|add:-1 }}" class="grid size-10 place-items-center text-sand-300 hover:text-white" aria-label="کاهش">{% icon "minus" "size-4" %}</button>
+                </form>
+                <div class="text-end">
+                  {% if line.quantity > 1 %}<p class="text-xs text-sand-500">هر عدد {{ line.unit_price|toman }}</p>{% endif %}
+                  <p class="font-semibold text-sand-50">{{ line.total|toman }} <span class="text-xs font-normal text-sand-500">تومان</span></p>
+                </div>
+              </div>
+            </div>
+          </li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+
+      <aside class="lg:col-span-4">
+        <div class="panel lg:sticky lg:top-[calc(var(--nav-h)+1.5rem)]" data-reveal>
+          <h2 class="text-lg font-semibold">خلاصه سفارش</h2>
+          <dl class="mt-6 grid gap-3 text-sm">
+            <div class="flex justify-between text-sand-400"><dt>جمع کالاها ({{ cart.count|fa }} عدد)</dt><dd>{{ cart.subtotal|toman }} تومان</dd></div>
+            {% if cart.savings %}<div class="flex justify-between text-success"><dt>سود شما از خرید</dt><dd>{{ cart.savings|toman }} تومان</dd></div>{% endif %}
+            <div class="flex justify-between text-sand-400"><dt>هزینه ارسال</dt><dd>{% if cart.shipping_cost %}{{ cart.shipping_cost|toman }} تومان{% else %}رایگان{% endif %}</dd></div>
+            <div class="divider my-2"></div>
+            <div class="flex justify-between text-base font-semibold"><dt>مبلغ قابل پرداخت</dt><dd class="text-gold-200">{{ cart.total|toman }} تومان</dd></div>
+          </dl>
+          {% if cart.free_shipping_remaining %}
+            <p class="mt-5 rounded-2xl bg-white/[0.03] p-4 text-xs leading-6 text-sand-400">با افزودن {{ cart.free_shipping_remaining|toman }} تومان دیگر، ارسال رایگان می‌شود.</p>
+          {% endif %}
+          <a href="{% url 'orders:checkout' %}" class="btn btn-gold mt-6 h-14 w-full text-base">ادامه و انتخاب آدرس {% icon "arrow-left" "size-4" %}</a>
+          {% if not user.is_authenticated %}<p class="mt-3 text-center text-xs text-sand-500">برای ثبت سفارش، با شماره موبایل وارد شوید.</p>{% endif %}
+        </div>
+      </aside>
+    </div>
+  {% else %}
+    <div class="card mt-10 grid place-items-center px-6 py-24 text-center">
+      <div class="grid size-20 place-items-center rounded-full border border-white/10 text-gold-300">{% icon "bag" "size-9" "1.2" %}</div>
+      <p class="mt-6 text-xl font-semibold">سبد خرید شما خالی است</p>
+      <p class="mt-2 text-sm text-sand-400">از میان مجموعه ساعت‌های ما، انتخاب کنید.</p>
+      <a href="{% url 'catalog:shop' %}" class="btn btn-gold mt-8">مشاهده ساعت‌ها</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

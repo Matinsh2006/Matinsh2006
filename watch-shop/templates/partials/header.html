@@ -1,0 +1,68 @@
+{% load shop_tags %}
+<header data-header class="site-header sticky top-0 z-50 border-b border-transparent">
+  <div class="container-x flex h-[var(--nav-h)] items-center gap-2 lg:gap-4">
+    <button type="button" class="icon-btn -ms-2 lg:hidden" data-menu-toggle aria-controls="mobile-menu" aria-expanded="false" aria-label="باز کردن منو">
+      {% icon "menu" "size-6" %}
+    </button>
+
+    <a href="{% url 'core:home' %}" class="flex shrink-0 items-center gap-3" aria-label="{{ shop.site_name }} — صفحه اصلی">
+      {% if shop.logo %}
+        <img src="{{ shop.logo.url }}" alt="{{ shop.site_name }}" class="h-9 w-auto">
+      {% else %}
+        <span class="font-display text-[2rem] leading-none font-bold text-gold-gradient">{{ shop.site_name }}</span>
+        {% if shop.site_name_en %}<span class="latin-caps hidden border-s border-white/10 ps-3 text-[0.6rem] text-sand-400 sm:block">{{ shop.site_name_en }}</span>{% endif %}
+      {% endif %}
+    </a>
+
+    <nav class="ms-6 hidden items-center gap-1 lg:flex xl:ms-10" aria-label="منوی اصلی">
+      <a class="nav-link" href="{% url 'catalog:shop' %}">فروشگاه</a>
+      <div class="has-mega relative">
+        <button type="button" class="nav-link" aria-haspopup="true">دسته‌بندی‌ها {% icon "chevron-down" "size-4 opacity-60" %}</button>
+        <div class="mega absolute top-full right-0 w-[min(56rem,calc(100vw-4rem))] pt-3">
+          <div class="grid grid-cols-[1fr_16rem] gap-6 rounded-[1.75rem] border border-white/[0.08] bg-ink-850/95 p-6 shadow-2xl backdrop-blur-2xl">
+            <div class="grid grid-cols-2 gap-x-6 gap-y-5 xl:grid-cols-3">
+              {% for category in nav_categories %}
+                <div>
+                  <a href="{{ category.get_absolute_url }}" class="group/cat flex items-center justify-between rounded-xl py-1 text-[0.95rem] font-semibold text-sand-50">
+                    <span>{{ category.title }}</span>
+                    {% icon "arrow-left" "size-4 text-gold-300 opacity-0 transition -translate-x-0 group-hover/cat:opacity-100 group-hover/cat:-translate-x-1" %}
+                  </a>
+                  <div class="mt-2 flex flex-wrap gap-1.5">
+                    {% for child in category.children.all %}
+                      <a href="{{ child.get_absolute_url }}" class="rounded-full border border-white/10 px-3 py-1 text-[0.78rem] text-sand-300 transition hover:border-gold-300/50 hover:text-gold-100">{{ child.name }}</a>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% empty %}
+                <p class="text-sm text-sand-400">هنوز دسته‌بندی‌ای ثبت نشده است.</p>
+              {% endfor %}
+            </div>
+            <a href="{% url 'catalog:shop' %}?sort=new" class="group/new relative flex min-h-48 flex-col justify-end overflow-hidden rounded-2xl bg-gradient-to-br from-gold-600/40 via-ink-800 to-ink-900 p-5">
+              <span class="absolute -top-10 -left-10 size-40 rounded-full bg-gold-300/20 blur-3xl transition duration-700 group-hover/new:scale-150"></span>
+              <span class="eyebrow">تازه‌ها</span>
+              <span class="mt-2 font-display text-2xl font-semibold text-sand-50">جدیدترین ساعت‌ها</span>
+              <span class="mt-3 inline-flex items-center gap-2 text-sm text-gold-200">مشاهده {% icon "arrow-left" "size-4" %}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <a class="nav-link" href="{% url 'catalog:men' %}">ساعت مردانه</a>
+      <a class="nav-link" href="{% url 'catalog:women' %}">ساعت زنانه</a>
+      <a class="nav-link" href="{% url 'core:contact' %}">آدرس و تماس</a>
+    </nav>
+
+    <div class="ms-auto flex items-center gap-1">
+      <button type="button" class="icon-btn" data-search-open aria-label="جستجو">{% icon "search" %}</button>
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" class="icon-btn" aria-label="حساب کاربری">{% icon "user" %}</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-ghost btn-sm hidden sm:inline-flex">ورود | ثبت‌نام</a>
+        <a href="{% url 'accounts:login' %}" class="icon-btn sm:hidden" aria-label="ورود یا ثبت‌نام">{% icon "user" %}</a>
+      {% endif %}
+      <a href="{% url 'cart:detail' %}" class="icon-btn" data-cart-open aria-label="سبد خرید">
+        {% icon "bag" %}
+        <span data-cart-count class="absolute -top-0.5 -left-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-gold-300 px-1 text-[0.68rem] font-bold text-ink-950"{% if not cart.count %} hidden{% endif %}>{{ cart.count|fa }}</span>
+      </a>
+    </div>
+  </div>
+</header>

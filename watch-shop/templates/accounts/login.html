@@ -1,0 +1,26 @@
+{% extends "accounts/_auth_shell.html" %}
+{% load shop_tags %}
+
+{% block title %}ورود / ثبت‌نام | {{ shop.site_name }}{% endblock %}
+
+{% block auth_content %}
+<p class="eyebrow" data-reveal>ورود یا ثبت‌نام</p>
+<h1 class="mt-4 font-display text-4xl font-semibold" data-split>با شماره موبایل وارد شوید</h1>
+<p class="mt-3 text-sm leading-7 text-sand-400" data-reveal style="--delay: 150">اگر حساب ندارید، با همین شماره یک پروفایل کاربری برایتان ساخته می‌شود. کد تایید پیامک خواهد شد.</p>
+
+<form method="post" class="mt-10 grid gap-6" novalidate data-reveal style="--delay: 250">
+  {% csrf_token %}
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+  <div class="field">
+    <label for="{{ form.phone.id_for_label }}" class="label">{{ form.phone.label }}</label>
+    <div class="relative">
+      <input type="text" name="phone" id="{{ form.phone.id_for_label }}" value="{{ form.phone.value|default_if_none:'' }}" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="0912 123 4567" autofocus required
+             class="input h-14 ps-14 text-lg tracking-wider{% if form.phone.errors %} border-danger/60{% endif %}">
+      <span class="pointer-events-none absolute inset-y-0 start-4 grid place-items-center text-gold-300">{% icon "phone" "size-5" %}</span>
+    </div>
+    {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+  </div>
+  <button type="submit" class="btn btn-gold h-14 text-base">دریافت کد تایید {% icon "arrow-left" "size-4" %}</button>
+  <p class="text-center text-xs leading-6 text-sand-500">ورود شما به معنای پذیرش <a href="{% url 'core:page' 'terms' %}" class="text-gold-200 hover:underline">قوانین و مقررات</a> فروشگاه است.</p>
+</form>
+{% endblock %}

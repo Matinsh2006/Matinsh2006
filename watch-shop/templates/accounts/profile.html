@@ -1,0 +1,82 @@
+{% extends "accounts/_layout.html" %}
+{% load shop_tags %}
+
+{% block title %}حساب کاربری | {{ shop.site_name }}{% endblock %}
+{% block account_title %}سلام{% if user.first_name %}، {{ user.first_name }}{% endif %}{% endblock %}
+
+{% block account_content %}
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="card p-6" data-reveal>
+      <p class="text-xs text-sand-500">نام کاربری (موبایل)</p>
+      <p class="ltr mt-2 text-end text-xl font-semibold sm:text-start">{{ user.phone|fa }}</p>
+      <a href="{% url 'accounts:change_phone' %}" class="mt-4 inline-flex items-center gap-1 text-xs text-gold-200 hover:underline">{% icon "edit" "size-3.5" %} تغییر با تایید پیامکی</a>
+    </div>
+    <div class="card p-6" data-reveal style="--delay: 90">
+      <p class="text-xs text-sand-500">سفارش‌ها</p>
+      <p class="mt-2 text-xl font-semibold">{{ user.orders.count|fa }}</p>
+      <a href="{% url 'orders:list' %}" class="mt-4 inline-flex text-xs text-gold-200 hover:underline">مشاهده همه</a>
+    </div>
+    <div class="card p-6" data-reveal style="--delay: 180">
+      <p class="text-xs text-sand-500">عضویت از</p>
+      <p class="mt-2 text-xl font-semibold">{{ user.date_joined|jdate }}</p>
+      <a href="{% url 'accounts:profile_edit' %}" class="mt-4 inline-flex text-xs text-gold-200 hover:underline">ویرایش اطلاعات</a>
+    </div>
+  </div>
+
+  <section class="mt-10" data-reveal>
+    <div class="mb-5 flex items-center justify-between">
+      <h2 class="text-lg font-semibold">اطلاعات حساب</h2>
+      <a href="{% url 'accounts:profile_edit' %}" class="btn btn-ghost btn-sm">{% icon "edit" "size-4" %} ویرایش</a>
+    </div>
+    <dl class="grid grid-cols-1 gap-px overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.07] sm:grid-cols-2">
+      <div class="bg-ink-900 p-5"><dt class="text-xs text-sand-500">نام و نام خانوادگی</dt><dd class="mt-1.5">{{ user.get_full_name|default:"—" }}</dd></div>
+      <div class="bg-ink-900 p-5"><dt class="text-xs text-sand-500">ایمیل</dt><dd class="mt-1.5">{{ user.email|default:"—" }}</dd></div>
+      <div class="bg-ink-900 p-5"><dt class="text-xs text-sand-500">شماره موبایل</dt><dd class="ltr mt-1.5 text-end sm:text-start">{{ user.phone|fa }}</dd></div>
+      <div class="bg-ink-900 p-5"><dt class="text-xs text-sand-500">وضعیت تایید موبایل</dt><dd class="mt-1.5 text-success">{% if user.phone_verified_at %}تایید شده در {{ user.phone_verified_at|jdate }}{% else %}—{% endif %}</dd></div>
+    </dl>
+  </section>
+
+  <section class="mt-10" data-reveal>
+    <div class="mb-5 flex items-center justify-between">
+      <h2 class="text-lg font-semibold">آخرین سفارش‌ها</h2>
+      {% if orders %}<a href="{% url 'orders:list' %}" class="text-sm text-gold-200 hover:underline">همه سفارش‌ها</a>{% endif %}
+    </div>
+    {% if orders %}
+      <ul class="grid gap-4">
+        {% for order in orders %}<li class="card p-5">{% include "orders/_order_summary.html" %}</li>{% endfor %}
+      </ul>
+    {% else %}
+      <p class="rounded-3xl border border-dashed border-white/15 p-8 text-center text-sm text-sand-400">هنوز سفارشی ثبت نشده است. <a href="{% url 'catalog:shop' %}" class="text-gold-200 hover:underline">شروع خرید</a></p>
+    {% endif %}
+  </section>
+
+  <section id="addresses" class="mt-10 scroll-mt-28" data-reveal>
+    <div class="mb-5 flex items-center justify-between">
+      <h2 class="text-lg font-semibold">نشانی‌ها</h2>
+      <a href="{% url 'accounts:address_create' %}" class="btn btn-ghost btn-sm">{% icon "plus" "size-4" %} نشانی جدید</a>
+    </div>
+    {% if addresses %}
+      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {% for address in addresses %}
+          <li class="card flex flex-col p-5">
+            <div class="flex items-center justify-between">
+              <p class="font-semibold">{{ address.title }}</p>
+              {% if address.is_default %}<span class="rounded-full bg-gold-300/10 px-2.5 py-1 text-[0.7rem] text-gold-200">پیش‌فرض</span>{% endif %}
+            </div>
+            <p class="mt-3 flex-1 text-sm leading-7 text-sand-300">{{ address.full_address|fa }}</p>
+            <p class="mt-2 text-xs text-sand-500">{{ address.recipient_name }} · {{ address.recipient_phone|fa }}</p>
+            <div class="mt-4 flex gap-2">
+              <a href="{% url 'accounts:address_update' address.pk %}" class="btn btn-ghost btn-sm">ویرایش</a>
+              <form action="{% url 'accounts:address_delete' address.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm text-sand-400 hover:text-danger">حذف</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="rounded-3xl border border-dashed border-white/15 p-8 text-center text-sm text-sand-400">نشانی‌ای ثبت نشده است.</p>
+    {% endif %}
+  </section>
+{% endblock %}

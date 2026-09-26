@@ -1,0 +1,93 @@
+/* Persian typography and store colours for the Django admin. */
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("fonts/vazirmatn-arabic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC;
+}
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("fonts/vazirmatn-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F;
+}
+
+:root,
+html[data-theme="light"] {
+  --font-family-primary: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --primary: #7c4632;
+  --secondary: #1b1614;
+  --accent: #f5cfb7;
+  --primary-fg: #fff;
+  --header-bg: #110f0d;
+  --header-color: #d9cdc2;
+  --header-branding-color: #f5cfb7;
+  --header-link-color: #fff;
+  --breadcrumbs-bg: #2b2421;
+  --breadcrumbs-fg: #cbbdb0;
+  --breadcrumbs-link-fg: #f5cfb7;
+  --link-fg: #a45f43;
+  --link-hover-color: #7c4632;
+  --link-selected-fg: #7c4632;
+  --button-bg: #a45f43;
+  --button-hover-bg: #7c4632;
+  --default-button-bg: #c97b57;
+  --default-button-hover-bg: #a45f43;
+  --selected-row: #fbe7da;
+  --selected-bg: #f3e1d5;
+  --object-tools-bg: #7c4632;
+  --object-tools-hover-bg: #5a3223;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #df9570;
+    --secondary: #1b1614;
+    --link-fg: #ecb393;
+    --link-hover-color: #f5cfb7;
+    --link-selected-fg: #f5cfb7;
+    --button-bg: #a45f43;
+    --button-hover-bg: #c97b57;
+    --default-button-bg: #c97b57;
+    --default-button-hover-bg: #df9570;
+    --selected-row: #3a2a22;
+    --selected-bg: #2e231e;
+    --body-bg: #121010;
+    --darkened-bg: #1a1715;
+  }
+}
+
+html[data-theme="dark"] {
+  --primary: #df9570;
+  --link-fg: #ecb393;
+  --link-hover-color: #f5cfb7;
+  --link-selected-fg: #f5cfb7;
+  --button-bg: #a45f43;
+  --button-hover-bg: #c97b57;
+  --default-button-bg: #c97b57;
+  --default-button-hover-bg: #df9570;
+  --selected-row: #3a2a22;
+  --selected-bg: #2e231e;
+  --body-bg: #121010;
+  --darkened-bg: #1a1715;
+}
+
+body,
+input,
+select,
+textarea,
+button {
+  font-family: var(--font-family-primary);
+}
+
+#site-name a { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; }
+.brand-mark { font-size: 1.1em; }
+#header { border-bottom: 1px solid rgba(245, 207, 183, 0.15); }
+.module h2, .module caption, .inline-group h2 { background: var(--secondary); color: #f5cfb7; }
+.button, input[type="submit"], input[type="button"], .submit-row input, a.button { border-radius: 10px; }
+.submit-row { border-radius: 12px; }
+fieldset.module { border-radius: 14px; overflow: hidden; }
+.help, p.help, div.help { line-height: 1.8; }
+textarea[name$="_code"] { direction: ltr; font-family: var(--font-family-monospace); font-size: 12px; min-height: 110px; }

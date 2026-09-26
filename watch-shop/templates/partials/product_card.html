@@ -1,0 +1,43 @@
+{% load shop_tags %}
+<article class="product-card group/card relative" data-grid-item data-reveal style="--delay: {{ delay|default:0 }}">
+  <div class="pc-media relative aspect-[4/5] overflow-hidden rounded-[1.6rem] border border-white/[0.06] bg-ink-800" data-carousel>
+    <div class="scroll-track size-full" data-track>
+      {% for image in product.ordered_images|slice:":4" %}
+        <a href="{{ product.get_absolute_url }}" class="block size-full basis-full" {% if not forloop.first %}tabindex="-1"{% endif %} aria-label="{{ product.name }}">
+          <img src="{{ image.image|thumb:720 }}" srcset="{% srcset image.image 480 720 1080 %}" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" alt="{{ image.alt_text }}" loading="lazy" decoding="async" class="size-full object-cover" draggable="false">
+        </a>
+      {% empty %}
+        <a href="{{ product.get_absolute_url }}" class="grid size-full basis-full place-items-center text-sand-500">{% icon "watch" "size-14" "1" %}</a>
+      {% endfor %}
+    </div>
+    <div class="pc-glow pointer-events-none absolute inset-0"></div>
+
+    <div class="pointer-events-none absolute top-3 right-3 flex flex-col items-start gap-1.5">
+      {% if product.discount_percent %}<span class="badge">٪{{ product.discount_percent|fa }} تخفیف</span>{% endif %}
+      {% if not product.in_stock %}<span class="rounded-full bg-ink-950/80 px-2.5 py-1 text-[0.7rem] text-sand-300 backdrop-blur">ناموجود</span>{% endif %}
+    </div>
+
+    {% if product.ordered_images|length > 1 %}
+      <div data-dots class="dot-nav absolute inset-x-0 bottom-3 flex justify-center gap-1.5"></div>
+    {% endif %}
+
+    {% if product.in_stock %}
+      <form action="{% url 'cart:add' product.pk %}" method="post" data-cart-form="add" class="absolute bottom-3 left-3 translate-y-2 opacity-100 transition duration-500 lg:opacity-0 lg:group-hover/card:translate-y-0 lg:group-hover/card:opacity-100">
+        {% csrf_token %}
+        <input type="hidden" name="quantity" value="1">
+        <button type="submit" class="grid size-11 place-items-center rounded-full bg-sand-50 text-ink-950 shadow-lg transition hover:scale-105 hover:bg-gold-200" aria-label="افزودن {{ product.name }} به سبد">{% icon "plus" "size-5" "2" %}</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <a href="{{ product.get_absolute_url }}" class="mt-4 block px-1">
+    <p class="latin-caps text-[0.62rem] text-sand-500">{{ product.brand.name_en|default:product.brand.name }}</p>
+    <h3 class="mt-1.5 line-clamp-1 text-[0.97rem] text-sand-50 transition group-hover/card:text-gold-100">{{ product.name }}</h3>
+    {% if product.name_en %}<p class="latin mt-0.5 line-clamp-1 text-[1.05rem] text-sand-400">{{ product.name_en }}</p>{% endif %}
+    <div class="mt-2.5 flex flex-wrap items-baseline gap-x-2">
+      {% if product.discount_percent %}<del class="text-xs text-sand-500">{{ product.compare_at_price|toman }}</del>{% endif %}
+      <span class="font-semibold text-gold-200">{{ product.price|toman }}</span>
+      <span class="text-xs text-sand-500">تومان</span>
+    </div>
+  </a>
+</article>

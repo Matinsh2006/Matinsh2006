@@ -1,0 +1,13 @@
+{% extends "accounts/_auth_shell.html" %}
+{% load shop_tags %}
+
+{% block title %}کد تایید | {{ shop.site_name }}{% endblock %}
+
+{% block auth_content %}
+<p class="eyebrow" data-reveal>تایید شماره موبایل</p>
+<h1 class="mt-4 font-display text-4xl font-semibold" data-split>کد پیامک‌شده را وارد کنید</h1>
+<div class="mt-10" data-reveal style="--delay: 200">
+  {% url 'accounts:login' as change_url %}
+  {% include "accounts/_otp_form.html" with change_url=change_url change_label="ویرایش شماره" %}
+</div>
+{% endblock %}

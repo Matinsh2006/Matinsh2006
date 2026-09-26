@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block content %}
+<div class="container-x py-10 lg:py-16">
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[17rem_1fr] lg:gap-12">
+    <aside>
+      <div class="panel lg:sticky lg:top-[calc(var(--nav-h)+1.5rem)]">
+        <div class="flex items-center gap-4">
+          <span class="grid size-14 place-items-center rounded-full bg-gradient-to-br from-gold-200 to-gold-600 font-display text-2xl font-bold text-ink-950">{{ user.first_name|default:"؟"|slice:":1" }}</span>
+          <div class="min-w-0">
+            <p class="truncate font-semibold">{{ user.get_full_name|default:"کاربر گرامی" }}</p>
+            <p class="ltr text-sm text-sand-400">{{ user.phone|fa }}</p>
+          </div>
+        </div>
+        <nav class="mt-6 grid gap-1 text-sm" aria-label="حساب کاربری">
+          {% url 'accounts:profile' as profile_url %}{% url 'orders:list' as orders_url %}{% url 'accounts:profile_edit' as edit_url %}{% url 'accounts:change_phone' as phone_url %}
+          <a href="{{ profile_url }}" class="flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-white/[0.05] {% if request.path == profile_url %}bg-white/[0.06] text-gold-100{% else %}text-sand-300{% endif %}">{% icon "grid" "size-5" %} پیشخوان</a>
+          <a href="{{ orders_url }}" class="flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-white/[0.05] {% if orders_url in request.path %}bg-white/[0.06] text-gold-100{% else %}text-sand-300{% endif %}">{% icon "package" "size-5" %} سفارش‌ها</a>
+          <a href="{{ edit_url }}" class="flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-white/[0.05] {% if request.path == edit_url %}bg-white/[0.06] text-gold-100{% else %}text-sand-300{% endif %}">{% icon "edit" "size-5" %} اطلاعات حساب</a>
+          <a href="{{ phone_url }}" class="flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-white/[0.05] {% if phone_url in request.path %}bg-white/[0.06] text-gold-100{% else %}text-sand-300{% endif %}">{% icon "phone" "size-5" %} تغییر شماره موبایل</a>
+          <a href="{{ profile_url }}#addresses" class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sand-300 transition hover:bg-white/[0.05]">{% icon "map-pin" "size-5" %} نشانی‌ها</a>
+          {% if user.is_staff %}<a href="/admin/" class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sand-300 transition hover:bg-white/[0.05]">{% icon "store" "size-5" %} پنل مدیریت فروشگاه</a>{% endif %}
+          <form action="{% url 'accounts:logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sand-400 transition hover:bg-danger/10 hover:text-danger">{% icon "logout" "size-5" %} خروج</button>
+          </form>
+        </nav>
+      </div>
+    </aside>
+    <div class="min-w-0">
+      <h1 class="heading-md mb-8" data-reveal>{% block account_title %}{% endblock %}</h1>
+      {% block account_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

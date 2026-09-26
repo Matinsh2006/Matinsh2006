@@ -1,0 +1,97 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
+  <style>
+    .map-picker { margin: 0 0 24px; }
+    .map-picker p { margin: 0 0 10px; color: var(--body-quiet-color); line-height: 1.9; }
+    #location-map { height: 400px; border-radius: 14px; border: 1px solid var(--border-color); }
+    .map-search { display: flex; gap: 8px; margin: 0 0 10px; }
+    .map-search input { flex: 1; min-width: 0; padding: 8px 12px; border-radius: 10px; }
+    .map-search-results { list-style: none; margin: 0 0 10px; padding: 0; }
+    .map-search-results button { width: 100%; text-align: right; background: var(--darkened-bg); color: var(--body-fg); border: 0; border-radius: 8px; padding: 8px 12px; margin-bottom: 4px; cursor: pointer; }
+  </style>
+{% endblock %}
+
+{% block field_sets %}
+  <div class="map-picker">
+    <p>📍 روی نقشه کلیک کنید یا نشانگر را بکشید تا عرض و طول جغرافیایی مغازه به‌طور خودکار ثبت شود. همچنین می‌توانید نام مکان را جستجو کنید.</p>
+    <div class="map-search">
+      <input type="search" id="map-search" placeholder="جستجوی مکان، مثلاً: میدان ونک تهران">
+      <button type="button" class="button" id="map-search-btn">جستجو</button>
+    </div>
+    <ul class="map-search-results" id="map-search-results"></ul>
+    <div id="location-map" data-tiles="{{ map_tile_url }}" data-attribution="{{ map_tile_attribution }}"></div>
+  </div>
+  {{ block.super }}
+{% endblock %}
+
+{% block admin_change_form_document_ready %}
+  {{ block.super }}
+  <script src="{% static 'vendor/leaflet/leaflet.js' %}"></script>
+  <script>
+    (function () {
+      var latInput = document.getElementById("id_latitude");
+      var lngInput = document.getElementById("id_longitude");
+      var zoomInput = document.getElementById("id_zoom");
+      var mapEl = document.getElementById("location-map");
+      if (!latInput || !lngInput || !mapEl || !window.L) return;
+      var toNumber = function (v) { return parseFloat(String(v || "").replace(/[۰-۹]/g, function (d) { return "۰۱۲۳۴۵۶۷۸۹".indexOf(d); })); };
+      var lat = toNumber(latInput.value), lng = toNumber(lngInput.value);
+      var hasPoint = !isNaN(lat) && !isNaN(lng);
+      var center = hasPoint ? [lat, lng] : [35.6997, 51.338];
+      var zoom = parseInt(zoomInput && zoomInput.value, 10) || (hasPoint ? 16 : 11);
+      var map = L.map(mapEl).setView(center, zoom);
+      L.tileLayer(mapEl.dataset.tiles, { attribution: mapEl.dataset.attribution, maxZoom: 19 }).addTo(map);
+      var marker = L.marker(center, { draggable: true });
+      if (hasPoint) marker.addTo(map);
+      var setPoint = function (latlng, move) {
+        latInput.value = latlng.lat.toFixed(6);
+        lngInput.value = latlng.lng.toFixed(6);
+        marker.setLatLng(latlng);
+        if (!map.hasLayer(marker)) marker.addTo(map);
+        if (move) map.setView(latlng, Math.max(map.getZoom(), 16));
+      };
+      map.on("click", function (e) { setPoint(e.latlng, false); });
+      marker.on("dragend", function () { setPoint(marker.getLatLng(), false); });
+      map.on("zoomend", function () { if (zoomInput) zoomInput.value = map.getZoom(); });
+      var sync = function () {
+        var la = toNumber(latInput.value), ln = toNumber(lngInput.value);
+        if (!isNaN(la) && !isNaN(ln)) setPoint(L.latLng(la, ln), true);
+      };
+      latInput.addEventListener("change", sync);
+      lngInput.addEventListener("change", sync);
+
+      var search = document.getElementById("map-search");
+      var results = document.getElementById("map-search-results");
+      var run = function () {
+        var q = search.value.trim();
+        if (!q) return;
+        results.innerHTML = "<li>در حال جستجو…</li>";
+        fetch("https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=fa&countrycodes=ir&q=" + encodeURIComponent(q))
+          .then(function (r) { return r.json(); })
+          .then(function (items) {
+            results.innerHTML = "";
+            if (!items.length) { results.innerHTML = "<li>نتیجه‌ای یافت نشد.</li>"; return; }
+            items.forEach(function (item) {
+              var li = document.createElement("li");
+              var b = document.createElement("button");
+              b.type = "button";
+              b.textContent = item.display_name;
+              b.addEventListener("click", function () {
+                setPoint(L.latLng(parseFloat(item.lat), parseFloat(item.lon)), true);
+                results.innerHTML = "";
+              });
+              li.appendChild(b);
+              results.appendChild(li);
+            });
+          })
+          .catch(function () { results.innerHTML = "<li>جستجو در دسترس نیست؛ روی نقشه کلیک کنید.</li>"; });
+      };
+      document.getElementById("map-search-btn").addEventListener("click", run);
+      search.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); run(); } });
+    })();
+  </script>
+{% endblock %}

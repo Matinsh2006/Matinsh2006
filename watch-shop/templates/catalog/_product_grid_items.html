@@ -1,0 +1,5 @@
+{% load shop_tags %}
+<span hidden data-page-meta {% if page_obj.has_next %}data-next-url="{% querystring page=page_obj.next_page_number partial=None %}"{% endif %}></span>
+{% for product in products %}
+  {% include "partials/product_card.html" with delay=forloop.counter0|stagger:3 %}
+{% endfor %}

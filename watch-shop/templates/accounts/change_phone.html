@@ -1,0 +1,33 @@
+{% extends "accounts/_layout.html" %}
+{% load shop_tags %}
+
+{% block title %}تغییر شماره موبایل | {{ shop.site_name }}{% endblock %}
+{% block account_title %}تغییر نام کاربری (شماره موبایل){% endblock %}
+
+{% block account_content %}
+<div class="panel max-w-xl" data-reveal>
+  <ol class="mb-8 grid grid-cols-2 gap-3 text-xs">
+    <li class="grid gap-2"><span class="h-1 rounded-full bg-gold-300"></span><span class="{% if step == 1 %}text-gold-100{% else %}text-sand-400{% endif %}">۱. شماره جدید</span></li>
+    <li class="grid gap-2"><span class="h-1 rounded-full {% if step == 2 %}bg-gold-300{% else %}bg-white/10{% endif %}"></span><span class="{% if step == 2 %}text-gold-100{% else %}text-sand-500{% endif %}">۲. تایید پیامکی</span></li>
+  </ol>
+
+  {% if step == 1 %}
+    <p class="text-sm leading-7 text-sand-300">شماره فعلی شما <span class="ltr font-semibold text-sand-50">{{ user.phone|fa }}</span> است. پس از وارد کردن شماره جدید، یک کد تایید از طریق پنل پیامکی به آن ارسال می‌شود و تنها پس از تایید، نام کاربری شما تغییر می‌کند.</p>
+    <form method="post" class="mt-8 grid gap-6" novalidate>
+      {% csrf_token %}
+      <div class="field">
+        <label for="{{ form.phone.id_for_label }}" class="label">{{ form.phone.label }}</label>
+        <input type="text" name="phone" id="{{ form.phone.id_for_label }}" value="{{ form.phone.value|default_if_none:'' }}" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="0912 123 4567" autofocus class="input h-14 text-lg tracking-wider{% if form.phone.errors %} border-danger/60{% endif %}">
+        {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <button type="submit" class="btn btn-gold h-13">ارسال کد تایید به شماره جدید</button>
+    </form>
+  {% else %}
+    <p class="text-sm leading-7 text-sand-300">کد تایید به شماره جدید پیامک شد. پس از تایید، برای ورودهای بعدی از این شماره استفاده کنید.</p>
+    <div class="mt-8">
+      {% url 'accounts:change_phone' as change_url %}
+      {% include "accounts/_otp_form.html" with change_url=change_url change_label="تغییر شماره جدید" submit_label="تایید و تغییر نام کاربری" %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

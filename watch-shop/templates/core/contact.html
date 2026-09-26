@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block title %}آدرس و تماس با ما | {{ shop.site_name }}{% endblock %}
+
+{% block content %}
+<section class="container-x pt-12 lg:pt-16">
+  <p class="eyebrow" data-reveal>آدرس و تماس</p>
+  <h1 class="heading-lg mt-4 max-w-3xl" data-split>در گالری منتظر دیدار شما هستیم</h1>
+</section>
+
+<section class="container-x mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12">
+  <div class="lg:col-span-7" data-reveal="clip">
+    <div class="map-dark relative h-[24rem] overflow-hidden rounded-[2rem] border border-white/[0.08] lg:h-[32rem]">
+      {% if stores %}
+        <div class="absolute inset-0" data-map data-stores="{{ stores_json }}" data-leaflet="{% static 'vendor/leaflet/' %}" data-tiles="{{ map_tile_url }}" data-attribution="{{ map_tile_attribution }}" role="region" aria-label="نقشه موقعیت فروشگاه"></div>
+      {% else %}
+        <div class="grid size-full place-items-center text-sm text-sand-500">موقعیت فروشگاه هنوز در پنل مدیریت ثبت نشده است.</div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="grid content-start gap-4 lg:col-span-5">
+    {% for store in stores %}
+      <div class="card p-6" data-reveal style="--delay: {{ forloop.counter0|stagger:6 }}">
+        <div class="flex items-start justify-between gap-4">
+          <h2 class="text-lg font-semibold">{{ store.name }}</h2>
+          {% if stores|length > 1 %}<button type="button" data-map-focus="{{ forloop.counter0 }}" class="icon-btn border border-white/10" aria-label="نمایش روی نقشه">{% icon "map-pin" "size-4" %}</button>{% endif %}
+        </div>
+        <p class="mt-3 text-sm leading-7 text-sand-300">{{ store.address|fa }}</p>
+        <ul class="mt-4 grid gap-2 text-sm text-sand-400">
+          {% if store.working_hours %}<li class="flex items-center gap-2">{% icon "clock" "size-4 text-gold-300" %} {{ store.working_hours|fa }}</li>{% endif %}
+          {% if store.phone %}<li class="flex items-center gap-2">{% icon "phone" "size-4 text-gold-300" %} <a href="{{ store.phone_link }}" class="ltr hover:text-gold-100">{{ store.phone|fa }}</a></li>{% endif %}
+        </ul>
+        <div class="mt-5 flex flex-wrap gap-2">
+          <a href="{{ store.neshan_link }}" target="_blank" rel="noopener" class="chip h-9 text-xs">{% icon "navigation" "size-3.5" %} نشان</a>
+          <a href="{{ store.balad_link }}" target="_blank" rel="noopener" class="chip h-9 text-xs">{% icon "navigation" "size-3.5" %} بلد</a>
+          <a href="{{ store.directions_url }}" target="_blank" rel="noopener" class="chip h-9 text-xs">{% icon "navigation" "size-3.5" %} گوگل مپ</a>
+          <a href="{{ store.waze_url }}" target="_blank" rel="noopener" class="chip h-9 text-xs">{% icon "navigation" "size-3.5" %} ویز</a>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="card p-6" data-reveal>
+      <h2 class="text-lg font-semibold">راه‌های ارتباطی</h2>
+      <ul class="mt-4 grid gap-3 text-sm text-sand-300">
+        {% if shop.phone %}<li class="flex items-center gap-3">{% icon "phone" "size-4 text-gold-300" %}<a href="{{ shop.phone_link }}" class="ltr hover:text-gold-100">{{ shop.phone|fa }}</a></li>{% endif %}
+        {% if shop.mobile %}<li class="flex items-center gap-3">{% icon "headset" "size-4 text-gold-300" %}<a href="{{ shop.mobile_link }}" class="ltr hover:text-gold-100">{{ shop.mobile|fa }}</a></li>{% endif %}
+        {% if shop.email %}<li class="flex items-center gap-3">{% icon "mail" "size-4 text-gold-300" %}<a href="mailto:{{ shop.email }}" class="hover:text-gold-100">{{ shop.email }}</a></li>{% endif %}
+      </ul>
+      {% if shop.social_links %}
+        <div class="mt-5 flex flex-wrap gap-2">
+          {% for link in shop.social_links %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener" class="chip h-10">{% social_icon link.key "size-4" %} {{ link.label }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section id="contact-form" class="container-x mt-16 mb-24 scroll-mt-28">
+  <div class="panel grid grid-cols-1 gap-10 lg:grid-cols-12">
+    <div class="lg:col-span-5">
+      <p class="eyebrow">پیام بگذارید</p>
+      <h2 class="heading-md mt-4" data-split>سوالی دارید؟ با ما در میان بگذارید</h2>
+      <p class="mt-4 text-sm leading-7 text-sand-400">کارشناسان ما در ساعات کاری با شما تماس می‌گیرند.</p>
+    </div>
+    <form method="post" class="grid gap-5 lg:col-span-7" novalidate>
+      {% csrf_token %}
+      <div class="hidden" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+      {% for error in form.non_field_errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        {% include "partials/field.html" with field=form.name %}
+        {% include "partials/field.html" with field=form.phone %}
+      </div>
+      {% include "partials/field.html" with field=form.message %}
+      <button type="submit" class="btn btn-gold w-fit">ارسال پیام</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

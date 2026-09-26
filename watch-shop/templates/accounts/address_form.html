@@ -1,0 +1,34 @@
+{% extends "accounts/_layout.html" %}
+{% load shop_tags %}
+
+{% block title %}{% if address %}ویرایش نشانی{% else %}نشانی جدید{% endif %} | {{ shop.site_name }}{% endblock %}
+{% block account_title %}{% if address %}ویرایش نشانی{% else %}افزودن نشانی جدید{% endif %}{% endblock %}
+
+{% block account_content %}
+<form method="post" class="panel grid gap-6" novalidate data-reveal>
+  {% csrf_token %}
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+    {% include "partials/field.html" with field=form.title %}
+    {% include "partials/field.html" with field=form.recipient_name %}
+    {% include "partials/field.html" with field=form.recipient_phone %}
+  </div>
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+    {% include "partials/field.html" with field=form.province %}
+    {% include "partials/field.html" with field=form.city %}
+    {% include "partials/field.html" with field=form.postal_code %}
+  </div>
+  {% include "partials/field.html" with field=form.address %}
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+    {% include "partials/field.html" with field=form.plaque %}
+    {% include "partials/field.html" with field=form.unit %}
+  </div>
+  <label class="flex cursor-pointer items-center gap-3 text-sm text-sand-300">
+    <input type="checkbox" name="is_default" class="size-4 accent-[#df9570]" {% if form.is_default.value %}checked{% endif %}> {{ form.is_default.label }}
+  </label>
+  <div class="flex gap-3">
+    <button type="submit" class="btn btn-gold">ذخیره نشانی</button>
+    <a href="{{ next|default:'/account/#addresses' }}" class="btn btn-ghost">انصراف</a>
+  </div>
+</form>
+{% endblock %}

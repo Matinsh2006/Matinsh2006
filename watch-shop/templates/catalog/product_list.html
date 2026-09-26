@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}{{ title }} | {{ shop.site_name }}{% endblock %}
+{% block meta_description %}{{ subtitle|default:title }}{% endblock %}
+
+{% block content %}
+<section class="relative overflow-hidden border-b border-white/[0.06]">
+  <div aria-hidden="true" class="pointer-events-none absolute -top-32 right-1/4 h-72 w-[40rem] rounded-full bg-gold-500/10 blur-[110px]"></div>
+  <div class="container-x relative pt-10 pb-10 lg:pt-16">
+    <nav class="flex flex-wrap items-center gap-2 text-xs text-sand-500" aria-label="مسیر صفحه" data-reveal>
+      <a href="{% url 'core:home' %}" class="hover:text-sand-200">خانه</a><span>/</span>
+      <a href="{% url 'catalog:shop' %}" class="hover:text-sand-200">فروشگاه</a>
+      {% if category.parent %}<span>/</span><a href="{{ category.parent.get_absolute_url }}" class="hover:text-sand-200">{{ category.parent.title }}</a>{% endif %}
+      {% if category or brand or gender %}<span>/</span><span class="text-sand-300">{{ title }}</span>{% endif %}
+    </nav>
+    <div class="mt-6 flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        {% if brand %}<p class="latin-caps text-xs text-gold-300" data-reveal>{{ brand.name_en }}</p>{% endif %}
+        <h1 class="heading-lg mt-2" data-split>{{ title }}</h1>
+        {% if subtitle %}<p class="mt-4 leading-8 text-sand-400" data-reveal style="--delay: 150">{{ subtitle }}</p>{% endif %}
+      </div>
+      <p class="text-sm text-sand-400" data-reveal>{{ page_obj.paginator.count|fa }} مدل ساعت</p>
+    </div>
+    {% if chips %}
+      <div class="mt-8 flex flex-wrap gap-2" data-reveal style="--delay: 200">
+        {% if chips_all_url %}<a href="{{ chips_all_url }}" class="chip{% if not category.parent %} is-active{% endif %}">{{ chips_all_label }}</a>{% endif %}
+        {% for chip in chips %}
+          <a href="{{ chip.url }}" class="chip{% if chip.active %} is-active{% endif %}">{{ chip.label }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<div class="container-x grid grid-cols-1 gap-10 py-10 lg:grid-cols-[17rem_1fr] lg:py-14">
+  <div data-filter-overlay class="overlay fixed inset-0 z-[70] bg-black/60 lg:hidden"></div>
+  <aside data-filter-panel class="filter-panel fixed inset-y-0 right-0 z-[80] w-[20rem] max-w-[88vw] overflow-y-auto bg-ink-900 p-6 lg:static lg:z-auto lg:w-auto lg:max-w-none lg:overflow-visible lg:bg-transparent lg:p-0" data-lenis-prevent>
+    <form method="get" class="grid gap-7 lg:sticky lg:top-[calc(var(--nav-h)+1.5rem)]" id="filter-form">
+      {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+      <input type="hidden" name="sort" value="{{ current_sort }}">
+      <div class="flex items-center justify-between lg:hidden">
+        <p class="text-lg font-semibold">فیلترها</p>
+        <button type="button" class="icon-btn" data-filter-toggle aria-label="بستن">{% icon "close" %}</button>
+      </div>
+
+      {% if not gender and not category.parent %}
+      <fieldset>
+        <legend class="mb-3 text-sm font-semibold text-sand-100">جنسیت</legend>
+        <div class="flex gap-2">
+          {% for value, label in form.fields.gender.choices %}
+            <label class="cursor-pointer">
+              <input type="radio" name="gender" value="{{ value }}" class="peer sr-only" {% if filters.gender == value or not filters.gender and not value %}checked{% endif %}>
+              <span class="chip h-9 peer-checked:border-gold-300/70 peer-checked:bg-gold-300/10 peer-checked:text-gold-100">{{ label }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      {% endif %}
+
+      {% if not category and filter_types %}
+      <fieldset>
+        <legend class="mb-3 text-sm font-semibold text-sand-100">نوع ساعت</legend>
+        <div class="grid gap-2.5">
+          {% for type in filter_types %}
+            <label class="flex cursor-pointer items-center gap-3 text-sm text-sand-300 hover:text-sand-50">
+              <input type="checkbox" name="type" value="{{ type.slug }}" class="size-4 accent-[#df9570]" {% if type.slug in filters.type %}checked{% endif %}> {{ type.name }}
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      {% endif %}
+
+      {% if not brand and filter_brands %}
+      <fieldset>
+        <legend class="mb-3 text-sm font-semibold text-sand-100">برند</legend>
+        <div class="grid max-h-60 gap-2.5 overflow-y-auto pe-1" data-lenis-prevent>
+          {% for item in filter_brands %}
+            <label class="flex cursor-pointer items-center gap-3 text-sm text-sand-300 hover:text-sand-50">
+              <input type="checkbox" name="brand" value="{{ item.slug }}" class="size-4 accent-[#df9570]" {% if item.slug in filters.brand %}checked{% endif %}>
+              <span>{{ item.name }}</span>{% if item.name_en %}<span class="latin text-sand-500">{{ item.name_en }}</span>{% endif %}
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      {% endif %}
+
+      <fieldset>
+        <legend class="mb-3 text-sm font-semibold text-sand-100">نوع موتور</legend>
+        <div class="grid gap-2.5">
+          {% for value, label in form.fields.movement.choices %}
+            <label class="flex cursor-pointer items-center gap-3 text-sm text-sand-300 hover:text-sand-50">
+              <input type="checkbox" name="movement" value="{{ value }}" class="size-4 accent-[#df9570]" {% if value in filters.movement %}checked{% endif %}> {{ label }}
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="mb-3 text-sm font-semibold text-sand-100">جنس بند</legend>
+        <div class="grid gap-2.5">
+          {% for value, label in form.fields.strap.choices %}
+            <label class="flex cursor-pointer items-center gap-3 text-sm text-sand-300 hover:text-sand-50">
+              <input type="checkbox" name="strap" value="{{ value }}" class="size-4 accent-[#df9570]" {% if value in filters.strap %}checked{% endif %}> {{ label }}
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="mb-3 text-sm font-semibold text-sand-100">محدوده قیمت (تومان)</legend>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" inputmode="numeric" name="min_price" value="{{ filters.min_price|default_if_none:'' }}" placeholder="از" class="input h-11 text-sm" dir="ltr">
+          <input type="text" inputmode="numeric" name="max_price" value="{{ filters.max_price|default_if_none:'' }}" placeholder="تا" class="input h-11 text-sm" dir="ltr">
+        </div>
+      </fieldset>
+
+      <div class="grid gap-3">
+        <label class="flex cursor-pointer items-center gap-3 text-sm text-sand-300"><input type="checkbox" name="available" value="1" class="size-4 accent-[#df9570]" {% if filters.available %}checked{% endif %}> فقط کالاهای موجود</label>
+        <label class="flex cursor-pointer items-center gap-3 text-sm text-sand-300"><input type="checkbox" name="discount" value="1" class="size-4 accent-[#df9570]" {% if filters.discount %}checked{% endif %}> فقط تخفیف‌دارها</label>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="submit" class="btn btn-gold btn-sm flex-1">اعمال فیلتر</button>
+        {% if has_active_filters %}<a href="{{ request.path }}{% if query %}?q={{ query|urlencode }}{% endif %}" class="btn btn-ghost btn-sm">حذف فیلترها</a>{% endif %}
+      </div>
+    </form>
+  </aside>
+
+  <div>
+    <div class="mb-8 flex items-center justify-between gap-4">
+      <button type="button" class="btn btn-ghost btn-sm lg:hidden" data-filter-toggle>{% icon "sliders" "size-4" %} فیلترها</button>
+      <label class="ms-auto flex items-center gap-3 text-sm text-sand-400">
+        مرتب‌سازی:
+        <select name="sort" form="filter-form" class="input h-10 w-auto min-w-40 rounded-full text-sm" data-autosubmit>
+          {% for value, label in sort_choices %}<option value="{{ value }}" {% if value == current_sort %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      </label>
+    </div>
+
+    {% if products %}
+      <div id="product-grid" class="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 xl:grid-cols-3">
+        {% include "catalog/_product_grid_items.html" %}
+      </div>
+      {% if page_obj.has_next %}
+        <div class="mt-14 grid place-items-center gap-4" data-load-more-wrap>
+          <button type="button" class="btn btn-ghost min-w-56" data-load-more data-target="#product-grid" data-next-url="{% querystring page=page_obj.next_page_number %}">نمایش ساعت‌های بیشتر</button>
+          <nav class="flex items-center gap-1 text-sm" aria-label="صفحه‌بندی">
+            {% for number in page_obj.paginator.page_range %}
+              {% if number == page_obj.number %}<span class="grid size-9 place-items-center rounded-full bg-gold-300 text-ink-950">{{ number|fa }}</span>
+              {% else %}<a href="{% querystring page=number %}" class="grid size-9 place-items-center rounded-full text-sand-400 hover:bg-white/5">{{ number|fa }}</a>{% endif %}
+            {% endfor %}
+          </nav>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="card grid place-items-center px-6 py-20 text-center">
+        <div class="grid size-20 place-items-center rounded-full border border-white/10 text-gold-300">{% icon "watch" "size-9" "1.2" %}</div>
+        <p class="mt-6 text-lg font-semibold">ساعتی با این مشخصات پیدا نشد</p>
+        <p class="mt-2 text-sm text-sand-400">فیلترها را تغییر دهید یا همه ساعت‌ها را ببینید.</p>
+        <a href="{% url 'catalog:shop' %}" class="btn btn-gold mt-7">همه ساعت‌ها</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}تکمیل خرید | {{ shop.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-x py-12 lg:py-16">
+  <p class="eyebrow" data-reveal>مرحله ۲ از ۳</p>
+  <h1 class="heading-lg mt-4" data-split>نشانی و پرداخت</h1>
+
+  <form method="post" class="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12" novalidate>
+    {% csrf_token %}
+    <div class="grid gap-8 lg:col-span-8">
+      <section class="panel" data-reveal>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="flex items-center gap-3 text-lg font-semibold">{% icon "map-pin" "size-5 text-gold-300" %} نشانی ارسال</h2>
+          <a href="{% url 'accounts:address_create' %}?next={% url 'orders:checkout' %}" class="btn btn-ghost btn-sm">{% icon "plus" "size-4" %} نشانی جدید</a>
+        </div>
+        {% if form.address.errors %}<p class="field-error mt-4">{{ form.address.errors.0 }}</p>{% endif %}
+        {% if addresses %}
+          <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {% for address in addresses %}
+              <label class="group/addr relative cursor-pointer">
+                <input type="radio" name="address" value="{{ address.pk }}" class="peer sr-only" {% if form.address.value|stringformat:"s" == address.pk|stringformat:"s" or not form.address.value and address.is_default %}checked{% endif %}>
+                <div class="h-full rounded-3xl border border-white/10 p-5 transition peer-checked:border-gold-300/70 peer-checked:bg-gold-300/[0.06] peer-focus-visible:ring-2 peer-focus-visible:ring-gold-300">
+                  <div class="flex items-center justify-between">
+                    <p class="font-semibold">{{ address.title }}</p>
+                    <span class="grid size-5 place-items-center rounded-full border border-white/20 group-has-[:checked]/addr:border-gold-300 group-has-[:checked]/addr:bg-gold-300">{% icon "check" "size-3 text-ink-950 opacity-0 group-has-[:checked]/addr:opacity-100" "3" %}</span>
+                  </div>
+                  <p class="mt-3 text-sm leading-7 text-sand-300">{{ address.full_address|fa }}</p>
+                  <p class="mt-2 text-xs text-sand-500">{{ address.recipient_name }} · {{ address.recipient_phone|fa }} · کد پستی {{ address.postal_code|fa }}</p>
+                  <a href="{% url 'accounts:address_update' address.pk %}?next={% url 'orders:checkout' %}" class="mt-3 inline-flex text-xs text-gold-200 hover:underline">ویرایش</a>
+                </div>
+              </label>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="mt-6 rounded-3xl border border-dashed border-white/15 p-8 text-center">
+            <p class="text-sand-300">هنوز نشانی‌ای ثبت نکرده‌اید.</p>
+            <a href="{% url 'accounts:address_create' %}?next={% url 'orders:checkout' %}" class="btn btn-gold mt-5">افزودن نشانی</a>
+          </div>
+        {% endif %}
+      </section>
+
+      <section class="panel" data-reveal>
+        <h2 class="flex items-center gap-3 text-lg font-semibold">{% icon "card" "size-5 text-gold-300" %} درگاه پرداخت</h2>
+        {% if form.gateway.errors %}<p class="field-error mt-4">{{ form.gateway.errors.0 }}</p>{% endif %}
+        <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {% for gateway in gateways %}
+            <label class="cursor-pointer">
+              <input type="radio" name="gateway" value="{{ gateway.code }}" class="peer sr-only" {% if form.gateway.value == gateway.code or not form.gateway.value and forloop.first %}checked{% endif %}>
+              <div class="flex h-full items-center gap-4 rounded-3xl border border-white/10 p-5 transition peer-checked:border-gold-300/70 peer-checked:bg-gold-300/[0.06]">
+                <span class="grid size-12 place-items-center rounded-2xl bg-white/[0.05] text-gold-200">{% icon "card" "size-6" %}</span>
+                <span><span class="block font-semibold">{{ gateway.title }}</span><span class="mt-1 block text-xs text-sand-500">{{ gateway.description }}</span></span>
+              </div>
+            </label>
+          {% empty %}
+            <p class="text-sm text-danger">در حال حاضر هیچ درگاه پرداختی فعال نیست.</p>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="panel" data-reveal>
+        <label class="label" for="{{ form.note.id_for_label }}">{{ form.note.label }}</label>
+        <textarea name="note" id="{{ form.note.id_for_label }}" rows="2" class="input mt-2" placeholder="مثلاً: لطفاً کادوپیچ شود">{{ form.note.value|default_if_none:'' }}</textarea>
+      </section>
+    </div>
+
+    <aside class="lg:col-span-4">
+      <div class="panel lg:sticky lg:top-[calc(var(--nav-h)+1.5rem)]" data-reveal>
+        <h2 class="text-lg font-semibold">سفارش شما</h2>
+        <ul class="mt-5 grid gap-4">
+          {% for line in cart.lines %}
+            <li class="flex items-center gap-3">
+              <span class="relative size-14 shrink-0 overflow-hidden rounded-xl bg-ink-800">
+                {% if line.product.main_image %}<img src="{{ line.product.main_image.image|thumb:160 }}" alt="" class="size-full object-cover">{% endif %}
+                <span class="absolute -top-1 -left-1 grid size-5 place-items-center rounded-full bg-gold-300 text-[0.65rem] font-bold text-ink-950">{{ line.quantity|fa }}</span>
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm">{{ line.product.name }}</span>
+              <span class="text-sm text-sand-300">{{ line.total|toman }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+        <dl class="mt-6 grid gap-3 border-t border-white/[0.07] pt-5 text-sm">
+          <div class="flex justify-between text-sand-400"><dt>جمع کالاها</dt><dd>{{ cart.subtotal|toman }} تومان</dd></div>
+          <div class="flex justify-between text-sand-400"><dt>هزینه ارسال</dt><dd>{% if cart.shipping_cost %}{{ cart.shipping_cost|toman }} تومان{% else %}رایگان{% endif %}</dd></div>
+          <div class="flex justify-between text-base font-semibold"><dt>مبلغ قابل پرداخت</dt><dd class="text-gold-200">{{ cart.total|toman }} تومان</dd></div>
+        </dl>
+        <label class="mt-6 flex cursor-pointer items-start gap-3 text-xs leading-6 text-sand-300">
+          <input type="checkbox" name="accept_terms" value="on" class="mt-1 size-4 accent-[#df9570]" {% if form.accept_terms.value %}checked{% endif %}>
+          <span>{{ form.accept_terms.label }}</span>
+        </label>
+        {% if form.accept_terms.errors %}<p class="field-error mt-2">{{ form.accept_terms.errors.0 }}</p>{% endif %}
+        <button type="submit" class="btn btn-gold mt-6 h-14 w-full text-base" {% if not addresses or not gateways %}disabled{% endif %}>{% icon "shield" "size-5" %} پرداخت امن {{ cart.total|toman }} تومان</button>
+        <p class="mt-3 text-center text-[0.7rem] text-sand-500">پس از کلیک به درگاه بانکی منتقل می‌شوید.</p>
+      </div>
+    </aside>
+  </form>
+</div>
+{% endblock %}

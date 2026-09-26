@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}درگاه پرداخت آزمایشی{% endblock %}
+
+{% block content %}
+<div class="container-x grid min-h-[70svh] place-items-center py-16">
+  <div class="w-full max-w-md overflow-hidden rounded-[2rem] border border-white/10 bg-sand-50 text-ink-950 shadow-2xl" data-reveal="scale">
+    <div class="flex items-center justify-between bg-ink-950 px-6 py-5 text-sand-50">
+      <p class="font-semibold">درگاه پرداخت آزمایشی</p>
+      <span class="rounded-full bg-gold-300/20 px-3 py-1 text-xs text-gold-200">حالت توسعه</span>
+    </div>
+    <div class="grid gap-5 p-6">
+      <p class="rounded-2xl bg-gold-100 p-4 text-xs leading-6 text-ink-700">این صفحه جایگزین صفحه بانک در محیط توسعه است. در نسخه نهایی، مشتری به درگاه زرین‌پال یا زیبال منتقل می‌شود.</p>
+      <dl class="grid gap-3 text-sm">
+        <div class="flex justify-between"><dt class="text-ink-500">پذیرنده</dt><dd class="font-semibold">{{ shop.site_name }}</dd></div>
+        <div class="flex justify-between"><dt class="text-ink-500">شماره سفارش</dt><dd class="ltr">{{ payment.order.number|fa }}</dd></div>
+        <div class="flex justify-between text-base"><dt class="text-ink-500">مبلغ</dt><dd class="font-bold">{{ payment.amount|toman }} ریال</dd></div>
+      </dl>
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <a href="{{ ok_url }}" class="btn h-12 bg-ink-950 text-sand-50 hover:bg-ink-800">پرداخت موفق</a>
+        <a href="{{ cancel_url }}" class="btn h-12 border border-ink-950/15 hover:bg-ink-950/5">انصراف از پرداخت</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

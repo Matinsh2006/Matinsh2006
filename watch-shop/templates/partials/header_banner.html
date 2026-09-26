@@ -1,0 +1,39 @@
+{% load shop_tags %}{% if header_banners %}
+<div data-header-banner data-version="{% for banner in header_banners %}{{ banner.version }}{% if not forloop.last %}_{% endif %}{% endfor %}" class="group/hb relative z-[60] overflow-hidden bg-ink-900" role="region" aria-label="اطلاعیه ویژه">
+  <div class="relative h-[clamp(3.25rem,5.4vw,5.25rem)]">
+    {% for banner in header_banners %}
+      <{% if banner.link %}a href="{{ banner.link }}"{% if banner.is_external %} target="_blank" rel="noopener"{% endif %}{% else %}div{% endif %} class="hb-slide absolute inset-0 block overflow-hidden{% if forloop.first %} is-active{% endif %}">
+        {% if banner.image %}
+          <picture class="hb-media absolute inset-0 block">
+            {% if banner.image_mobile %}<source media="(max-width: 640px)" srcset="{{ banner.image_mobile|thumb:900 }}">{% endif %}
+            <img src="{{ banner.image|thumb:1920 }}" alt="{{ banner.title }}" class="size-full object-cover" fetchpriority="high">
+          </picture>
+          {% if banner.show_text %}<div class="absolute inset-0 bg-gradient-to-l from-ink-950/75 via-ink-950/30 to-ink-950/75"></div>{% endif %}
+        {% else %}
+          <div class="hb-media absolute inset-0 {% if banner.style == 'light' %}bg-sand-100{% elif banner.style == 'dark' %}bg-ink-800{% else %}bg-[linear-gradient(110deg,#6d3a28_0%,#c98460_28%,#f7d6c1_50%,#c98460_72%,#6d3a28_100%)]{% endif %}"></div>
+          <div class="pointer-events-none absolute inset-y-0 w-1/4 animate-shine bg-gradient-to-l from-transparent via-white/25 to-transparent"></div>
+        {% endif %}
+        {% if banner.show_text or not banner.image %}
+          <div class="container-x relative flex h-full items-center justify-center gap-3 text-center sm:gap-5 {% if banner.style == 'light' and not banner.image %}text-ink-950{% elif banner.style == 'gold' and not banner.image %}text-ink-950{% else %}text-sand-50{% endif %}">
+            {% icon "sparkle" "size-4 shrink-0 opacity-80" "1.4" %}
+            <p class="truncate text-[0.82rem] font-semibold sm:text-sm">{{ banner.title }}</p>
+            {% if banner.subtitle %}<p class="hidden truncate text-sm opacity-80 md:block">{{ banner.subtitle }}</p>{% endif %}
+            {% if banner.button_text %}
+              <span class="hidden shrink-0 items-center gap-1.5 rounded-full border border-current/30 px-4 py-1.5 text-xs font-medium transition group-hover/hb:bg-current/10 sm:inline-flex">{{ banner.button_text }} {% icon "arrow-left" "size-3.5" %}</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </{% if banner.link %}a{% else %}div{% endif %}>
+    {% endfor %}
+
+    {% if header_banners|length > 1 %}
+      <button type="button" data-hb-next class="absolute top-1/2 left-12 hidden -translate-y-1/2 rounded-full p-1.5 text-white/70 transition hover:bg-black/20 hover:text-white sm:block" aria-label="بنر بعدی">{% icon "chevron-left" "size-4" %}</button>
+      <div class="hb-progress absolute inset-x-0 bottom-0 h-px bg-white/10"><span class="block h-full bg-white/70"></span></div>
+    {% endif %}
+    {% if header_banners.0.is_dismissible %}
+      <button type="button" data-hb-close class="absolute top-1/2 left-3 -translate-y-1/2 rounded-full p-1.5 text-current opacity-70 transition hover:bg-black/20 hover:opacity-100 {% if not header_banners.0.image and header_banners.0.style != 'dark' %}text-ink-950{% else %}text-white{% endif %}" aria-label="بستن بنر">{% icon "close" "size-4" %}</button>
+    {% endif %}
+  </div>
+</div>
+<script>try{var hb=document.currentScript.previousElementSibling;if(localStorage.getItem("hb-dismissed")===hb.dataset.version)hb.remove()}catch(e){}</script>
+{% endif %}

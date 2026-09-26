@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block extra_head %}
+  <link rel="modulepreload" href="{% static 'js/hero.js' %}">
+{% endblock %}
+
+{% block content %}
+{# ============================================================ 3D HERO #}
+<section data-scene class="relative -mt-[var(--nav-h)] h-[520svh] lg:h-[560svh]" aria-label="معرفی">
+  <div data-hero data-config="{{ hero_config }}" class="hero-stage grain sticky top-0 h-svh overflow-hidden">
+    <canvas data-hero-canvas class="absolute inset-0 size-full" aria-hidden="true"></canvas>
+    <img data-hero-fallback src="{% static 'img/hero-watch.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute top-[6%] left-1/2 h-[58%] w-auto -translate-x-1/2 object-contain lg:top-1/2 lg:left-[30%] lg:h-[74%] lg:-translate-y-1/2">
+    <div class="hero-loader pointer-events-none absolute top-[32%] left-1/2 -translate-x-1/2 lg:top-1/2 lg:left-[30%] lg:-translate-y-1/2" aria-hidden="true">
+      <span class="block size-16 animate-spin rounded-full border border-white/10 border-t-gold-300 [animation-duration:1.6s]"></span>
+    </div>
+
+    {# Labels that follow the exploded parts #}
+    <div class="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
+      <div data-part-label="crystal" class="part-label absolute top-0 left-0"><span class="label-line"></span><span class="label-box">کریستال سافایر<small>ضدخش، با پوشش ضدبازتاب</small></span></div>
+      <div data-part-label="bezel" class="part-label absolute top-0 left-0"><span class="label-line"></span><span class="label-box">بزل کنگره‌ای<small>تراش‌خورده از رزگلد</small></span></div>
+      <div data-part-label="dial" class="part-label absolute top-0 left-0"><span class="label-line"></span><span class="label-box">صفحه سان‌برست<small>اعداد فارسی و تقویم شمسی</small></span></div>
+      <div data-part-label="movement" class="part-label absolute top-0 left-0"><span class="label-line"></span><span class="label-box">موتور اتوماتیک<small>۳۱ جواهر · ۷۰ ساعت ذخیره</small></span></div>
+    </div>
+
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-ink-950 via-ink-950/70 to-transparent lg:hidden"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 hidden w-[55%] bg-gradient-to-l from-ink-950/80 via-ink-950/35 to-transparent lg:block"></div>
+
+    <div class="container-x relative h-full">
+      {# Beat 1: intro #}
+      <div data-beat data-from="0" data-to="0.13" class="beat absolute inset-x-4 bottom-[9svh] sm:inset-x-6 lg:inset-x-auto lg:top-1/2 lg:right-10 lg:bottom-auto lg:w-[42%] lg:-translate-y-1/2">
+        <p class="eyebrow">{{ shop.hero_eyebrow }}</p>
+        <h1 class="heading-xl mt-5 text-balance" data-split>{{ shop.hero_title }}</h1>
+        {% if shop.hero_subtitle %}<p class="mt-6 max-w-lg text-[0.98rem] leading-8 text-sand-300 lg:text-lg">{{ shop.hero_subtitle }}</p>{% endif %}
+        <div class="pointer-events-auto mt-8 flex flex-wrap gap-3">
+          {% if shop.hero_cta_text %}<a href="{{ shop.hero_cta_url|default:'/shop/' }}" class="btn btn-gold">{{ shop.hero_cta_text }} {% icon "arrow-left" "size-4" %}</a>{% endif %}
+          <a href="#collections" class="btn btn-ghost">سبک‌ها و دسته‌بندی‌ها</a>
+        </div>
+      </div>
+
+      {# Beat 2: piece by piece #}
+      <div data-beat data-from="0.15" data-to="0.44" class="beat absolute inset-x-4 bottom-[9svh] sm:inset-x-6 lg:inset-x-auto lg:top-1/2 lg:right-10 lg:bottom-auto lg:w-[38%] lg:-translate-y-1/2">
+        <p class="eyebrow">قطعه به قطعه</p>
+        <h2 class="heading-lg mt-5" data-split>بیش از دویست قطعه، یک هماهنگی بی‌نقص</h2>
+        <p class="mt-6 max-w-md leading-8 text-sand-300">از کریستال سافایر تا چرخ‌دنده‌های موتور؛ هر قطعه با دقت میکرونی کنار هم قرار می‌گیرد تا هر ثانیه را بی‌خطا روایت کند.</p>
+      </div>
+
+      {# Beat 3: precision numbers #}
+      <div data-beat data-from="0.47" data-to="0.65" class="beat absolute inset-x-4 bottom-[9svh] sm:inset-x-6 lg:inset-x-auto lg:top-1/2 lg:right-10 lg:bottom-auto lg:w-[38%] lg:-translate-y-1/2">
+        <p class="eyebrow">دقت، در ذات ماست</p>
+        <h2 class="heading-lg mt-5" data-split>زمانی که می‌شود به آن اعتماد کرد</h2>
+        <dl class="mt-8 grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
+          <div class="flex flex-col-reverse"><dt class="mt-1 text-xs leading-5 text-sand-400">نوسان در ساعت</dt><dd class="font-display text-3xl font-semibold text-gold-200 lg:text-4xl">۲۸٬۸۰۰</dd></div>
+          <div class="flex flex-col-reverse"><dt class="mt-1 text-xs leading-5 text-sand-400">ساعت ذخیره انرژی</dt><dd class="font-display text-3xl font-semibold text-gold-200 lg:text-4xl">۷۰</dd></div>
+          <div class="flex flex-col-reverse"><dt class="mt-1 text-xs leading-5 text-sand-400">متر مقاومت در آب</dt><dd class="font-display text-3xl font-semibold text-gold-200 lg:text-4xl">۱۰۰</dd></div>
+        </dl>
+      </div>
+
+      {# Beat 4: details (macro) #}
+      <div data-beat data-from="0.7" data-to="0.84" class="beat absolute inset-x-4 bottom-[9svh] sm:inset-x-6 lg:inset-x-auto lg:right-10 lg:bottom-[12svh] lg:w-[30%]">
+        <p class="eyebrow">جزئیات، امضای ماست</p>
+        <p class="mt-4 font-display text-3xl leading-snug font-semibold text-sand-50 lg:text-4xl">روز هفته و تاریخ شمسی، روی صفحه‌ای سان‌برست.</p>
+        <p class="mt-4 max-w-sm text-sm leading-7 text-sand-300">عقربه‌های شب‌تاب، اعداد فارسی برجسته و بزل کنگره‌ای که نور را به رقص درمی‌آورد.</p>
+      </div>
+
+      {# Beat 5: the product (like the reference: title + text + CTA) #}
+      <div data-beat data-from="0.89" data-to="1" class="beat absolute inset-x-4 bottom-[8svh] sm:inset-x-6 lg:inset-x-auto lg:top-1/2 lg:right-10 lg:bottom-auto lg:w-[40%] lg:-translate-y-1/2">
+        {% if hero_product %}
+          <p class="latin-caps text-[0.68rem] text-gold-300">{{ hero_product.brand.name_en|default:hero_product.brand.name }} · EST. 1405</p>
+          <h2 class="latin mt-3 text-5xl leading-none font-medium text-sand-50 sm:text-6xl lg:mt-4 lg:text-8xl">{{ hero_product.name_en|default:hero_product.name }}</h2>
+          <p class="mt-3 text-lg text-sand-200 lg:mt-4">{{ hero_product.name }}</p>
+          {% if hero_product.short_description %}<p class="mt-4 hidden max-w-md text-sm leading-7 text-sand-400 sm:block">{{ hero_product.short_description }}</p>{% endif %}
+          <p class="mt-3 text-2xl font-semibold text-gold-200 lg:mt-5">{{ hero_product.price|toman }} <span class="text-sm font-normal text-sand-400">تومان</span></p>
+          <div class="pointer-events-auto mt-5 flex flex-wrap items-center gap-4 lg:mt-7">
+            <a href="{{ hero_product.get_absolute_url }}" class="btn btn-gold">مشاهده و خرید {% icon "arrow-left" "size-4" %}</a>
+            <a href="{% url 'catalog:shop' %}" class="link-underline text-sm text-sand-300">همه ساعت‌ها</a>
+          </div>
+        {% else %}
+          <p class="latin-caps text-[0.68rem] text-gold-300">{{ shop.site_name_en }} · EST. 1405</p>
+          <h2 class="latin mt-4 text-6xl leading-none font-medium text-sand-50 lg:text-8xl">Presidential</h2>
+          <p class="mt-5 max-w-md text-sm leading-7 text-sand-400">{{ shop.tagline }}</p>
+          <div class="pointer-events-auto mt-7"><a href="{% url 'catalog:shop' %}" class="btn btn-gold">مشاهده مجموعه {% icon "arrow-left" "size-4" %}</a></div>
+        {% endif %}
+        <div class="pointer-events-auto mt-5 flex items-center gap-3 lg:mt-8" role="group" aria-label="رنگ بدنه">
+          <span class="text-xs text-sand-500">رنگ بدنه:</span>
+          <button type="button" data-hero-metal="rose" aria-pressed="{% if shop.hero_metal == 'rose' %}true{% else %}false{% endif %}" class="swatch bg-[linear-gradient(135deg,#ffe3d6,#e2977a,#9c5840)]" aria-label="رزگلد"></button>
+          <button type="button" data-hero-metal="gold" aria-pressed="{% if shop.hero_metal == 'gold' %}true{% else %}false{% endif %}" class="swatch bg-[linear-gradient(135deg,#fff3c4,#e2b55c,#96701f)]" aria-label="طلایی"></button>
+          <button type="button" data-hero-metal="steel" aria-pressed="{% if shop.hero_metal == 'steel' %}true{% else %}false{% endif %}" class="swatch bg-[linear-gradient(135deg,#ffffff,#c4c9ce,#727980)]" aria-label="استیل"></button>
+        </div>
+      </div>
+    </div>
+
+    {# Scroll cue + progress rail #}
+    <div data-beat data-from="0" data-to="0.06" class="beat absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 text-[0.7rem] text-sand-400 lg:flex">
+      <span>برای کشف، اسکرول کنید</span>
+      <span class="relative h-10 w-6 rounded-full border border-white/25"><span class="absolute top-2 left-1/2 h-2 w-0.5 -translate-x-1/2 animate-bounce rounded-full bg-gold-200"></span></span>
+    </div>
+    <div class="absolute top-1/2 left-5 hidden h-40 w-px -translate-y-1/2 bg-white/10 lg:block" aria-hidden="true">
+      <span data-scene-bar class="block h-full w-full origin-top bg-gradient-to-b from-gold-200 to-gold-500" style="transform: scaleY(0)"></span>
+    </div>
+  </div>
+</section>
+
+{# ======================================================= PROMO BANNERS #}
+{% if home_banners %}
+<section class="container-x relative z-10 mt-8 grid grid-cols-1 gap-5 {% if home_banners|length > 1 %}md:grid-cols-2{% endif %}" aria-label="پیشنهادهای ویژه">
+  {% for banner in home_banners %}
+    <a href="{{ banner.link|default:'#' }}" class="group/pb relative isolate block min-h-72 overflow-hidden rounded-[2rem] border border-white/[0.07] {% if forloop.first and home_banners|length == 3 %}md:col-span-2{% endif %}" data-reveal="clip" style="--delay: {{ forloop.counter0|stagger:3 }}">
+      {% if banner.image %}
+        <div class="absolute inset-0 -z-10 overflow-hidden">
+          <picture>
+            {% if banner.image_mobile %}<source media="(max-width: 640px)" srcset="{{ banner.image_mobile|thumb:900 }}">{% endif %}
+            <img src="{{ banner.image|thumb:1600 }}" alt="{{ banner.title }}" loading="lazy" class="h-[115%] w-full object-cover transition duration-[1.6s] ease-out group-hover/pb:scale-105" data-parallax="0.08">
+          </picture>
+        </div>
+      {% else %}
+        <div class="absolute inset-0 -z-10 bg-gradient-to-br from-gold-600/50 via-ink-800 to-ink-900"></div>
+      {% endif %}
+      <div class="absolute inset-0 -z-10 bg-gradient-to-l from-ink-950/85 via-ink-950/40 to-transparent"></div>
+      <div class="flex h-full min-h-72 max-w-md flex-col justify-end p-8 sm:p-10">
+        <h3 class="font-display text-4xl leading-tight font-semibold">{{ banner.title }}</h3>
+        {% if banner.subtitle %}<p class="mt-3 text-sm leading-7 text-sand-300">{{ banner.subtitle }}</p>{% endif %}
+        {% if banner.button_text %}<span class="mt-6 inline-flex w-fit items-center gap-2 text-sm font-medium text-gold-200">{{ banner.button_text }} {% icon "arrow-left" "size-4 transition group-hover/pb:-translate-x-1" %}</span>{% endif %}
+      </div>
+    </a>
+  {% endfor %}
+</section>
+{% endif %}
+
+{# =============================================== COLLECTIONS (type › gender) #}
+{% if category_cards %}
+<section id="collections" data-hscroll class="relative mt-24 lg:mt-32 lg:h-[300svh]" aria-labelledby="collections-title">
+  <div class="lg:sticky lg:top-0 lg:flex lg:h-svh lg:flex-col lg:justify-center lg:overflow-hidden">
+    <div class="container-x mb-10 flex flex-wrap items-end justify-between gap-6 lg:mb-12">
+      <div>
+        <p class="eyebrow" data-reveal>سبک خود را انتخاب کنید</p>
+        <h2 id="collections-title" class="heading-lg mt-4" data-split>نوع ساعت، سپس مردانه یا زنانه</h2>
+      </div>
+      <p class="max-w-sm text-sm leading-7 text-sand-400" data-reveal style="--delay: 150">هر مجموعه بر اساس نوع ساعت مرتب شده و در ادامه به بخش‌های مردانه و زنانه تقسیم می‌شود؛ مثلاً اسپرت › زنانه.</p>
+    </div>
+    <div class="overflow-x-auto overscroll-x-contain [scrollbar-width:none] lg:overflow-visible" data-lenis-prevent-touch>
+      <div data-hscroll-track class="flex w-max gap-4 px-4 pb-4 will-change-transform sm:gap-6 sm:px-6 lg:px-10">
+        {% for card in category_cards %}
+          {% with category=card.category %}
+          <article class="group/cat relative flex h-[26rem] w-[80vw] shrink-0 flex-col justify-end overflow-hidden rounded-[2rem] border border-white/[0.08] bg-ink-800 sm:h-[30rem] sm:w-[26rem] lg:h-[62svh] lg:w-[34rem]">
+            {% if card.cover %}
+              <img src="{{ card.cover|thumb:1200 }}" alt="{{ category.title }}" loading="lazy" class="absolute inset-0 size-full object-cover opacity-80 transition duration-[1.4s] group-hover/cat:scale-105 group-hover/cat:opacity-95">
+            {% endif %}
+            <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/40 to-transparent"></div>
+            <span class="latin-caps absolute top-6 right-7 text-[0.62rem] text-sand-300">{{ forloop.counter|stringformat:"02d"|fa }} / {{ category_cards|length|stringformat:"02d"|fa }}</span>
+            <div class="relative p-7 sm:p-8">
+              <p class="text-xs text-gold-200">{{ category.product_count|fa }} مدل</p>
+              <h3 class="mt-2 font-display text-5xl font-semibold text-sand-50">{{ category.name }}</h3>
+              {% if category.tagline %}<p class="mt-2 max-w-xs text-sm leading-7 text-sand-300">{{ category.tagline }}</p>{% endif %}
+              <div class="mt-6 flex flex-wrap gap-2">
+                {% for child in card.children %}
+                  <a href="{{ child.get_absolute_url }}" class="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm text-sand-50 backdrop-blur-md transition hover:bg-gold-300 hover:text-ink-950">{{ child.title }} {% icon "arrow-left" "size-4" %}</a>
+                {% endfor %}
+                <a href="{{ category.get_absolute_url }}" class="inline-flex h-11 items-center rounded-full border border-white/15 px-5 text-sm text-sand-200 transition hover:border-gold-300">همه</a>
+              </div>
+            </div>
+          </article>
+          {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ============================================================ FEATURED #}
+{% if featured_products %}
+<section class="container-x mt-24 lg:mt-36" aria-labelledby="featured-title">
+  <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="eyebrow" data-reveal>برگزیده‌ها</p>
+      <h2 id="featured-title" class="heading-lg mt-4" data-split>منتخب گالری {{ shop.site_name }}</h2>
+    </div>
+    <a href="{% url 'catalog:shop' %}" class="btn btn-ghost" data-reveal>همه ساعت‌ها {% icon "arrow-left" "size-4" %}</a>
+  </div>
+  <div class="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
+    {% for product in featured_products %}
+      {% include "partials/product_card.html" with delay=forloop.counter0|stagger:4 %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# =========================================================== STATEMENT #}
+<section class="container-x mt-32 lg:mt-48" aria-label="فلسفه ما">
+  <p data-highlight class="mx-auto max-w-5xl text-center font-display text-4xl leading-[1.45] font-semibold text-sand-50 sm:text-5xl lg:text-6xl">
+    ساعت، فقط ابزاری برای دانستن زمان نیست؛ امضایی است که هر روز همراه شماست و داستان شما را، ثانیه به ثانیه، روایت می‌کند.
+  </p>
+</section>
+
+{# ============================================================== BRANDS #}
+{% if brands %}
+<section class="mt-28 border-y border-white/[0.06] py-10 lg:mt-40" data-marquee data-speed="38" aria-label="برندها">
+  <div class="mask-fade-x overflow-hidden">
+    <div data-marquee-track class="flex w-max will-change-transform">
+      {% for i in "1234" %}
+        <div data-marquee-group class="flex shrink-0 items-center" {% if not forloop.first %}aria-hidden="true"{% endif %}>
+          {% for brand in brands %}
+            <a href="{{ brand.get_absolute_url }}" class="group/b flex items-center gap-4 px-10" {% if not forloop.parentloop.first %}tabindex="-1"{% endif %}>
+              <span class="latin-caps text-2xl text-sand-400 transition group-hover/b:text-gold-200 sm:text-3xl">{{ brand.name_en|default:brand.name }}</span>
+              <span class="text-sm text-sand-500">{{ brand.name }}</span>
+            </a>
+            <span class="text-gold-400" aria-hidden="true">✦</span>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ============================================================ SERVICES #}
+<section class="container-x mt-24 lg:mt-32" aria-label="خدمات">
+  <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {% with free=shop.free_shipping_threshold %}
+    <li class="card p-7" data-reveal style="--delay: 0">
+      <span class="grid size-12 place-items-center rounded-2xl bg-gold-300/10 text-gold-200">{% icon "shield" "size-6" %}</span>
+      <h3 class="mt-6 text-lg font-semibold">ضمانت اصالت کالا</h3>
+      <p class="mt-2 text-sm leading-7 text-sand-400">تمام ساعت‌ها اصل و دارای کارت گارانتی معتبر هستند.</p>
+    </li>
+    <li class="card p-7" data-reveal style="--delay: 90">
+      <span class="grid size-12 place-items-center rounded-2xl bg-gold-300/10 text-gold-200">{% icon "truck" "size-6" %}</span>
+      <h3 class="mt-6 text-lg font-semibold">ارسال بیمه‌شده</h3>
+      <p class="mt-2 text-sm leading-7 text-sand-400">{% if free %}ارسال رایگان برای خریدهای بالای {{ free|toman }} تومان.{% else %}ارسال سریع و بیمه‌شده به سراسر کشور.{% endif %}</p>
+    </li>
+    <li class="card p-7" data-reveal style="--delay: 180">
+      <span class="grid size-12 place-items-center rounded-2xl bg-gold-300/10 text-gold-200">{% icon "return" "size-6" %}</span>
+      <h3 class="mt-6 text-lg font-semibold">۷ روز ضمانت بازگشت</h3>
+      <p class="mt-2 text-sm leading-7 text-sand-400">اگر ساعت انتخابی مطابق انتظارتان نبود، آن را بازگردانید.</p>
+    </li>
+    <li class="card p-7" data-reveal style="--delay: 270">
+      <span class="grid size-12 place-items-center rounded-2xl bg-gold-300/10 text-gold-200">{% icon "headset" "size-6" %}</span>
+      <h3 class="mt-6 text-lg font-semibold">مشاوره تخصصی</h3>
+      <p class="mt-2 text-sm leading-7 text-sand-400">پیش از خرید، با کارشناسان ما گفت‌وگو کنید.</p>
+    </li>
+    {% endwith %}
+  </ul>
+</section>
+
+{# ======================================================== NEW ARRIVALS #}
+{% if new_arrivals %}
+<section class="mt-28 lg:mt-36" data-carousel aria-labelledby="new-title">
+  <div class="container-x mb-10 flex items-end justify-between gap-4">
+    <div>
+      <p class="eyebrow" data-reveal>تازه‌ها</p>
+      <h2 id="new-title" class="heading-lg mt-4" data-split>تازه‌ترین ورودی‌ها</h2>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" data-prev class="icon-btn size-12 border border-white/10 disabled:opacity-30" aria-label="قبلی">{% icon "arrow-right" %}</button>
+      <button type="button" data-next class="icon-btn size-12 border border-white/10 disabled:opacity-30" aria-label="بعدی">{% icon "arrow-left" %}</button>
+    </div>
+  </div>
+  <div class="scroll-track scroll-px-4 gap-4 px-4 sm:scroll-px-6 sm:gap-6 sm:px-6 lg:scroll-px-10 lg:px-10" data-track tabindex="0" aria-label="تازه‌ترین ساعت‌ها">
+    {% for product in new_arrivals %}
+      <div class="w-[72vw] sm:w-[20rem] lg:w-[22rem]">
+        {% include "partials/product_card.html" %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ============================================================ LOCATION #}
+{% if stores %}
+<section id="location" class="container-x mt-28 lg:mt-40" aria-labelledby="location-title">
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-stretch">
+    <div class="lg:col-span-5 lg:py-6">
+      <p class="eyebrow" data-reveal>به گالری ما سر بزنید</p>
+      <h2 id="location-title" class="heading-lg mt-4" data-split>از نزدیک ببینید، لمس کنید، انتخاب کنید</h2>
+      <div class="mt-10 grid gap-4">
+        {% for store in stores %}
+          <div class="card p-6" data-reveal style="--delay: {{ forloop.counter0|stagger:6 }}">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="text-lg font-semibold">{{ store.name }}</h3>
+                <p class="mt-2 text-sm leading-7 text-sand-300">{{ store.address|fa }}</p>
+              </div>
+              {% if stores|length > 1 %}<button type="button" data-map-focus="{{ forloop.counter0 }}" class="icon-btn shrink-0 border border-white/10" aria-label="نمایش روی نقشه">{% icon "map-pin" "size-4" %}</button>{% endif %}
+            </div>
+            <ul class="mt-4 grid gap-2 text-sm text-sand-400">
+              {% if store.working_hours %}<li class="flex items-center gap-2">{% icon "clock" "size-4 text-gold-300" %} {{ store.working_hours|fa }}</li>{% endif %}
+              {% if store.phone %}<li class="flex items-center gap-2">{% icon "phone" "size-4 text-gold-300" %} <a href="{{ store.phone_link }}" class="ltr hover:text-gold-100">{{ store.phone|fa }}</a></li>{% endif %}
+            </ul>
+            <div class="mt-5 flex flex-wrap gap-2">
+              <a href="{{ store.neshan_link }}" target="_blank" rel="noopener" class="chip h-9 text-xs">مسیریابی با نشان</a>
+              <a href="{{ store.balad_link }}" target="_blank" rel="noopener" class="chip h-9 text-xs">بلد</a>
+              <a href="{{ store.directions_url }}" target="_blank" rel="noopener" class="chip h-9 text-xs">گوگل مپ</a>
+              <a href="{{ store.waze_url }}" target="_blank" rel="noopener" class="chip h-9 text-xs">ویز</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="lg:col-span-7" data-reveal="clip">
+      <div class="map-dark relative h-[26rem] overflow-hidden rounded-[2rem] border border-white/[0.08] lg:h-full lg:min-h-[34rem]">
+        <div class="absolute inset-0" data-map data-stores="{{ stores_json }}" data-leaflet="{% static 'vendor/leaflet/' %}" data-tiles="{{ map_tile_url }}" data-attribution="{{ map_tile_attribution }}" role="region" aria-label="نقشه موقعیت فروشگاه"></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<div class="h-28 lg:h-40"></div>
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{% static 'js/hero.js' %}"></script>
+{% endblock %}

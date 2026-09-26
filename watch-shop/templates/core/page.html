@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} | {{ shop.site_name }}{% endblock %}
+
+{% block content %}
+<article class="container-x max-w-3xl py-12 lg:py-20">
+  <p class="eyebrow" data-reveal>{{ shop.site_name }}</p>
+  <h1 class="heading-lg mt-4" data-split>{{ page.title }}</h1>
+  <div class="prose-fa mt-10" data-reveal style="--delay: 150">{{ page.content|safe }}</div>
+</article>
+{% endblock %}

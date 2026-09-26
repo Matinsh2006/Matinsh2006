@@ -1,0 +1,21 @@
+{% load shop_tags %}
+<div class="flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <p class="text-sm text-sand-400">سفارش <a href="{{ order.get_absolute_url }}" class="ltr font-semibold text-sand-50 hover:text-gold-100">{{ order.number|fa }}</a></p>
+    <p class="mt-1 text-xs text-sand-500">{{ order.created_at|jdate:"full" }}</p>
+  </div>
+  <span class="rounded-full px-3 py-1 text-xs {% if order.status == 'pending' %}bg-gold-300/10 text-gold-200{% elif order.status == 'canceled' %}bg-danger/10 text-danger{% else %}bg-success/10 text-success{% endif %}">{{ order.get_status_display }}</span>
+</div>
+<div class="mt-5 flex flex-wrap items-center justify-between gap-4">
+  <div class="flex -space-x-3 space-x-reverse">
+    {% for item in order.items.all|slice:":4" %}
+      <span class="size-12 overflow-hidden rounded-xl border-2 border-ink-850 bg-ink-800">
+        {% if item.product and item.product.main_image %}<img src="{{ item.product.main_image.image|thumb:120 }}" alt="{{ item.product_name }}" class="size-full object-cover">{% endif %}
+      </span>
+    {% endfor %}
+  </div>
+  <div class="flex items-center gap-4">
+    <p class="font-semibold text-gold-200">{{ order.total|toman }} <span class="text-xs font-normal text-sand-500">تومان</span></p>
+    <a href="{{ order.get_absolute_url }}" class="btn btn-ghost btn-sm">جزئیات</a>
+  </div>
+</div>

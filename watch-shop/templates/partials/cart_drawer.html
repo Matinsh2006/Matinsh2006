@@ -1,0 +1,11 @@
+{% load shop_tags %}
+<div data-cart-overlay class="overlay fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm"></div>
+<aside data-cart-drawer data-drawer-url="{% url 'cart:drawer' %}" class="drawer fixed inset-y-0 left-0 z-[80] flex w-full max-w-md flex-col border-e border-white/10 bg-ink-900 shadow-2xl" aria-hidden="true" aria-label="سبد خرید">
+  <div class="flex items-center justify-between border-b border-white/[0.07] px-6 py-5">
+    <p class="flex items-center gap-3 text-lg font-semibold">{% icon "bag" "size-5 text-gold-300" %} سبد خرید</p>
+    <button type="button" class="icon-btn" data-cart-close aria-label="بستن سبد خرید">{% icon "close" %}</button>
+  </div>
+  <div data-drawer-body class="flex min-h-0 flex-1 flex-col">
+    {% include "cart/_drawer_body.html" %}
+  </div>
+</aside>
