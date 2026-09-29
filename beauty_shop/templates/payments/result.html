@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}{% if success %}پرداخت موفق{% else %}نتیجه پرداخت{% endif %} | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="result-card">
+    {% if success %}
+      <span class="result-card__icon result-card__icon--success">{% icon 'check-circle' 'icon--xl' %}</span>
+      <h1>پرداخت با موفقیت انجام شد</h1>
+      <p>سفارش شما ثبت شد و به‌زودی آماده ارسال می‌شود. از خرید شما سپاسگزاریم.</p>
+    {% elif retryable %}
+      <span class="result-card__icon result-card__icon--warning">{% icon 'clock' 'icon--xl' %}</span>
+      <h1>در انتظار تایید پرداخت</h1>
+      <p>{{ message }}</p>
+    {% else %}
+      <span class="result-card__icon result-card__icon--fail">{% icon 'x-circle' 'icon--xl' %}</span>
+      <h1>پرداخت ناموفق بود</h1>
+      <p>{{ message|default:"پرداخت انجام نشد." }} در صورت کسر وجه، مبلغ حداکثر تا ۷۲ ساعت آینده به حساب شما بازمی‌گردد.</p>
+    {% endif %}
+
+    <dl class="info-list result-details">
+      <div class="info-list__row"><dt>شماره سفارش</dt><dd>{{ order.number|fa_digits }}</dd></div>
+      <div class="info-list__row"><dt>مبلغ</dt><dd>{{ payment.amount|price }} {{ CURRENCY }}</dd></div>
+      <div class="info-list__row"><dt>درگاه پرداخت</dt><dd>{{ payment.get_gateway_display }}</dd></div>
+      {% if payment.ref_id %}<div class="info-list__row"><dt>کد پیگیری بانکی</dt><dd dir="ltr">{{ payment.ref_id|fa_digits }}</dd></div>{% endif %}
+      {% if payment.card_pan %}<div class="info-list__row"><dt>شماره کارت</dt><dd dir="ltr">{{ payment.card_pan|fa_digits }}</dd></div>{% endif %}
+    </dl>
+
+    <div class="result-actions">
+      {% if retryable %}
+        <a class="btn btn--primary" href="{{ retry_url }}">{% icon 'check' 'icon--sm' %}تلاش دوباره برای تایید</a>
+      {% else %}
+        <a class="btn btn--primary" href="{{ order.get_absolute_url }}">مشاهده سفارش</a>
+        {% if not success and order.is_payable %}
+          <form method="post" action="{% url 'payments:start' order.number %}" data-once>
+            {% csrf_token %}
+            <button type="submit" class="btn btn--outline">{% icon 'credit-card' 'icon--sm' %}پرداخت دوباره</button>
+          </form>
+        {% endif %}
+      {% endif %}
+      <a class="btn btn--ghost" href="{% url 'core:home' %}">بازگشت به فروشگاه</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

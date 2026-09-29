@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}صفحه پیدا نشد | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container error-page">
+  <p class="error-page__code">۴۰۴</p>
+  <h1>صفحه‌ای که دنبالش هستید پیدا نشد!</h1>
+  <p class="text-muted">ممکن است آدرس اشتباه وارد شده باشد یا این صفحه حذف شده باشد.</p>
+  <form class="header-search error-page__search" action="{% url 'catalog:product_list' %}" method="get" role="search">
+    <label for="notfound-search" class="visually-hidden">جستجوی محصولات</label>
+    <input id="notfound-search" class="search-input" type="search" name="q" placeholder="جستجو در محصولات…">
+    <button class="search-btn" type="submit" aria-label="جستجو">{% icon 'search' %}</button>
+  </form>
+  <div class="result-actions">
+    <a class="btn btn--primary" href="{% url 'core:home' %}">صفحه اصلی</a>
+    <a class="btn btn--ghost" href="{% url 'catalog:product_list' %}">مشاهده محصولات</a>
+  </div>
+</div>
+{% endblock %}

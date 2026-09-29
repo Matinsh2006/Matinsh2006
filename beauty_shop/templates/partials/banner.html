@@ -1,0 +1,14 @@
+{% load shop_tags %}
+{% if banner.link %}<a class="banner{% if banner.mobile_image %} banner--has-mobile{% endif %}" href="{{ banner.link }}">{% else %}<div class="banner{% if banner.mobile_image %} banner--has-mobile{% endif %}">{% endif %}
+  <picture>
+    {% if banner.mobile_image %}<source media="(max-width: 767px)" srcset="{{ banner.mobile_image.url }}">{% endif %}
+    <img src="{{ banner.image.url }}" alt="{{ banner.title }}" width="1920" height="640" decoding="async"{% if eager %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+  </picture>
+  {% if banner.show_text %}
+    <div class="banner__caption">
+      <p class="banner__title">{{ banner.title }}</p>
+      {% if banner.subtitle %}<p class="banner__subtitle">{{ banner.subtitle }}</p>{% endif %}
+      {% if banner.button_text %}<span class="btn btn--light btn--sm banner__btn">{{ banner.button_text }}{% icon 'arrow-left' 'icon--sm' %}</span>{% endif %}
+    </div>
+  {% endif %}
+{% if banner.link %}</a>{% else %}</div>{% endif %}

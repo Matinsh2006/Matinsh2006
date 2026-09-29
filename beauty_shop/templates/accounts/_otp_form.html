@@ -1,0 +1,13 @@
+{% load shop_tags %}
+<form method="post" novalidate data-once>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert--error">{% icon 'alert' %}<span class="alert__text">{{ form.non_field_errors|join:" " }}</span></div>{% endif %}
+  {% include "partials/form_field.html" with field=form.code %}
+  <button type="submit" class="btn btn--primary btn--lg btn--block">{{ submit_label }}</button>
+</form>
+<form method="post" class="resend-row">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="resend">
+  <span data-countdown-wrap{% if not resend_wait %} hidden{% endif %}>ارسال مجدد کد تا <b data-countdown="{{ resend_wait }}" dir="ltr">{{ resend_wait|duration }}</b> دیگر</span>
+  <button type="submit" class="link-btn" data-countdown-button{% if resend_wait %} hidden{% endif %}>{% icon 'message' 'icon--sm' %}ارسال مجدد کد</button>
+</form>

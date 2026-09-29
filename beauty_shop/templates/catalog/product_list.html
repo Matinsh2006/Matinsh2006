@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block title %}{% if brand %}محصولات {{ brand.name }}{% elif category %}{{ category.name }}{% elif query %}جستجوی «{{ query }}»{% else %}همه محصولات{% endif %} | {{ site.site_name }}{% endblock %}
+{% block meta_description %}{% if brand %}خرید اینترنتی محصولات اصل برند {{ brand.name }}{% elif category %}{{ category.description|default:category.name }}{% else %}خرید اینترنتی لوازم آرایشی و بهداشتی اصل{% endif %}{% endblock %}
+{% block body_class %}page-catalog{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="مسیر صفحه">
+    <ol>
+      <li><a href="{% url 'core:home' %}">خانه</a></li>
+      {% if brand %}
+        <li><a href="{% url 'catalog:brand_list' %}">برندها</a></li>
+        <li aria-current="page">{{ brand.name }}</li>
+      {% elif category %}
+        <li><a href="{% url 'catalog:category_list' %}">دسته‌بندی‌ها</a></li>
+        {% if category.parent %}<li><a href="{{ category.parent.get_absolute_url }}">{{ category.parent.name }}</a></li>{% endif %}
+        <li aria-current="page">{{ category.name }}</li>
+      {% else %}
+        <li aria-current="page">محصولات</li>
+      {% endif %}
+    </ol>
+  </nav>
+
+  {% if brand %}
+    <header class="brand-hero">
+      <div class="brand-hero__logo">
+        {% if brand.logo %}<img src="{{ brand.logo.url }}" alt="{{ brand.name }}" width="120" height="120">{% else %}<span class="brand-logo__fallback">{{ brand.name|slice:":1" }}</span>{% endif %}
+      </div>
+      <div class="brand-hero__body">
+        <h1 class="page-title">{{ brand.name }}{% if brand.name_en %} <span class="brand-hero__en" dir="ltr">{{ brand.name_en }}</span>{% endif %}</h1>
+        {% if brand.country %}<p class="page-subtitle">کشور سازنده: {{ brand.country }}</p>{% endif %}
+        {% if brand.description %}<div class="prose prose--sm">{{ brand.description|richtext }}</div>{% endif %}
+      </div>
+    </header>
+  {% else %}
+    <header class="page-head">
+      <h1 class="page-title">{% if category %}{{ category.name }}{% elif query %}نتایج جستجو برای «{{ query }}»{% else %}همه محصولات{% endif %}</h1>
+      {% if category.description %}<p class="page-subtitle">{{ category.description }}</p>{% endif %}
+    </header>
+    {% if category %}
+      {% with children=category.children.all %}
+        {% if children %}
+          <div class="chip-list" aria-label="زیردسته‌ها">
+            {% for child in children %}{% if child.is_active %}<a class="chip" href="{{ child.get_absolute_url }}">{{ child.name }}</a>{% endif %}{% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+    {% endif %}
+  {% endif %}
+
+  <div class="catalog-layout">
+    <aside class="filters drawer drawer--bottom" id="filter-drawer" aria-label="فیلتر محصولات">
+      <button type="button" class="drawer__backdrop" data-drawer-close tabindex="-1" aria-label="بستن فیلترها"></button>
+      <div class="drawer__panel filters__panel">
+        <div class="drawer__head filters__head">
+          <span class="drawer__title">{% icon 'filter' 'icon--sm' %}فیلترها</span>
+          <button type="button" class="icon-btn filters__close" data-drawer-close aria-label="بستن فیلترها">{% icon 'close' %}</button>
+        </div>
+        <form class="filters__form" method="get" action="{{ request.path }}">
+          {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+          <input type="hidden" name="sort" value="{{ sort }}">
+          <div class="drawer__body filters__body">
+            {% if not category %}
+            <fieldset class="filter-group">
+              <legend class="filter-group__title">دسته‌بندی</legend>
+              <div class="filter-group__options filter-group__options--scroll">
+                <label class="radio"><input type="radio" name="category" value=""{% if not selected_category %} checked{% endif %}><span>همه دسته‌ها</span></label>
+                {% for cat in filter_categories %}
+                  <label class="radio"><input type="radio" name="category" value="{{ cat.slug }}"{% if selected_category.slug == cat.slug %} checked{% endif %}><span>{{ cat.name }}</span></label>
+                  {% for child in cat.children.all %}
+                    <label class="radio radio--child"><input type="radio" name="category" value="{{ child.slug }}"{% if selected_category.slug == child.slug %} checked{% endif %}><span>{{ child.name }}</span></label>
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            </fieldset>
+            {% endif %}
+
+            {% if not brand and filter_brands %}
+            <fieldset class="filter-group">
+              <legend class="filter-group__title">برند</legend>
+              <div class="filter-group__options filter-group__options--scroll">
+                {% for item in filter_brands %}
+                  <label class="checkbox"><input type="checkbox" name="brand" value="{{ item.slug }}"{% if item.slug in selected_brands %} checked{% endif %}><span>{{ item.name }}</span></label>
+                {% endfor %}
+              </div>
+            </fieldset>
+            {% endif %}
+
+            <fieldset class="filter-group">
+              <legend class="filter-group__title">محدوده قیمت ({{ CURRENCY }})</legend>
+              <div class="price-range">
+                <label><span class="visually-hidden">حداقل قیمت</span><input class="input input--sm" type="text" inputmode="numeric" name="min_price" placeholder="از" value="{{ min_price|default_if_none:'' }}" data-latin-digits dir="ltr"></label>
+                <span class="price-range__sep">تا</span>
+                <label><span class="visually-hidden">حداکثر قیمت</span><input class="input input--sm" type="text" inputmode="numeric" name="max_price" placeholder="تا" value="{{ max_price|default_if_none:'' }}" data-latin-digits dir="ltr"></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="filter-group">
+              <legend class="visually-hidden">وضعیت کالا</legend>
+              <label class="switch"><input type="checkbox" name="available" value="1"{% if only_available %} checked{% endif %}><span class="switch__track" aria-hidden="true"></span><span>فقط کالاهای موجود</span></label>
+              <label class="switch"><input type="checkbox" name="discount" value="1"{% if only_discounted %} checked{% endif %}><span class="switch__track" aria-hidden="true"></span><span>فقط کالاهای تخفیف‌دار</span></label>
+            </fieldset>
+          </div>
+          <div class="filters__actions">
+            <button type="submit" class="btn btn--primary btn--block">اعمال فیلترها</button>
+            {% if active_filters %}<a class="btn btn--ghost btn--block" href="{{ request.path }}{% if query %}?q={{ query|urlencode }}{% endif %}">حذف همه فیلترها</a>{% endif %}
+          </div>
+        </form>
+      </div>
+    </aside>
+
+    <div class="catalog-main">
+      <div class="catalog-toolbar">
+        <button type="button" class="btn btn--ghost btn--sm filter-toggle" data-drawer-open="filter-drawer" aria-controls="filter-drawer" aria-expanded="false">
+          {% icon 'filter' 'icon--sm' %}فیلترها{% if active_filters %}<span class="count-pill">{{ active_filters|fa_digits }}</span>{% endif %}
+        </button>
+        <nav class="sort-links" aria-label="مرتب‌سازی">
+          <span class="sort-links__label">{% icon 'sort' 'icon--sm' %}مرتب‌سازی:</span>
+          {% for key, label in sort_options %}
+            <a href="{% querystring sort=key page=None %}" class="sort-links__link{% if key == sort %} is-active{% endif %}"{% if key == sort %} aria-current="true"{% endif %}>{{ label }}</a>
+          {% endfor %}
+        </nav>
+        <form class="sort-select" method="get" action="{{ request.path }}">
+          {% for key, values in request.GET.lists %}{% if key != 'sort' and key != 'page' %}{% for value in values %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endfor %}{% endif %}{% endfor %}
+          <label class="visually-hidden" for="sort-select">مرتب‌سازی</label>
+          <select id="sort-select" name="sort" class="input input--sm" data-autosubmit>
+            {% for key, label in sort_options %}<option value="{{ key }}"{% if key == sort %} selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+          <noscript><button type="submit" class="btn btn--sm btn--ghost">اعمال</button></noscript>
+        </form>
+        <span class="catalog-toolbar__count">{{ page_obj.paginator.count|fa_digits }} کالا</span>
+      </div>
+
+      {% if products %}
+        <div class="product-grid">
+          {% for product in products %}{% include "partials/product_card.html" %}{% endfor %}
+        </div>
+        {% include "partials/pagination.html" %}
+      {% else %}
+        <div class="empty-state">
+          <span class="empty-state__icon">{% icon 'search' 'icon--lg' %}</span>
+          <h2>محصولی پیدا نشد</h2>
+          <p>{% if query or active_filters %}فیلترها یا عبارت جستجو را تغییر دهید.{% else %}هنوز محصولی در این بخش ثبت نشده است.{% endif %}</p>
+          <a class="btn btn--primary" href="{% url 'catalog:product_list' %}">مشاهده همه محصولات</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

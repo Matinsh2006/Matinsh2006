@@ -1,0 +1,44 @@
+{% extends "accounts/account_base.html" %}
+{% load shop_tags %}
+
+{% block title %}حساب کاربری | {{ site.site_name }}{% endblock %}
+
+{% block account_content %}
+{% if not user.is_profile_complete %}
+  <div class="alert alert--warning">{% icon 'alert' %}<span class="alert__text">پروفایل شما کامل نیست. <a href="{% url 'accounts:profile_edit' %}">نام و نام خانوادگی</a> خود را وارد کنید.</span></div>
+{% endif %}
+
+<div class="card">
+  <div class="card__head">
+    <h1 class="card__title">اطلاعات حساب کاربری</h1>
+    <a class="btn btn--ghost btn--sm" href="{% url 'accounts:profile_edit' %}">{% icon 'edit' 'icon--sm' %}ویرایش</a>
+  </div>
+  <dl class="info-list">
+    <div class="info-list__row"><dt>نام و نام خانوادگی</dt><dd>{{ user.get_full_name|default:"—" }}</dd></div>
+    <div class="info-list__row">
+      <dt>شماره موبایل (نام کاربری)</dt>
+      <dd><span dir="ltr">{{ user.phone|fa_digits }}</span> <a class="link" href="{% url 'accounts:change_phone' %}">تغییر</a></dd>
+    </div>
+    <div class="info-list__row"><dt>ایمیل</dt><dd>{{ user.email|default:"—" }}</dd></div>
+    <div class="info-list__row"><dt>تاریخ عضویت</dt><dd>{{ user.date_joined|jdate }}</dd></div>
+  </dl>
+</div>
+
+<div class="stat-grid">
+  <a class="stat" href="{% url 'orders:order_list' %}"><span class="stat__icon">{% icon 'package' %}</span><span><span class="stat__value">{{ orders_count|fa_digits }}</span><span class="stat__label">سفارش</span></span></a>
+  <a class="stat" href="{% url 'accounts:address_list' %}"><span class="stat__icon">{% icon 'map-pin' %}</span><span><span class="stat__value">{{ addresses_count|fa_digits }}</span><span class="stat__label">آدرس ثبت‌شده</span></span></a>
+  <a class="stat" href="{% url 'cart:detail' %}"><span class="stat__icon">{% icon 'bag' %}</span><span><span class="stat__value">{{ cart_count|fa_digits }}</span><span class="stat__label">کالا در سبد</span></span></a>
+</div>
+
+<div class="card">
+  <div class="card__head">
+    <h2 class="card__title">آخرین سفارش‌ها</h2>
+    <a class="section-link" href="{% url 'orders:order_list' %}">همه سفارش‌ها{% icon 'chevron-left' 'icon--sm' %}</a>
+  </div>
+  {% if recent_orders %}
+    <div class="order-list">{% for order in recent_orders %}{% include "orders/_order_card.html" %}{% endfor %}</div>
+  {% else %}
+    <p class="text-muted">هنوز سفارشی ثبت نکرده‌اید.</p>
+  {% endif %}
+</div>
+{% endblock %}

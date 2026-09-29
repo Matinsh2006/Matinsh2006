@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block title %}سبد خرید | {{ site.site_name }}{% endblock %}
+{% block body_class %}page-cart{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header class="page-head">
+    <h1 class="page-title">سبد خرید{% if items %} <span class="page-title__count">({{ cart_count|fa_digits }} کالا)</span>{% endif %}</h1>
+  </header>
+
+  {% if items %}
+    <div class="cart-layout">
+      <div class="cart-items">
+        {% if has_unavailable %}
+          <div class="alert alert--warning">{% icon 'alert' %}<span class="alert__text">موجودی برخی کالاها کمتر از تعداد انتخابی شماست. لطفاً تعداد را اصلاح کنید.</span></div>
+        {% endif %}
+        {% for item in items %}
+          <article class="cart-item{% if not item.is_available %} is-unavailable{% endif %}">
+            <a class="cart-item__img" href="{{ item.product.get_absolute_url }}">
+              {% with image=item.product.main_image %}
+                {% if image %}<img src="{{ image.image.url }}" alt="{{ image.alt }}" loading="lazy" width="120" height="120">{% else %}<img src="{% static 'img/placeholder.svg' %}" alt="" width="120" height="120">{% endif %}
+              {% endwith %}
+            </a>
+            <div class="cart-item__info">
+              {% if item.product.brand %}<span class="cart-item__brand">{{ item.product.brand.name }}</span>{% endif %}
+              <a class="cart-item__title" href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+              <p class="cart-item__unit">
+                {% if item.product.has_discount %}<del>{{ item.product.price|price }}</del>{% endif %}
+                <span>{{ item.unit_price|price }} {{ CURRENCY }}</span>
+              </p>
+              {% if not item.is_available %}
+                <p class="stock stock--out">{% icon 'alert' 'icon--sm' %}{% if item.product.stock %}فقط {{ item.product.stock|fa_digits }} عدد موجود است{% else %}این کالا ناموجود شد{% endif %}</p>
+              {% endif %}
+            </div>
+            <div class="cart-item__actions">
+              <form method="post" action="{% url 'cart:update' item.product.pk %}" class="qty qty--sm" data-qty data-autosubmit>
+                {% csrf_token %}
+                <button type="button" class="qty__btn" data-qty-step="1" aria-label="افزایش تعداد">{% icon 'plus' 'icon--sm' %}</button>
+                <input class="qty__input" type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" inputmode="numeric" aria-label="تعداد {{ item.product.name }}">
+                <button type="button" class="qty__btn" data-qty-step="-1" aria-label="کاهش تعداد">{% icon 'minus' 'icon--sm' %}</button>
+                <noscript><button type="submit" class="btn btn--sm btn--ghost">ثبت</button></noscript>
+              </form>
+              <p class="cart-item__total"><span class="price__current">{{ item.total_price|price }}</span> <span class="price__currency">{{ CURRENCY }}</span></p>
+              <form method="post" action="{% url 'cart:remove' item.product.pk %}" class="cart-item__remove">
+                {% csrf_token %}
+                <button type="submit" class="icon-btn icon-btn--danger" aria-label="حذف «{{ item.product.name }}» از سبد">{% icon 'trash' %}</button>
+              </form>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      <aside class="summary-card" aria-labelledby="summary-title">
+        <h2 class="summary-card__title" id="summary-title">خلاصه سفارش</h2>
+        <div class="summary-row"><span>جمع کالاها</span><span>{{ subtotal|price }} {{ CURRENCY }}</span></div>
+        {% if savings %}<div class="summary-row summary-row--saving"><span>سود شما از این خرید</span><span>{{ savings|price }} {{ CURRENCY }}</span></div>{% endif %}
+        <div class="summary-row"><span>هزینه ارسال</span><span>{% if shipping %}{{ shipping|price }} {{ CURRENCY }}{% else %}رایگان{% endif %}</span></div>
+        {% if free_shipping_remaining %}
+          <p class="free-ship">{% icon 'truck' 'icon--sm' %}با {{ free_shipping_remaining|price }} {{ CURRENCY }} خرید بیشتر، ارسال رایگان می‌شود.</p>
+        {% endif %}
+        <div class="summary-row summary-row--total"><span>مبلغ قابل پرداخت</span><span>{{ total|price }} {{ CURRENCY }}</span></div>
+        {% if has_unavailable %}
+          <button type="button" class="btn btn--primary btn--lg btn--block" disabled>ابتدا تعداد کالاها را اصلاح کنید</button>
+        {% else %}
+          <a href="{% url 'orders:checkout' %}" class="btn btn--primary btn--lg btn--block">ادامه و ثبت سفارش{% icon 'arrow-left' 'icon--sm' %}</a>
+        {% endif %}
+        <a href="{% url 'catalog:product_list' %}" class="btn btn--ghost btn--block">ادامه خرید</a>
+      </aside>
+    </div>
+
+    {% if not has_unavailable %}
+      <div class="mobile-checkout-bar">
+        <div class="mobile-checkout-bar__total"><span>مبلغ قابل پرداخت</span><strong>{{ total|price }} {{ CURRENCY }}</strong></div>
+        <a href="{% url 'orders:checkout' %}" class="btn btn--primary">ثبت سفارش</a>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-state__icon">{% icon 'bag' 'icon--lg' %}</span>
+      <h2>سبد خرید شما خالی است</h2>
+      <p>محصولات مورد علاقه‌تان را پیدا کنید و به سبد خرید اضافه کنید.</p>
+      <a class="btn btn--primary" href="{% url 'catalog:product_list' %}">مشاهده محصولات</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

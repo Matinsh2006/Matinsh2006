@@ -1,0 +1,10 @@
+{% load shop_tags %}
+<div class="hscroll" data-hscroll>
+  <button type="button" class="hscroll__btn hscroll__btn--prev" data-hscroll-prev aria-label="موارد قبلی">{% icon 'chevron-right' %}</button>
+  <div class="hscroll__track" data-hscroll-track>
+    {% for product in products %}
+      <div class="hscroll__item">{% include "partials/product_card.html" %}</div>
+    {% endfor %}
+  </div>
+  <button type="button" class="hscroll__btn hscroll__btn--next" data-hscroll-next aria-label="موارد بعدی">{% icon 'chevron-left' %}</button>
+</div>

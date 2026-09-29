@@ -1,0 +1,22 @@
+{% extends "accounts/account_base.html" %}
+{% load shop_tags %}
+
+{% block title %}تغییر شماره موبایل | {{ site.site_name }}{% endblock %}
+
+{% block account_content %}
+<div class="card card--narrow">
+  <div class="card__head"><h1 class="card__title">تغییر شماره موبایل (نام کاربری)</h1></div>
+  <p class="text-muted">
+    شماره فعلی شما <span class="phone-chip" dir="ltr">{{ user.phone|fa_digits }}</span> است.
+    شماره جدید را وارد کنید؛ یک کد تایید به شماره جدید پیامک می‌شود و پس از تایید، نام کاربری شما تغییر می‌کند.
+  </p>
+  <form method="post" novalidate data-once>
+    {% csrf_token %}
+    {% include "partials/form_field.html" with field=form.phone %}
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">ارسال کد تایید به شماره جدید</button>
+      <a class="btn btn--ghost" href="{% url 'accounts:profile' %}">انصراف</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

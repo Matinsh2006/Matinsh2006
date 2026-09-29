@@ -1,0 +1,29 @@
+{% extends "accounts/account_base.html" %}
+{% load shop_tags %}
+
+{% block title %}ویرایش اطلاعات | {{ site.site_name }}{% endblock %}
+
+{% block account_content %}
+<div class="card">
+  <div class="card__head"><h1 class="card__title">ویرایش اطلاعات حساب</h1></div>
+  <form method="post" enctype="multipart/form-data" novalidate data-once>
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <div class="form-grid">
+      {% include "partials/form_field.html" with field=form.first_name %}
+      {% include "partials/form_field.html" with field=form.last_name %}
+      {% include "partials/form_field.html" with field=form.email %}
+      {% include "partials/form_field.html" with field=form.avatar %}
+    </div>
+    <div class="form-field">
+      <span class="form-label">شماره موبایل (نام کاربری)</span>
+      <p class="readonly-field"><span dir="ltr">{{ user.phone|fa_digits }}</span> <a class="link" href="{% url 'accounts:change_phone' %}">تغییر شماره با تایید پیامکی</a></p>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">ذخیره اطلاعات</button>
+      {% url 'accounts:profile' as profile_url %}
+      <a class="btn btn--ghost" href="{{ next|default:profile_url }}">انصراف</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}دسته‌بندی محصولات | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="مسیر صفحه">
+    <ol><li><a href="{% url 'core:home' %}">خانه</a></li><li aria-current="page">دسته‌بندی‌ها</li></ol>
+  </nav>
+  <header class="page-head">
+    <h1 class="page-title">دسته‌بندی محصولات</h1>
+  </header>
+
+  {% if categories %}
+    <div class="category-grid">
+      {% for cat in categories %}
+        <section class="category-tile">
+          <a class="category-tile__head" href="{{ cat.get_absolute_url }}">
+            <span class="cat-card__img">{% if cat.image %}<img src="{{ cat.image.url }}" alt="" loading="lazy" width="96" height="96">{% else %}{% icon 'sparkle' 'icon--lg' %}{% endif %}</span>
+            <span class="category-tile__name">{{ cat.name }}</span>
+            {% icon 'chevron-left' 'icon--sm' %}
+          </a>
+          {% with children=cat.children.all %}
+            {% if children %}
+              <div class="category-tile__children">
+                {% for child in children %}<a class="chip chip--sm" href="{{ child.get_absolute_url }}">{{ child.name }}</a>{% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+        </section>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state"><span class="empty-state__icon">{% icon 'grid' 'icon--lg' %}</span><p>هنوز دسته‌بندی ثبت نشده است.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

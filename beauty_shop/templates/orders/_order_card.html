@@ -1,0 +1,12 @@
+{% load shop_tags %}
+<a class="order-card" href="{{ order.get_absolute_url }}">
+  <span class="order-card__head">
+    <strong>سفارش {{ order.number|fa_digits }}</strong>
+    <span class="status-badge status--{{ order.status_css }}">{{ order.get_status_display }}</span>
+  </span>
+  <span class="order-card__meta">
+    <span>{% icon 'calendar' 'icon--sm' %}{{ order.created_at|jdate }}</span>
+    <span>{% icon 'package' 'icon--sm' %}{{ order.items.all|length|fa_digits }} قلم کالا</span>
+    <span>{% icon 'credit-card' 'icon--sm' %}{{ order.total|price }} {{ CURRENCY }}</span>
+  </span>
+</a>

@@ -1,0 +1,35 @@
+{% load static shop_tags %}
+<article class="product-card{% if not product.in_stock %} is-soldout{% endif %}">
+  <a class="product-card__media" href="{{ product.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+    {% with image=product.main_image %}
+      {% if image %}
+        <img src="{{ image.image.url }}" alt="{{ image.alt }}" loading="lazy" decoding="async" width="400" height="400">
+      {% else %}
+        <img src="{% static 'img/placeholder.svg' %}" alt="" loading="lazy" width="400" height="400">
+      {% endif %}
+    {% endwith %}
+    {% if product.has_discount and product.in_stock %}
+      <span class="product-card__badge badge-discount">{{ product.discount_percent|fa_digits }}٪</span>
+    {% endif %}
+    {% if not product.in_stock %}<span class="product-card__soldout">ناموجود</span>{% endif %}
+  </a>
+  <div class="product-card__body">
+    {% if product.brand %}<a class="product-card__brand" href="{{ product.brand.get_absolute_url }}">{{ product.brand.name }}</a>{% endif %}
+    <h3 class="product-card__title"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+    <div class="product-card__footer">
+      {% if product.in_stock %}
+        <div class="price">
+          {% if product.has_discount %}<del class="price__old">{{ product.price|price }}</del>{% endif %}
+          <span class="price__row"><span class="price__current">{{ product.final_price|price }}</span><span class="price__currency">{{ CURRENCY }}</span></span>
+        </div>
+        <form method="post" action="{% url 'cart:add' product.pk %}" data-cart-form>
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <button type="submit" class="product-card__cart" aria-label="افزودن «{{ product.name }}» به سبد خرید" title="افزودن به سبد خرید">{% icon 'plus' %}</button>
+        </form>
+      {% else %}
+        <span class="product-card__unavailable">فعلاً موجود نیست</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

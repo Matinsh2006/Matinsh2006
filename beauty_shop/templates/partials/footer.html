@@ -1,0 +1,55 @@
+{% load shop_tags %}
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <section class="footer-col footer-about">
+      <a href="{% url 'core:home' %}" class="logo logo--light">
+        <span class="logo__mark">{% icon 'sparkle' %}</span><span class="logo__text">{{ site.site_name }}</span>
+      </a>
+      {% if site.about_short %}
+        <p class="footer-text">{{ site.about_short|linebreaksbr }}</p>
+      {% elif site.slogan %}
+        <p class="footer-text">{{ site.slogan }}</p>
+      {% endif %}
+      {% if social_links %}{% include "partials/social_links.html" %}{% endif %}
+    </section>
+
+    <section class="footer-col">
+      <h2 class="footer-title">دسترسی سریع</h2>
+      <ul class="footer-links">
+        <li><a href="{% url 'catalog:product_list' %}">همه محصولات</a></li>
+        <li><a href="{% url 'catalog:product_list' %}?discount=1">پیشنهادهای ویژه</a></li>
+        <li><a href="{% url 'catalog:brand_list' %}">برندها</a></li>
+        <li><a href="{% url 'blog:list' %}">مجله زیبایی</a></li>
+        {% for page in footer_pages %}<li><a href="{{ page.get_absolute_url }}">{{ page.title }}</a></li>{% endfor %}
+      </ul>
+    </section>
+
+    {% if nav_categories %}
+    <section class="footer-col">
+      <h2 class="footer-title">دسته‌بندی‌ها</h2>
+      <ul class="footer-links">
+        {% for cat in nav_categories|slice:":7" %}<li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <section class="footer-col">
+      <h2 class="footer-title">ارتباط با ما</h2>
+      <ul class="footer-contact">
+        {% if main_branch %}<li>{% icon 'map-pin' %}<span>{{ main_branch.address }}</span></li>{% endif %}
+        {% if site.phone %}<li>{% icon 'phone' %}<a href="{{ site.phone_link }}" dir="ltr">{{ site.phone|fa_digits }}</a></li>{% endif %}
+        {% if site.email %}<li>{% icon 'mail' %}<a href="mailto:{{ site.email }}">{{ site.email }}</a></li>{% endif %}
+        {% if site.working_hours %}<li>{% icon 'clock' %}<span>{{ site.working_hours }}</span></li>{% endif %}
+      </ul>
+      <a class="btn btn--sm btn--glass" href="{% url 'core:contact' %}">{% icon 'map' 'icon--sm' %}مشاهده فروشگاه روی نقشه</a>
+      {% if site.enamad_code %}<div class="enamad">{{ site.enamad_code|safe }}</div>{% endif %}
+    </section>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container footer-bottom__inner">
+      <p>© {{ current_jalali_year|fa_digits }} — تمامی حقوق برای {{ site.site_name }} محفوظ است.</p>
+      <a href="#top" class="footer-top-link">بازگشت به بالا ↑</a>
+    </div>
+  </div>
+</footer>

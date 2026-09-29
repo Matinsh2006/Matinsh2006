@@ -1,0 +1,21 @@
+{% load shop_tags %}
+{% if page_obj.has_other_pages %}
+<nav class="pagination" aria-label="صفحه‌بندی">
+  {% if page_obj.has_previous %}
+    <a href="{% querystring page=page_obj.previous_page_number %}" class="pagination__arrow" aria-label="صفحه قبل">{% icon 'chevron-right' 'icon--sm' %}</a>
+  {% endif %}
+  {% elided_page_range page_obj as pages %}
+  {% for num in pages %}
+    {% if num == page_obj.paginator.ELLIPSIS %}
+      <span class="pagination__dots">…</span>
+    {% elif num == page_obj.number %}
+      <span class="is-current" aria-current="page">{{ num|fa_digits }}</span>
+    {% else %}
+      <a href="{% querystring page=num %}">{{ num|fa_digits }}</a>
+    {% endif %}
+  {% endfor %}
+  {% if page_obj.has_next %}
+    <a href="{% querystring page=page_obj.next_page_number %}" class="pagination__arrow" aria-label="صفحه بعد">{% icon 'chevron-left' 'icon--sm' %}</a>
+  {% endif %}
+</nav>
+{% endif %}

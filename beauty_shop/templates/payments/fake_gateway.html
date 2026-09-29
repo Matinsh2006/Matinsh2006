@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}درگاه پرداخت آزمایشی{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="fake-gateway">
+    <div class="fake-gateway__head">
+      {% icon 'credit-card' 'icon--xl' %}
+      <h1>درگاه پرداخت آزمایشی</h1>
+      <p>سفارش شماره {{ payment.order.number|fa_digits }}</p>
+    </div>
+    <div class="fake-gateway__body">
+      <p class="test-ribbon">{% icon 'info' 'icon--sm' %}این صفحه فقط برای تست است و هیچ مبلغی کسر نمی‌شود. در محیط واقعی، مشتری به درگاه زرین‌پال یا زیبال منتقل می‌شود.</p>
+      <dl class="info-list">
+        <div class="info-list__row"><dt>پذیرنده</dt><dd>{{ site.site_name }}</dd></div>
+        <div class="info-list__row info-list__row--strong"><dt>مبلغ قابل پرداخت</dt><dd>{{ payment.amount|price }} {{ CURRENCY }}</dd></div>
+      </dl>
+      <a class="btn btn--primary btn--lg btn--block" href="{{ success_url }}">{% icon 'check' 'icon--sm' %}پرداخت موفق</a>
+      <a class="btn btn--ghost btn--block" href="{{ cancel_url }}">انصراف از پرداخت</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

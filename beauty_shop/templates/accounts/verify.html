@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}تایید شماره موبایل | {{ site.site_name }}{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<div class="container auth-page">
+  <div class="auth-card">
+    <span class="auth-card__icon">{% icon 'lock' 'icon--lg' %}</span>
+    <h1>کد تایید را وارد کنید</h1>
+    <p>کد {{ otp_length|fa_digits }} رقمی پیامک‌شده به شماره زیر را وارد کنید:</p>
+    <p class="auth-card__phone">
+      <span class="phone-chip" dir="ltr">{{ phone|fa_digits }}</span>
+      <a class="link-btn" href="{% url 'accounts:login' %}">{% icon 'edit' 'icon--sm' %}ویرایش شماره</a>
+    </p>
+    {% include "accounts/_otp_form.html" with submit_label="تایید و ورود" %}
+  </div>
+</div>
+{% endblock %}

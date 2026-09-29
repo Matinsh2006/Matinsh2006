@@ -1,0 +1,10 @@
+{% load shop_tags %}
+<ul class="social-list{% if variant %} social-list--{{ variant }}{% endif %}">
+  {% for link in social_links %}
+    <li>
+      <a class="social-btn social-btn--{{ link.platform }}" href="{{ link.url }}"{% if link.is_external %} target="_blank" rel="noopener"{% endif %} aria-label="{{ link.label }}" title="{{ link.label }}">
+        {% icon link.icon %}
+      </a>
+    </li>
+  {% endfor %}
+</ul>

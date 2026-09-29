@@ -1,0 +1,44 @@
+{% extends "accounts/account_base.html" %}
+{% load shop_tags %}
+
+{% block title %}آدرس‌های من | {{ site.site_name }}{% endblock %}
+
+{% block account_content %}
+<div class="card">
+  <div class="card__head">
+    <h1 class="card__title">آدرس‌های من</h1>
+    <a class="btn btn--primary btn--sm" href="{% url 'accounts:address_create' %}">{% icon 'plus' 'icon--sm' %}افزودن آدرس</a>
+  </div>
+  {% if addresses %}
+    <div class="address-list">
+      {% for address in addresses %}
+        <article class="address-card{% if address.is_default %} is-default{% endif %}">
+          <header class="address-card__head">
+            <strong>{{ address.title|default:"آدرس" }}</strong>
+            {% if address.is_default %}<span class="tag">پیش‌فرض</span>{% endif %}
+          </header>
+          <p class="address-card__text">{{ address.as_text }}</p>
+          <p class="address-card__meta">
+            <span>{% icon 'user' 'icon--sm' %}{{ address.receiver_name }}</span>
+            <span dir="ltr">{% icon 'phone' 'icon--sm' %}{{ address.receiver_phone|fa_digits }}</span>
+            <span>کد پستی: {{ address.postal_code|fa_digits }}</span>
+          </p>
+          <div class="address-card__actions">
+            <a class="btn btn--ghost btn--sm" href="{% url 'accounts:address_update' address.pk %}">{% icon 'edit' 'icon--sm' %}ویرایش</a>
+            {% if not address.is_default %}
+              <form method="post" action="{% url 'accounts:address_set_default' address.pk %}">{% csrf_token %}<button type="submit" class="btn btn--ghost btn--sm">انتخاب به‌عنوان پیش‌فرض</button></form>
+            {% endif %}
+            <form method="post" action="{% url 'accounts:address_delete' address.pk %}" data-confirm="این آدرس حذف شود؟">{% csrf_token %}<button type="submit" class="btn btn--danger-ghost btn--sm">{% icon 'trash' 'icon--sm' %}حذف</button></form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state empty-state--flat">
+      <span class="empty-state__icon">{% icon 'map-pin' 'icon--lg' %}</span>
+      <p>هنوز آدرسی ثبت نکرده‌اید.</p>
+      <a class="btn btn--primary" href="{% url 'accounts:address_create' %}">افزودن اولین آدرس</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

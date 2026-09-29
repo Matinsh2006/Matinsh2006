@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block title %}{{ product.name }}{% if product.brand %} | {{ product.brand.name }}{% endif %} | {{ site.site_name }}{% endblock %}
+{% block meta_description %}{{ product.short_description|default:product.name }}{% endblock %}
+{% block og %}
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="{{ product.name }}">
+  {% if images %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ images.0.image.url }}">{% endif %}
+{% endblock %}
+{% block extra_head %}<script type="application/ld+json">{{ json_ld }}</script>{% endblock %}
+{% block body_class %}page-product{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="مسیر صفحه">
+    <ol>
+      <li><a href="{% url 'core:home' %}">خانه</a></li>
+      {% if product.category %}
+        {% if product.category.parent %}<li><a href="{{ product.category.parent.get_absolute_url }}">{{ product.category.parent.name }}</a></li>{% endif %}
+        <li><a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></li>
+      {% else %}
+        <li><a href="{% url 'catalog:product_list' %}">محصولات</a></li>
+      {% endif %}
+      <li aria-current="page">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="product-page">
+    <section class="gallery" data-gallery aria-label="تصاویر محصول">
+      <div class="gallery__main">
+        <div class="gallery__track" data-gallery-track>
+          {% for img in images %}
+            <figure class="gallery__slide">
+              <img src="{{ img.image.url }}" alt="{{ img.alt }}" width="800" height="800" decoding="async"{% if forloop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+            </figure>
+          {% empty %}
+            <figure class="gallery__slide gallery__slide--empty"><img src="{% static 'img/placeholder.svg' %}" alt="" width="800" height="800"></figure>
+          {% endfor %}
+        </div>
+        {% if product.has_discount and product.in_stock %}<span class="gallery__badge badge-discount">{{ product.discount_percent|fa_digits }}٪ تخفیف</span>{% endif %}
+        {% if images|length > 1 %}<span class="gallery__counter" data-gallery-counter>{{ 1|fa_digits }} / {{ images|length|fa_digits }}</span>{% endif %}
+        {% if images %}<button type="button" class="icon-btn gallery__zoom" data-gallery-open aria-label="نمایش تصویر در اندازه بزرگ">{% icon 'zoom-in' %}</button>{% endif %}
+      </div>
+      {% if images|length > 1 %}
+        <div class="gallery__thumbs" data-gallery-thumbs>
+          {% for img in images %}
+            <button type="button" class="gallery__thumb{% if forloop.first %} is-active{% endif %}" data-gallery-thumb aria-label="نمایش تصویر {{ forloop.counter|fa_digits }}"{% if forloop.first %} aria-current="true"{% endif %}>
+              <img src="{{ img.image.url }}" alt="" loading="lazy" width="80" height="80">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% if images %}
+        <dialog class="lightbox" data-lightbox aria-label="نمایش تصاویر محصول">
+          <div class="lightbox__stage"><img class="lightbox__img" data-lightbox-img alt=""></div>
+          <button type="button" class="icon-btn icon-btn--light lightbox__close" data-lightbox-close aria-label="بستن">{% icon 'close' %}</button>
+          {% if images|length > 1 %}
+            <button type="button" class="icon-btn icon-btn--light lightbox__prev" data-lightbox-prev aria-label="تصویر قبلی">{% icon 'chevron-right' %}</button>
+            <button type="button" class="icon-btn icon-btn--light lightbox__next" data-lightbox-next aria-label="تصویر بعدی">{% icon 'chevron-left' %}</button>
+          {% endif %}
+          <p class="lightbox__counter" data-lightbox-counter></p>
+        </dialog>
+      {% endif %}
+    </section>
+
+    <section class="product-info" aria-labelledby="product-title">
+      {% if product.brand %}
+        <a class="product-info__brand" href="{{ product.brand.get_absolute_url }}">{% icon 'award' 'icon--sm' %}{{ product.brand.name }}{% if product.brand.name_en %} <span dir="ltr">{{ product.brand.name_en }}</span>{% endif %}</a>
+      {% endif %}
+      <h1 class="product-title" id="product-title">{{ product.name }}</h1>
+      <div class="product-meta">
+        {% if product.category %}<span>دسته: <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></span>{% endif %}
+        {% if product.sku %}<span>کد کالا: <span dir="ltr">{{ product.sku|fa_digits }}</span></span>{% endif %}
+        {% if product.sold_count %}<span>{% icon 'trending' 'icon--sm' %}{{ product.sold_count|fa_digits }} فروش موفق</span>{% endif %}
+      </div>
+      {% if product.short_description %}<p class="product-summary">{{ product.short_description }}</p>{% endif %}
+
+      {% if specifications %}
+        <ul class="key-specs">
+          {% for spec in specifications|slice:":4" %}<li><span class="key-specs__title">{{ spec.title }}</span><span class="key-specs__value">{{ spec.value }}</span></li>{% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="buy-box" data-buy-anchor>
+        {% if product.in_stock %}
+          <div class="buy-box__price">
+            <div class="price price--lg">
+              {% if product.has_discount %}
+                <span class="price__old-row"><del class="price__old">{{ product.price|price }}</del><span class="badge-discount">{{ product.discount_percent|fa_digits }}٪</span></span>
+              {% endif %}
+              <span class="price__row"><span class="price__current">{{ product.final_price|price }}</span><span class="price__currency">{{ CURRENCY }}</span></span>
+            </div>
+            {% if product.stock <= 5 %}
+              <span class="stock stock--low">{% icon 'alert' 'icon--sm' %}تنها {{ product.stock|fa_digits }} عدد باقی مانده</span>
+            {% else %}
+              <span class="stock stock--in">{% icon 'check-circle' 'icon--sm' %}موجود در انبار</span>
+            {% endif %}
+          </div>
+          <form id="buy-form" class="buy-box__form" method="post" action="{% url 'cart:add' product.pk %}" data-cart-form>
+            {% csrf_token %}
+            <div class="qty" data-qty>
+              <button type="button" class="qty__btn" data-qty-step="1" aria-label="افزایش تعداد">{% icon 'plus' 'icon--sm' %}</button>
+              <input class="qty__input" type="number" name="quantity" value="1" min="1" max="{{ product.max_order_quantity }}" inputmode="numeric" aria-label="تعداد">
+              <button type="button" class="qty__btn" data-qty-step="-1" aria-label="کاهش تعداد">{% icon 'minus' 'icon--sm' %}</button>
+            </div>
+            <button type="submit" class="btn btn--primary btn--lg buy-box__submit">{% icon 'bag' %}افزودن به سبد خرید</button>
+          </form>
+          {% if in_cart_quantity %}
+            <p class="buy-box__note">{% icon 'check' 'icon--sm' %}{{ in_cart_quantity|fa_digits }} عدد از این کالا در <a href="{% url 'cart:detail' %}">سبد خرید</a> شما قرار دارد.</p>
+          {% endif %}
+        {% else %}
+          <div class="buy-box__soldout">
+            {% icon 'x-circle' 'icon--lg' %}
+            <div><strong>ناموجود</strong><p>این کالا در حال حاضر موجود نیست.</p></div>
+          </div>
+          {% if site.phone %}<a class="btn btn--outline btn--block" href="{{ site.phone_link }}">{% icon 'phone' 'icon--sm' %}استعلام موجودی: <span dir="ltr">{{ site.phone|fa_digits }}</span></a>{% endif %}
+        {% endif %}
+      </div>
+
+      <ul class="perks">
+        <li class="perk">{% icon 'award' %}<span>ضمانت اصالت کالا</span></li>
+        <li class="perk">{% icon 'truck' %}<span>ارسال به سراسر کشور</span></li>
+        <li class="perk">{% icon 'shield' %}<span>پرداخت امن اینترنتی</span></li>
+      </ul>
+    </section>
+  </div>
+
+  {% if product.description or specifications %}
+    <div class="product-details">
+      {% if product.description %}
+        <section class="product-section" aria-labelledby="product-description">
+          <h2 class="product-section__title" id="product-description">معرفی محصول</h2>
+          <div class="prose">{{ product.description|richtext }}</div>
+        </section>
+      {% endif %}
+      {% if specifications %}
+        <section class="product-section" aria-labelledby="product-specs">
+          <h2 class="product-section__title" id="product-specs">مشخصات</h2>
+          <table class="spec-table">
+            <tbody>
+              {% for spec in specifications %}<tr><th scope="row">{{ spec.title }}</th><td>{{ spec.value }}</td></tr>{% endfor %}
+            </tbody>
+          </table>
+        </section>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if related_articles %}
+    <section class="section" aria-labelledby="product-articles">
+      <div class="section-head"><h2 class="section-title" id="product-articles">مقالات مرتبط با این محصول</h2></div>
+      <div class="article-grid">{% for article in related_articles %}{% include "partials/article_card.html" %}{% endfor %}</div>
+    </section>
+  {% endif %}
+
+  {% if related_products %}
+    <section class="section" aria-labelledby="product-related">
+      <div class="section-head"><h2 class="section-title" id="product-related">محصولات مشابه</h2></div>
+      {% include "partials/product_scroller.html" with products=related_products %}
+    </section>
+  {% endif %}
+</div>
+
+{% if product.in_stock %}
+  <div class="sticky-buy" data-sticky-buy>
+    <div class="price">
+      {% if product.has_discount %}<del class="price__old">{{ product.price|price }}</del>{% endif %}
+      <span class="price__row"><span class="price__current">{{ product.final_price|price }}</span><span class="price__currency">{{ CURRENCY }}</span></span>
+    </div>
+    <button type="submit" form="buy-form" class="btn btn--primary">{% icon 'bag' 'icon--sm' %}افزودن به سبد</button>
+  </div>
+{% endif %}
+{% endblock %}

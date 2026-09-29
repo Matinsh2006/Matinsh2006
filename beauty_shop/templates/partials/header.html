@@ -1,0 +1,149 @@
+{% load shop_tags %}
+<div class="topbar">
+  <div class="container topbar__inner">
+    <p class="topbar__text">
+      {% if site.free_shipping_threshold %}
+        {% icon 'truck' 'icon--sm' %}ارسال رایگان برای خریدهای بالای {{ site.free_shipping_threshold|price }} {{ CURRENCY }}
+      {% elif site.slogan %}
+        {% icon 'sparkle' 'icon--sm' %}{{ site.slogan }}
+      {% endif %}
+    </p>
+    <div class="topbar__links">
+      {% if site.phone %}
+        <a href="{{ site.phone_link }}" class="topbar__link">{% icon 'phone' 'icon--sm' %}<span dir="ltr">{{ site.phone|fa_digits }}</span></a>
+      {% endif %}
+      <a href="{% url 'blog:list' %}" class="topbar__link">{% icon 'book' 'icon--sm' %}مجله زیبایی</a>
+      <a href="{% url 'core:contact' %}" class="topbar__link">{% icon 'map-pin' 'icon--sm' %}آدرس فروشگاه</a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header" id="top">
+  <div class="header-main">
+    <div class="container header-main__inner">
+      <button type="button" class="icon-btn header-menu-btn" data-drawer-open="nav-drawer" aria-controls="nav-drawer" aria-expanded="false" aria-label="باز کردن منو">
+        {% icon 'menu' %}
+      </button>
+
+      <a href="{% url 'core:home' %}" class="logo" aria-label="{{ site.site_name }} – صفحه اصلی">
+        {% if site.logo %}
+          <img src="{{ site.logo.url }}" alt="{{ site.site_name }}" class="logo__img" width="160" height="48">
+        {% else %}
+          <span class="logo__mark">{% icon 'sparkle' %}</span>
+          <span class="logo__text">{{ site.site_name }}</span>
+        {% endif %}
+      </a>
+
+      <form class="header-search" action="{% url 'catalog:product_list' %}" method="get" role="search">
+        <label for="site-search" class="visually-hidden">جستجوی محصولات</label>
+        <input id="site-search" class="search-input" type="search" name="q" value="{{ query|default:'' }}"
+               placeholder="جستجو در محصولات و برندها…" autocomplete="off" enterkeyhint="search">
+        <button class="search-btn" type="submit" aria-label="جستجو">{% icon 'search' %}</button>
+      </form>
+
+      <div class="header-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'accounts:profile' %}" class="header-action header-action--account" aria-label="حساب کاربری">
+            {% icon 'user' %}<span class="header-action__label">{{ user.get_short_name|fa_digits }}</span>
+          </a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}?next={{ request.get_full_path|urlencode }}" class="header-action header-action--account" aria-label="ورود یا ثبت‌نام">
+            {% icon 'user' %}<span class="header-action__label">ورود | ثبت‌نام</span>
+          </a>
+        {% endif %}
+        <a href="{% url 'cart:detail' %}" class="header-action header-action--cart" aria-label="سبد خرید">
+          {% icon 'bag' %}<span class="header-action__label">سبد خرید</span>
+          <span class="badge" data-cart-count{% if not cart_count %} hidden{% endif %}>{{ cart_count|fa_digits }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="main-nav" aria-label="منوی اصلی">
+    <div class="container">
+      <ul class="nav-list">
+        <li class="nav-item nav-item--mega">
+          <a class="nav-link nav-link--cats" href="{% url 'catalog:category_list' %}">{% icon 'menu' 'icon--sm' %}دسته‌بندی محصولات</a>
+          {% if nav_categories %}
+          <div class="mega-menu">
+            <div class="container mega-menu__inner">
+              {% for cat in nav_categories %}
+                <div class="mega-menu__col">
+                  <a class="mega-menu__title" href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
+                  {% with children=cat.children.all %}
+                    {% if children %}
+                      <ul class="mega-menu__list">
+                        {% for child in children %}<li><a class="mega-menu__link" href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>{% endfor %}
+                      </ul>
+                    {% endif %}
+                  {% endwith %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'catalog:product_list' %}">همه محصولات</a></li>
+        <li class="nav-item"><a class="nav-link nav-link--hot" href="{% url 'catalog:product_list' %}?discount=1">{% icon 'percent' 'icon--sm' %}تخفیف‌ها</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'catalog:brand_list' %}">برندها</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'blog:list' %}">مقالات</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:contact' %}">تماس با ما</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<div class="drawer drawer--start" id="nav-drawer">
+  <button type="button" class="drawer__backdrop" data-drawer-close tabindex="-1" aria-label="بستن منو"></button>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="منوی سایت">
+    <div class="drawer__head">
+      <span class="drawer__title">{{ site.site_name }}</span>
+      <button type="button" class="icon-btn" data-drawer-close aria-label="بستن منو">{% icon 'close' %}</button>
+    </div>
+    <div class="drawer__body">
+      {% if user.is_authenticated %}
+        <a class="drawer-account" href="{% url 'accounts:profile' %}">
+          <span class="avatar avatar--sm">{% icon 'user' 'icon--sm' %}</span>
+          <span><strong>{{ user.display_name|fa_digits }}</strong><small>مشاهده حساب کاربری</small></span>
+        </a>
+      {% else %}
+        <a class="btn btn--primary btn--block" href="{% url 'accounts:login' %}">{% icon 'user' 'icon--sm' %}ورود / ثبت‌نام با شماره موبایل</a>
+      {% endif %}
+
+      <nav class="drawer-nav" aria-label="منوی موبایل">
+        <a href="{% url 'core:home' %}">{% icon 'home' %}صفحه اصلی</a>
+        <a href="{% url 'catalog:product_list' %}">{% icon 'grid' %}همه محصولات</a>
+        <a href="{% url 'catalog:product_list' %}?discount=1">{% icon 'percent' %}تخفیف‌ها</a>
+        <a href="{% url 'catalog:brand_list' %}">{% icon 'award' %}برندها</a>
+        <a href="{% url 'blog:list' %}">{% icon 'book' %}مجله زیبایی</a>
+        <a href="{% url 'core:contact' %}">{% icon 'map-pin' %}تماس با ما و آدرس</a>
+      </nav>
+
+      {% if nav_categories %}
+      <div class="drawer-section">
+        <p class="drawer-section__title">دسته‌بندی‌ها</p>
+        {% for cat in nav_categories %}
+          {% with children=cat.children.all %}
+            {% if children %}
+              <details class="drawer-cat">
+                <summary>{{ cat.name }}{% icon 'chevron-down' 'icon--sm' %}</summary>
+                <a href="{{ cat.get_absolute_url }}">همه موارد {{ cat.name }}</a>
+                {% for child in children %}<a href="{{ child.get_absolute_url }}">{{ child.name }}</a>{% endfor %}
+              </details>
+            {% else %}
+              <a class="drawer-cat__link" href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if social_links %}
+      <div class="drawer-section">
+        <p class="drawer-section__title">ما را دنبال کنید</p>
+        {% include "partials/social_links.html" with variant="soft" %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}{{ article.title }} | مجله {{ site.site_name }}{% endblock %}
+{% block meta_description %}{{ article.excerpt|truncatechars:160 }}{% endblock %}
+{% block og %}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ article.title }}">
+  <meta property="og:description" content="{{ article.excerpt|truncatechars:160 }}">
+  {% if article.cover %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ article.cover.url }}">{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="مسیر صفحه">
+    <ol>
+      <li><a href="{% url 'core:home' %}">خانه</a></li>
+      <li><a href="{% url 'blog:list' %}">مجله زیبایی</a></li>
+      {% if article.category %}<li><a href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a></li>{% endif %}
+      <li aria-current="page">{{ article.title }}</li>
+    </ol>
+  </nav>
+
+  <article class="article-page">
+    {% if not article.is_published %}
+      <div class="alert alert--warning">{% icon 'eye' %}<span class="alert__text">پیش‌نمایش: این مقاله هنوز منتشر نشده و فقط مدیران آن را می‌بینند.</span></div>
+    {% endif %}
+    <header class="article-header">
+      {% if article.category %}<a class="article-card__category" href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a>{% endif %}
+      <h1 class="article-title">{{ article.title }}</h1>
+      <div class="article-meta">
+        <span>{% icon 'calendar' 'icon--sm' %}{{ article.published_at|jdate }}</span>
+        <span>{% icon 'clock' 'icon--sm' %}{{ article.reading_time|fa_digits }} دقیقه مطالعه</span>
+        {% if article.author %}<span>{% icon 'user' 'icon--sm' %}{{ article.author.get_full_name|default:site.site_name }}</span>{% endif %}
+        <span>{% icon 'eye' 'icon--sm' %}{{ article.views|fa_digits }} بازدید</span>
+      </div>
+    </header>
+
+    {% if article.cover %}
+      <figure class="article-cover"><img src="{{ article.cover.url }}" alt="{{ article.title }}" width="1200" height="675" fetchpriority="high"></figure>
+    {% endif %}
+    {% if article.summary %}<p class="article-summary">{{ article.summary }}</p>{% endif %}
+
+    <div class="prose">{{ article.body|richtext }}</div>
+
+    {% with url=request.build_absolute_uri %}
+      <div class="share-bar">
+        <span class="share-bar__label">اشتراک‌گذاری:</span>
+        <a class="social-btn social-btn--soft social-btn--telegram" href="https://t.me/share/url?url={{ url|urlencode }}&amp;text={{ article.title|urlencode }}" target="_blank" rel="noopener" aria-label="اشتراک در تلگرام">{% icon 'telegram' %}</a>
+        <a class="social-btn social-btn--soft social-btn--whatsapp" href="https://wa.me/?text={{ article.title|urlencode }}%20{{ url|urlencode }}" target="_blank" rel="noopener" aria-label="اشتراک در واتساپ">{% icon 'whatsapp' %}</a>
+        <a class="social-btn social-btn--soft social-btn--twitter" href="https://twitter.com/intent/tweet?url={{ url|urlencode }}&amp;text={{ article.title|urlencode }}" target="_blank" rel="noopener" aria-label="اشتراک در توییتر">{% icon 'x-logo' %}</a>
+        <button type="button" class="social-btn social-btn--soft" data-copy="{{ url }}" aria-label="کپی لینک مقاله">{% icon 'link' %}</button>
+      </div>
+    {% endwith %}
+  </article>
+
+  {% if related_products %}
+    <section class="section" aria-labelledby="article-products">
+      <div class="section-head"><h2 class="section-title" id="article-products">محصولات معرفی‌شده در این مقاله</h2></div>
+      {% include "partials/product_scroller.html" with products=related_products %}
+    </section>
+  {% endif %}
+
+  {% if related_articles %}
+    <section class="section" aria-labelledby="article-related">
+      <div class="section-head"><h2 class="section-title" id="article-related">مقالات مرتبط</h2></div>
+      <div class="article-grid">{% for article in related_articles %}{% include "partials/article_card.html" %}{% endfor %}</div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "accounts/account_base.html" %}
+{% load static shop_tags %}
+
+{% block title %}سفارش {{ order.number }} | {{ site.site_name }}{% endblock %}
+
+{% block account_content %}
+<div class="card">
+  <div class="card__head">
+    <div>
+      <h1 class="card__title">سفارش {{ order.number|fa_digits }}</h1>
+      <p class="text-muted">ثبت‌شده در {{ order.created_at|jdatetime }}</p>
+    </div>
+    <span class="status-badge status--{{ order.status_css }}">{{ order.get_status_display }}</span>
+  </div>
+
+  {% if order.is_payable %}
+    <div class="alert alert--warning">{% icon 'alert' %}<span class="alert__text">این سفارش هنوز پرداخت نشده است. برای نهایی شدن سفارش، مبلغ آن را پرداخت کنید.</span></div>
+    <form method="post" action="{% url 'payments:start' order.number %}" class="order-pay" data-once>
+      {% csrf_token %}
+      <button type="submit" class="btn btn--primary btn--lg btn--block">{% icon 'credit-card' %}پرداخت {{ order.total|price }} {{ CURRENCY }}</button>
+    </form>
+  {% endif %}
+  {% if order.tracking_code %}
+    <div class="alert alert--info">{% icon 'truck' %}<span class="alert__text">کد رهگیری مرسوله: <strong dir="ltr">{{ order.tracking_code|fa_digits }}</strong></span></div>
+  {% endif %}
+
+  <ul class="order-items">
+    {% for item in order.items.all %}
+      <li class="order-item">
+        {% with image=item.product.main_image %}
+          {% if image %}<img src="{{ image.image.url }}" alt="" width="64" height="64" loading="lazy">{% else %}<img src="{% static 'img/placeholder.svg' %}" alt="" width="64" height="64">{% endif %}
+        {% endwith %}
+        <span class="order-item__info">
+          {% if item.product and item.product.is_active %}<a href="{{ item.product.get_absolute_url }}">{{ item.product_name }}</a>{% else %}<span>{{ item.product_name }}</span>{% endif %}
+          <small>{{ item.quantity|fa_digits }} × {{ item.unit_price|price }} {{ CURRENCY }}</small>
+        </span>
+        <strong class="order-item__total">{{ item.total_price|price }} {{ CURRENCY }}</strong>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <dl class="info-list">
+    <div class="info-list__row"><dt>جمع کالاها</dt><dd>{{ order.items_total|price }} {{ CURRENCY }}</dd></div>
+    <div class="info-list__row"><dt>هزینه ارسال</dt><dd>{% if order.shipping_cost %}{{ order.shipping_cost|price }} {{ CURRENCY }}{% else %}رایگان{% endif %}</dd></div>
+    <div class="info-list__row info-list__row--strong"><dt>مبلغ کل</dt><dd>{{ order.total|price }} {{ CURRENCY }}</dd></div>
+    {% if order.paid_at %}<div class="info-list__row"><dt>زمان پرداخت</dt><dd>{{ order.paid_at|jdatetime }}</dd></div>{% endif %}
+  </dl>
+</div>
+
+<div class="card">
+  <h2 class="card__title">اطلاعات ارسال</h2>
+  <dl class="info-list">
+    <div class="info-list__row"><dt>گیرنده</dt><dd>{{ order.receiver_name }}</dd></div>
+    <div class="info-list__row"><dt>موبایل</dt><dd dir="ltr">{{ order.receiver_phone|fa_digits }}</dd></div>
+    <div class="info-list__row"><dt>آدرس</dt><dd>{{ order.address_text }}</dd></div>
+    <div class="info-list__row"><dt>کد پستی</dt><dd>{{ order.postal_code|fa_digits }}</dd></div>
+    {% if order.note %}<div class="info-list__row"><dt>توضیحات</dt><dd>{{ order.note }}</dd></div>{% endif %}
+  </dl>
+</div>
+
+{% if payments %}
+<div class="card">
+  <h2 class="card__title">تراکنش‌های پرداخت</h2>
+  <ul class="payment-list">
+    {% for payment in payments %}
+      <li class="payment-row">
+        <span>{{ payment.created_at|jdatetime }}</span>
+        <span>{{ payment.get_gateway_display }}</span>
+        <span>{{ payment.amount|price }} {{ CURRENCY }}</span>
+        <span class="status-badge {% if payment.is_success %}status--success{% elif payment.status == 'failed' %}status--danger{% else %}status--muted{% endif %}">{{ payment.get_status_display }}</span>
+        {% if payment.ref_id %}<span>کد پیگیری: <span dir="ltr">{{ payment.ref_id|fa_digits }}</span></span>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<a class="btn btn--ghost" href="{% url 'orders:order_list' %}">{% icon 'chevron-right' 'icon--sm' %}بازگشت به سفارش‌ها</a>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}{% if category %}{{ category.name }} | {% endif %}مجله زیبایی | {{ site.site_name }}{% endblock %}
+{% block meta_description %}مقالات آموزشی آرایش، مراقبت از پوست و مو در مجله {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="مسیر صفحه">
+    <ol>
+      <li><a href="{% url 'core:home' %}">خانه</a></li>
+      {% if category %}<li><a href="{% url 'blog:list' %}">مجله زیبایی</a></li><li aria-current="page">{{ category.name }}</li>{% else %}<li aria-current="page">مجله زیبایی</li>{% endif %}
+    </ol>
+  </nav>
+  <header class="page-head page-head--split">
+    <div>
+      <h1 class="page-title">{% if category %}{{ category.name }}{% else %}مجله زیبایی{% endif %}</h1>
+      <p class="page-subtitle">راهنمای خرید، آموزش آرایش و نکات مراقبت از پوست و مو</p>
+    </div>
+    <form class="blog-search" method="get" action="{{ request.path }}" role="search">
+      <label for="blog-q" class="visually-hidden">جستجو در مقالات</label>
+      <input id="blog-q" class="input input--sm" type="search" name="q" value="{{ query }}" placeholder="جستجو در مقالات…">
+      <button type="submit" class="icon-btn" aria-label="جستجو">{% icon 'search' %}</button>
+    </form>
+  </header>
+
+  {% if categories %}
+    <div class="chip-list" aria-label="دسته‌بندی مقالات">
+      <a class="chip{% if not category %} is-active{% endif %}" href="{% url 'blog:list' %}">همه</a>
+      {% for item in categories %}
+        <a class="chip{% if category.pk == item.pk %} is-active{% endif %}" href="{{ item.get_absolute_url }}">{{ item.name }} <small>({{ item.num_articles|fa_digits }})</small></a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if articles %}
+    <div class="article-grid">{% for article in articles %}{% include "partials/article_card.html" %}{% endfor %}</div>
+    {% include "partials/pagination.html" %}
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-state__icon">{% icon 'book' 'icon--lg' %}</span>
+      <h2>مقاله‌ای پیدا نشد</h2>
+      <p>{% if query %}عبارت دیگری را جستجو کنید.{% else %}به‌زودی مقالات جدید منتشر می‌شوند.{% endif %}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

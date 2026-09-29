@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block title %}تکمیل خرید | {{ site.site_name }}{% endblock %}
+{% block body_class %}page-checkout{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header class="page-head">
+    <h1 class="page-title">تکمیل خرید</h1>
+    <ol class="steps" aria-label="مراحل خرید">
+      <li class="steps__item is-done">سبد خرید</li>
+      <li class="steps__item is-current" aria-current="step">اطلاعات ارسال</li>
+      <li class="steps__item">پرداخت</li>
+    </ol>
+  </header>
+
+  <form method="post" class="checkout-layout" data-once novalidate>
+    {% csrf_token %}
+    <div class="checkout-main">
+      <section class="checkout-step" aria-labelledby="step-address">
+        <h2 class="checkout-step__title" id="step-address"><span class="step-num">۱</span>آدرس تحویل سفارش</h2>
+        {% if addresses %}
+          <div class="address-options" role="radiogroup" aria-labelledby="step-address">
+            {% for address in addresses %}
+              <label class="address-option">
+                <input type="radio" name="address" value="{{ address.pk }}" data-address-choice{% if selected_address == address.pk|stringformat:"s" %} checked{% endif %}>
+                <span class="address-option__body">
+                  <span class="address-option__title">{{ address.title|default:"آدرس" }}{% if address.is_default %} <span class="tag">پیش‌فرض</span>{% endif %}</span>
+                  <span class="address-option__text">{{ address.as_text }}</span>
+                  <span class="address-option__meta">گیرنده: {{ address.receiver_name }} — <span dir="ltr">{{ address.receiver_phone|fa_digits }}</span> — کد پستی: {{ address.postal_code|fa_digits }}</span>
+                </span>
+              </label>
+            {% endfor %}
+            <label class="address-option address-option--new">
+              <input type="radio" name="address" value="new" data-address-choice{% if selected_address == 'new' %} checked{% endif %}>
+              <span class="address-option__body"><span class="address-option__title">{% icon 'plus' 'icon--sm' %}ارسال به آدرس جدید</span></span>
+            </label>
+          </div>
+        {% else %}
+          <input type="hidden" name="address" value="new">
+        {% endif %}
+
+        <div class="new-address" data-new-address{% if addresses and selected_address != 'new' %} hidden{% endif %}>
+          {% if address_form.non_field_errors %}<div class="alert alert--error">{{ address_form.non_field_errors }}</div>{% endif %}
+          <div class="form-grid">
+            {% for field in address_form %}{% include "partials/form_field.html" %}{% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <section class="checkout-step" aria-labelledby="step-note">
+        <h2 class="checkout-step__title" id="step-note"><span class="step-num">۲</span>توضیحات سفارش <small>(اختیاری)</small></h2>
+        <label for="order-note" class="visually-hidden">توضیحات سفارش</label>
+        <textarea id="order-note" class="input" name="note" rows="3" maxlength="500" placeholder="مثلاً زمان مناسب برای تحویل یا نکته‌ای برای بسته‌بندی">{{ note }}</textarea>
+      </section>
+
+      <section class="checkout-step" aria-labelledby="step-review">
+        <h2 class="checkout-step__title" id="step-review"><span class="step-num">۳</span>مرور کالاها</h2>
+        <ul class="checkout-items">
+          {% for item in items %}
+            <li class="checkout-item">
+              {% with image=item.product.main_image %}
+                {% if image %}<img src="{{ image.image.url }}" alt="" width="56" height="56" loading="lazy">{% else %}<img src="{% static 'img/placeholder.svg' %}" alt="" width="56" height="56">{% endif %}
+              {% endwith %}
+              <span class="checkout-item__name">{{ item.product.name }}</span>
+              <span class="checkout-item__qty">× {{ item.quantity|fa_digits }}</span>
+              <span class="checkout-item__price">{{ item.total_price|price }} {{ CURRENCY }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+        <a class="link" href="{% url 'cart:detail' %}">{% icon 'edit' 'icon--sm' %}ویرایش سبد خرید</a>
+      </section>
+    </div>
+
+    <aside class="summary-card" aria-labelledby="checkout-summary">
+      <h2 class="summary-card__title" id="checkout-summary">خلاصه پرداخت</h2>
+      <div class="summary-row"><span>جمع کالاها</span><span>{{ subtotal|price }} {{ CURRENCY }}</span></div>
+      {% if savings %}<div class="summary-row summary-row--saving"><span>سود شما</span><span>{{ savings|price }} {{ CURRENCY }}</span></div>{% endif %}
+      <div class="summary-row"><span>هزینه ارسال</span><span>{% if shipping %}{{ shipping|price }} {{ CURRENCY }}{% else %}رایگان{% endif %}</span></div>
+      <div class="summary-row summary-row--total"><span>مبلغ قابل پرداخت</span><span>{{ total|price }} {{ CURRENCY }}</span></div>
+      <p class="gateway-note">{% icon 'shield' %}<span>پرداخت امن از طریق {{ gateway.title|default:"درگاه پرداخت اینترنتی" }}</span></p>
+      <button type="submit" class="btn btn--primary btn--lg btn--block">{% icon 'credit-card' %}ثبت سفارش و پرداخت</button>
+      <p class="summary-card__note">با ثبت سفارش، قوانین و مقررات فروشگاه را می‌پذیرید.</p>
+    </aside>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block body_class %}page-home{% endblock %}
+
+{% block content %}
+{% if hero_banners %}
+<section class="hero container" aria-label="بنرهای ویژه">
+  <div class="slider" data-slider data-autoplay="5000" aria-roledescription="carousel">
+    <div class="slider__track" data-slider-track>
+      {% for banner in hero_banners %}
+        <div class="slider__slide" role="group" aria-roledescription="slide" aria-label="{{ forloop.counter|fa_digits }} از {{ hero_banners|length|fa_digits }}">
+          {% include "partials/banner.html" with eager=forloop.first %}
+        </div>
+      {% endfor %}
+    </div>
+    <button type="button" class="slider__nav slider__nav--prev" data-slider-prev aria-label="بنر قبلی">{% icon 'chevron-right' %}</button>
+    <button type="button" class="slider__nav slider__nav--next" data-slider-next aria-label="بنر بعدی">{% icon 'chevron-left' %}</button>
+    <div class="slider__dots" data-slider-dots></div>
+  </div>
+</section>
+{% endif %}
+
+{% if categories %}
+<section class="section container" aria-labelledby="home-cats">
+  <div class="section-head">
+    <h2 class="section-title" id="home-cats">خرید بر اساس دسته‌بندی</h2>
+    <a class="section-link" href="{% url 'catalog:category_list' %}">همه دسته‌ها{% icon 'chevron-left' 'icon--sm' %}</a>
+  </div>
+  <div class="hscroll hscroll--cats" data-hscroll>
+    <div class="hscroll__track" data-hscroll-track>
+      {% for cat in categories %}
+        <a class="cat-card" href="{{ cat.get_absolute_url }}">
+          <span class="cat-card__img">
+            {% if cat.image %}<img src="{{ cat.image.url }}" alt="" loading="lazy" width="96" height="96">{% else %}{% icon 'sparkle' 'icon--lg' %}{% endif %}
+          </span>
+          <span class="cat-card__name">{{ cat.name }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if discounted_products %}
+<section class="section container" aria-labelledby="home-deals">
+  <div class="deals">
+    <div class="deals__head">
+      <div class="deals__title">
+        <span class="deals__icon">{% icon 'percent' %}</span>
+        <div>
+          <h2 id="home-deals">پیشنهادهای شگفت‌انگیز</h2>
+          <p>تخفیف‌های ویژه محصولات منتخب</p>
+        </div>
+      </div>
+      <a class="btn btn--light btn--sm" href="{% url 'catalog:product_list' %}?discount=1&amp;sort=discount">مشاهده همه{% icon 'chevron-left' 'icon--sm' %}</a>
+    </div>
+    {% include "partials/product_scroller.html" with products=discounted_products %}
+  </div>
+</section>
+{% endif %}
+
+{% if promo_banners %}
+<section class="section container promo-grid" aria-label="بنرهای تبلیغاتی">
+  {% for banner in promo_banners %}
+    {% if banner.link %}<a class="promo" href="{{ banner.link }}">{% else %}<div class="promo">{% endif %}
+      <picture>
+        {% if banner.mobile_image %}<source media="(max-width: 767px)" srcset="{{ banner.mobile_image.url }}">{% endif %}
+        <img src="{{ banner.image.url }}" alt="{{ banner.title }}" loading="lazy" decoding="async" width="900" height="400">
+      </picture>
+      {% if banner.show_text %}
+        <span class="promo__caption">
+          <span class="promo__title">{{ banner.title }}</span>
+          {% if banner.subtitle %}<span class="promo__subtitle">{{ banner.subtitle }}</span>{% endif %}
+        </span>
+      {% endif %}
+    {% if banner.link %}</a>{% else %}</div>{% endif %}
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if new_products %}
+<section class="section container" aria-labelledby="home-new">
+  <div class="section-head">
+    <h2 class="section-title" id="home-new">تازه‌ترین محصولات</h2>
+    <a class="section-link" href="{% url 'catalog:product_list' %}">مشاهده همه{% icon 'chevron-left' 'icon--sm' %}</a>
+  </div>
+  {% include "partials/product_scroller.html" with products=new_products %}
+</section>
+{% endif %}
+
+{% if brands %}
+<section class="section container" aria-labelledby="home-brands">
+  <div class="section-head">
+    <h2 class="section-title" id="home-brands">برندهای محبوب</h2>
+    <a class="section-link" href="{% url 'catalog:brand_list' %}">همه برندها{% icon 'chevron-left' 'icon--sm' %}</a>
+  </div>
+  <div class="hscroll hscroll--brands" data-hscroll>
+    <button type="button" class="hscroll__btn hscroll__btn--prev" data-hscroll-prev aria-label="برندهای قبلی">{% icon 'chevron-right' %}</button>
+    <div class="hscroll__track" data-hscroll-track>
+      {% for brand in brands %}
+        <a class="brand-logo" href="{{ brand.get_absolute_url }}">
+          <span class="brand-logo__img">
+            {% if brand.logo %}<img src="{{ brand.logo.url }}" alt="{{ brand.name }}" loading="lazy" width="160" height="160">{% else %}<span class="brand-logo__fallback">{{ brand.name|slice:":1" }}</span>{% endif %}
+          </span>
+          <span class="brand-logo__name">{{ brand.name }}</span>
+        </a>
+      {% endfor %}
+    </div>
+    <button type="button" class="hscroll__btn hscroll__btn--next" data-hscroll-next aria-label="برندهای بعدی">{% icon 'chevron-left' %}</button>
+  </div>
+</section>
+{% endif %}
+
+{% if featured_products %}
+<section class="section container" aria-labelledby="home-featured">
+  <div class="section-head">
+    <h2 class="section-title" id="home-featured">پیشنهاد ویژه ما</h2>
+    <a class="section-link" href="{% url 'catalog:product_list' %}">مشاهده همه{% icon 'chevron-left' 'icon--sm' %}</a>
+  </div>
+  {% include "partials/product_scroller.html" with products=featured_products %}
+</section>
+{% endif %}
+
+{% if best_sellers %}
+<section class="section container" aria-labelledby="home-best">
+  <div class="section-head">
+    <h2 class="section-title" id="home-best">پرفروش‌ترین‌ها</h2>
+    <a class="section-link" href="{% url 'catalog:product_list' %}?sort=bestselling">مشاهده همه{% icon 'chevron-left' 'icon--sm' %}</a>
+  </div>
+  {% include "partials/product_scroller.html" with products=best_sellers %}
+</section>
+{% endif %}
+
+<section class="section container" aria-label="مزایای خرید از ما">
+  <ul class="features">
+    <li class="feature"><span class="feature__icon">{% icon 'award' %}</span><span><strong class="feature__title">ضمانت اصالت کالا</strong><span class="feature__text">تمام محصولات اورجینال</span></span></li>
+    <li class="feature"><span class="feature__icon">{% icon 'truck' %}</span><span><strong class="feature__title">ارسال سریع</strong><span class="feature__text">به سراسر ایران</span></span></li>
+    <li class="feature"><span class="feature__icon">{% icon 'shield' %}</span><span><strong class="feature__title">پرداخت امن</strong><span class="feature__text">درگاه بانکی معتبر</span></span></li>
+    <li class="feature"><span class="feature__icon">{% icon 'headphones' %}</span><span><strong class="feature__title">مشاوره رایگان</strong><span class="feature__text">پیش و پس از خرید</span></span></li>
+  </ul>
+</section>
+
+{% if latest_articles %}
+<section class="section container" aria-labelledby="home-blog">
+  <div class="section-head">
+    <h2 class="section-title" id="home-blog">مجله زیبایی</h2>
+    <a class="section-link" href="{% url 'blog:list' %}">همه مقالات{% icon 'chevron-left' 'icon--sm' %}</a>
+  </div>
+  <div class="article-grid">
+    {% for article in latest_articles %}{% include "partials/article_card.html" %}{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if not hero_banners and not new_products %}
+<section class="section container">
+  <div class="empty-state">
+    <span class="empty-state__icon">{% icon 'sparkle' 'icon--lg' %}</span>
+    <h2>به {{ site.site_name }} خوش آمدید</h2>
+    <p>هنوز محصول یا بنری اضافه نشده است.{% if user.is_staff %} از پنل مدیریت محصولات، برندها و بنرها را اضافه کنید.{% endif %}</p>
+    {% if user.is_staff %}<a class="btn btn--primary" href="{% url 'admin:index' %}">ورود به پنل مدیریت</a>{% endif %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

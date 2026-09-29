@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block body_class %}page-account{% endblock %}
+
+{% block content %}
+{% with name=request.resolver_match.url_name %}
+<div class="container account-layout">
+  <aside class="account-sidebar">
+    <div class="account-user">
+      <span class="avatar">
+        {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% elif user.first_name %}{{ user.first_name|slice:":1" }}{% else %}{% icon 'user' %}{% endif %}
+      </span>
+      <span class="account-user__info">
+        <strong class="account-user__name">{{ user.get_full_name|default:"کاربر عزیز" }}</strong>
+        <span class="account-user__phone" dir="ltr">{{ user.phone|fa_digits }}</span>
+      </span>
+    </div>
+    <nav class="account-nav" aria-label="منوی حساب کاربری">
+      <a class="account-nav__link{% if name == 'profile' %} is-active{% endif %}" href="{% url 'accounts:profile' %}">{% icon 'user' 'icon--sm' %}پیشخوان</a>
+      <a class="account-nav__link{% if name == 'order_list' or name == 'order_detail' %} is-active{% endif %}" href="{% url 'orders:order_list' %}">{% icon 'package' 'icon--sm' %}سفارش‌ها</a>
+      <a class="account-nav__link{% if 'address' in name %} is-active{% endif %}" href="{% url 'accounts:address_list' %}">{% icon 'map-pin' 'icon--sm' %}آدرس‌ها</a>
+      <a class="account-nav__link{% if name == 'profile_edit' %} is-active{% endif %}" href="{% url 'accounts:profile_edit' %}">{% icon 'edit' 'icon--sm' %}ویرایش اطلاعات</a>
+      <a class="account-nav__link{% if 'change_phone' in name %} is-active{% endif %}" href="{% url 'accounts:change_phone' %}">{% icon 'smartphone' 'icon--sm' %}تغییر شماره موبایل</a>
+      <form method="post" action="{% url 'accounts:logout' %}" class="account-nav__form">
+        {% csrf_token %}
+        <button type="submit" class="account-nav__link account-nav__link--danger">{% icon 'log-out' 'icon--sm' %}خروج</button>
+      </form>
+    </nav>
+  </aside>
+  <section class="account-content">
+    {% block account_content %}{% endblock %}
+  </section>
+</div>
+{% endwith %}
+{% endblock %}

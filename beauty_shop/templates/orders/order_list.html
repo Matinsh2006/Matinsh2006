@@ -1,0 +1,22 @@
+{% extends "accounts/account_base.html" %}
+{% load shop_tags %}
+
+{% block title %}سفارش‌های من | {{ site.site_name }}{% endblock %}
+
+{% block account_content %}
+<div class="card">
+  <div class="card__head"><h1 class="card__title">سفارش‌های من</h1></div>
+  {% if orders %}
+    <div class="order-list">
+      {% for order in orders %}{% include "orders/_order_card.html" %}{% endfor %}
+    </div>
+    {% include "partials/pagination.html" %}
+  {% else %}
+    <div class="empty-state empty-state--flat">
+      <span class="empty-state__icon">{% icon 'package' 'icon--lg' %}</span>
+      <p>هنوز سفارشی ثبت نکرده‌اید.</p>
+      <a class="btn btn--primary" href="{% url 'catalog:product_list' %}">شروع خرید</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}{{ page.title }} | {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="مسیر صفحه">
+    <ol><li><a href="{% url 'core:home' %}">خانه</a></li><li aria-current="page">{{ page.title }}</li></ol>
+  </nav>
+  <article class="content-page">
+    <h1 class="page-title">{{ page.title }}</h1>
+    <p class="page-subtitle">آخرین بروزرسانی: {{ page.updated_at|jdate }}</p>
+    <div class="prose">{{ page.body|richtext }}</div>
+  </article>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "accounts/account_base.html" %}
+{% load shop_tags %}
+
+{% block title %}{% if is_new %}افزودن آدرس{% else %}ویرایش آدرس{% endif %} | {{ site.site_name }}{% endblock %}
+
+{% block account_content %}
+<div class="card">
+  <div class="card__head"><h1 class="card__title">{% if is_new %}افزودن آدرس جدید{% else %}ویرایش آدرس{% endif %}</h1></div>
+  <form method="post" novalidate data-once>
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    {% if form.non_field_errors %}<div class="alert alert--error">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="form-grid">
+      {% for field in form %}{% include "partials/form_field.html" %}{% endfor %}
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">ذخیره آدرس</button>
+      {% url 'accounts:address_list' as list_url %}
+      <a class="btn btn--ghost" href="{{ next|default:list_url }}">انصراف</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

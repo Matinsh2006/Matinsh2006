@@ -1,0 +1,21 @@
+# Example systemd unit (/etc/systemd/system/beauty_shop.service)
+#   sudo systemctl daemon-reload && sudo systemctl enable --now beauty_shop
+
+[Unit]
+Description=Beauty shop (gunicorn)
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/beauty_shop
+RuntimeDirectory=beauty_shop
+EnvironmentFile=/srv/beauty_shop/.env
+ExecStart=/srv/beauty_shop/.venv/bin/gunicorn config.wsgi:application \
+    --bind unix:/run/beauty_shop/gunicorn.sock \
+    --workers 3 --timeout 60 \
+    --access-logfile - --error-logfile -
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

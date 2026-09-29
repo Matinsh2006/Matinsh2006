@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}برندها | {{ site.site_name }}{% endblock %}
+{% block meta_description %}معرفی برندهای معتبر لوازم آرایشی و بهداشتی موجود در {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="مسیر صفحه">
+    <ol><li><a href="{% url 'core:home' %}">خانه</a></li><li aria-current="page">برندها</li></ol>
+  </nav>
+  <header class="page-head">
+    <h1 class="page-title">برندها</h1>
+    <p class="page-subtitle">محصولات اصل برندهای معتبر داخلی و خارجی</p>
+  </header>
+
+  {% if brands %}
+    <div class="brand-grid">
+      {% for brand in brands %}
+        <a class="brand-card" href="{{ brand.get_absolute_url }}">
+          <span class="brand-card__logo">
+            {% if brand.logo %}<img src="{{ brand.logo.url }}" alt="{{ brand.name }}" loading="lazy" width="160" height="160">{% else %}<span class="brand-logo__fallback">{{ brand.name|slice:":1" }}</span>{% endif %}
+          </span>
+          <span class="brand-card__name">{{ brand.name }}</span>
+          {% if brand.name_en %}<span class="brand-card__en" dir="ltr">{{ brand.name_en }}</span>{% endif %}
+          <span class="brand-card__count">{{ brand.product_count|fa_digits }} محصول</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state"><span class="empty-state__icon">{% icon 'award' 'icon--lg' %}</span><p>هنوز برندی ثبت نشده است.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+/* Admin panel tweaks: Persian font, image previews, map picker. */
+@font-face { font-family: "Vazirmatn"; src: url("../fonts/vazirmatn/Vazirmatn-FD-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Vazirmatn"; src: url("../fonts/vazirmatn/Vazirmatn-FD-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+
+html:root, html[data-theme="light"], html[data-theme="dark"] {
+  --font-family-primary: "Vazirmatn", Tahoma, "Segoe UI", system-ui, sans-serif;
+}
+body, input, select, textarea, button { font-family: var(--font-family-primary); }
+
+.admin-thumb {
+  width: 56px; height: 56px; object-fit: cover; vertical-align: middle;
+  border-radius: 8px; border: 1px solid var(--hairline-color, #e5e5e5); background: #fff;
+}
+.admin-thumb--wide { width: 120px; height: 40px; }
+.admin-preview { width: 100%; max-width: 480px; height: auto; border-radius: 8px; border: 1px solid var(--hairline-color, #e5e5e5); }
+
+.location-picker { width: 100%; max-width: 900px; }
+.location-picker__map { height: 380px; border-radius: 8px; border: 1px solid var(--border-color, #ccc); z-index: 0; }
+.location-picker .help { margin-top: 6px !important; padding: 0 !important; }
+.location-picker__locate { margin-top: 8px; }
+.map-pin { background: none; border: 0; }
+.map-pin svg { width: 40px; height: 40px; color: #c2185b; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .3)); }
+.leaflet-container { font-family: inherit; }

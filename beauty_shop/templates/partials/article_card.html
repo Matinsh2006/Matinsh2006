@@ -1,0 +1,19 @@
+{% load static shop_tags %}
+<article class="article-card">
+  <a class="article-card__media" href="{{ article.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+    {% if article.cover %}
+      <img src="{{ article.cover.url }}" alt="" loading="lazy" decoding="async" width="640" height="360">
+    {% else %}
+      <img src="{% static 'img/placeholder-wide.svg' %}" alt="" loading="lazy" width="640" height="360">
+    {% endif %}
+  </a>
+  <div class="article-card__body">
+    {% if article.category %}<a class="article-card__category" href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a>{% endif %}
+    <h3 class="article-card__title"><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3>
+    <p class="article-card__excerpt">{{ article.excerpt }}</p>
+    <div class="article-card__meta">
+      <span>{% icon 'calendar' 'icon--sm' %}{{ article.published_at|jdate }}</span>
+      <span>{% icon 'clock' 'icon--sm' %}{{ article.reading_time|fa_digits }} دقیقه مطالعه</span>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+
+{% block title %}ورود / ثبت‌نام | {{ site.site_name }}{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<div class="container auth-page">
+  <div class="auth-card">
+    <span class="auth-card__icon">{% icon 'smartphone' 'icon--lg' %}</span>
+    <h1>ورود یا ثبت‌نام</h1>
+    <p>شماره موبایل خود را وارد کنید. کد تایید برای شما پیامک می‌شود و اگر حساب نداشته باشید، به‌صورت خودکار ساخته خواهد شد.</p>
+    <form method="post" novalidate data-once>
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {% include "partials/form_field.html" with field=form.phone %}
+      <button type="submit" class="btn btn--primary btn--lg btn--block">دریافت کد تایید{% icon 'arrow-left' 'icon--sm' %}</button>
+    </form>
+    <p class="auth-note">{% icon 'lock' 'icon--sm' %}ورود شما به معنای پذیرش قوانین و حریم خصوصی {{ site.site_name }} است.</p>
+  </div>
+</div>
+{% endblock %}

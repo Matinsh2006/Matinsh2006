@@ -1,0 +1,15 @@
+{% extends "accounts/account_base.html" %}
+{% load shop_tags %}
+
+{% block title %}تایید شماره جدید | {{ site.site_name }}{% endblock %}
+
+{% block account_content %}
+<div class="card card--narrow">
+  <div class="card__head"><h1 class="card__title">تایید شماره موبایل جدید</h1></div>
+  <p class="text-muted">
+    کد {{ otp_length|fa_digits }} رقمی پیامک‌شده به شماره <span class="phone-chip" dir="ltr">{{ phone|fa_digits }}</span> را وارد کنید.
+    <a class="link" href="{% url 'accounts:change_phone' %}">ویرایش شماره</a>
+  </p>
+  {% include "accounts/_otp_form.html" with submit_label="تایید و تغییر شماره" %}
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% load shop_tags %}
+{% with path=request.path %}
+<nav class="bottom-nav" aria-label="منوی پایین صفحه">
+  <a href="{% url 'core:home' %}" class="bottom-nav__item{% if path == '/' %} is-active{% endif %}">
+    {% icon 'home' %}<span>خانه</span>
+  </a>
+  <a href="{% url 'catalog:category_list' %}" class="bottom-nav__item{% if '/categor' in path or '/products/' in path or '/brands/' in path %} is-active{% endif %}">
+    {% icon 'grid' %}<span>دسته‌بندی</span>
+  </a>
+  <a href="{% url 'cart:detail' %}" class="bottom-nav__item{% if '/cart/' in path or '/checkout/' in path %} is-active{% endif %}">
+    <span class="bottom-nav__icon">{% icon 'bag' %}<span class="badge" data-cart-count{% if not cart_count %} hidden{% endif %}>{{ cart_count|fa_digits }}</span></span>
+    <span>سبد خرید</span>
+  </a>
+  <a href="{% url 'accounts:profile' %}" class="bottom-nav__item{% if '/account/' in path %} is-active{% endif %}">
+    {% icon 'user' %}<span>{% if user.is_authenticated %}حساب من{% else %}ورود{% endif %}</span>
+  </a>
+</nav>
+{% endwith %}

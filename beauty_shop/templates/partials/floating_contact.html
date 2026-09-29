@@ -1,0 +1,17 @@
+{% load shop_tags %}
+{% if floating_links %}
+<div class="fab" data-fab>
+  <div class="fab__menu" id="fab-menu">
+    {% for link in floating_links %}
+      <a class="fab__item" href="{{ link.url }}"{% if link.is_external %} target="_blank" rel="noopener"{% endif %}>
+        <span class="fab__label">{{ link.label }}</span>
+        <span class="fab__icon social-bg--{{ link.platform }}">{% icon link.icon %}</span>
+      </a>
+    {% endfor %}
+  </div>
+  <button type="button" class="fab__toggle" data-fab-toggle aria-expanded="false" aria-controls="fab-menu" aria-label="راه‌های تماس با ما">
+    <span class="fab__toggle-open">{% icon 'message' %}</span>
+    <span class="fab__toggle-close">{% icon 'close' %}</span>
+  </button>
+</div>
+{% endif %}

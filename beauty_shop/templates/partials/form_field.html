@@ -1,0 +1,12 @@
+{% with input_type=field.field.widget.input_type %}
+<div class="form-field{% if field.errors %} has-error{% endif %}{% if input_type == 'checkbox' %} form-field--checkbox{% endif %}{% if wide or field.name == 'full_address' %} span-2{% endif %}">
+  {% if input_type == 'checkbox' %}
+    <label class="checkbox">{{ field }}<span>{{ field.label }}</span></label>
+  {% else %}
+    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="req" aria-hidden="true">*</span>{% endif %}</label>
+    {{ field }}
+  {% endif %}
+  {% if field.help_text %}<small class="form-help">{{ field.help_text }}</small>{% endif %}
+  {{ field.errors }}
+</div>
+{% endwith %}

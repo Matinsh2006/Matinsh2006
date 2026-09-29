@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static shop_tags %}
+
+{% block title %}تماس با ما و آدرس فروشگاه | {{ site.site_name }}{% endblock %}
+{% block meta_description %}آدرس، موقعیت روی نقشه، شماره تماس و شبکه‌های اجتماعی {{ site.site_name }}{% endblock %}
+{% block extra_head %}{% if branches %}<link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="مسیر صفحه">
+    <ol><li><a href="{% url 'core:home' %}">خانه</a></li><li aria-current="page">تماس با ما</li></ol>
+  </nav>
+  <header class="page-head">
+    <h1 class="page-title">تماس با ما</h1>
+    <p class="page-subtitle">از راه‌های زیر با ما در ارتباط باشید یا به فروشگاه ما سر بزنید.</p>
+  </header>
+
+  {% if social_links or site.phone or site.email %}
+  <section class="section section--tight" aria-labelledby="contact-ways">
+    <h2 class="section-title" id="contact-ways">راه‌های ارتباطی</h2>
+    <div class="contact-methods">
+      {% if site.phone %}
+        <a class="contact-method" href="{{ site.phone_link }}">
+          <span class="contact-method__icon social-bg--phone">{% icon 'headphones' %}</span>
+          <span class="contact-method__body"><span class="contact-method__label">تلفن پشتیبانی</span><span class="contact-method__value" dir="ltr">{{ site.phone|fa_digits }}</span></span>
+        </a>
+      {% endif %}
+      {% for link in social_links %}
+        <a class="contact-method" href="{{ link.url }}"{% if link.is_external %} target="_blank" rel="noopener"{% endif %}>
+          <span class="contact-method__icon social-bg--{{ link.platform }}">{% icon link.icon %}</span>
+          <span class="contact-method__body"><span class="contact-method__label">{{ link.label }}</span><span class="contact-method__value" dir="ltr">{{ link.display_value|fa_digits }}</span></span>
+        </a>
+      {% endfor %}
+      {% if site.email %}
+        <a class="contact-method" href="mailto:{{ site.email }}">
+          <span class="contact-method__icon social-bg--email">{% icon 'mail' %}</span>
+          <span class="contact-method__body"><span class="contact-method__label">ایمیل</span><span class="contact-method__value" dir="ltr">{{ site.email }}</span></span>
+        </a>
+      {% endif %}
+    </div>
+    {% if site.working_hours %}<p class="contact-hours">{% icon 'clock' 'icon--sm' %}ساعات پاسخگویی: {{ site.working_hours }}</p>{% endif %}
+  </section>
+  {% endif %}
+
+  <section class="section section--tight" aria-labelledby="contact-branches">
+    <h2 class="section-title" id="contact-branches">آدرس و موقعیت فروشگاه</h2>
+    {% if branches %}
+      <div class="contact-grid">
+        <div id="store-map" class="map" dir="ltr" data-map data-map-source="map-data"
+             data-tile-url="{{ map_tile_url }}" data-tile-attribution="{{ map_tile_attribution }}"
+             role="region" aria-label="نقشه موقعیت فروشگاه">
+          <noscript><p class="map__noscript">برای مشاهده نقشه، جاوااسکریپت مرورگر را فعال کنید.</p></noscript>
+        </div>
+        <div class="branch-list">
+          {% for branch in branches %}
+            <article class="branch-card">
+              <h3 class="branch-card__title">{% icon 'map-pin' %}{{ branch.name }}</h3>
+              <p class="branch-card__row">{{ branch.address }}</p>
+              {% if branch.phone %}<p class="branch-card__row">{% icon 'phone' 'icon--sm' %}<a href="{{ branch.phone_link }}" dir="ltr">{{ branch.phone|fa_digits }}</a></p>{% endif %}
+              {% if branch.working_hours %}<p class="branch-card__row">{% icon 'clock' 'icon--sm' %}{{ branch.working_hours }}</p>{% endif %}
+              <div class="branch-card__actions">
+                <a class="btn btn--primary btn--sm" href="{{ branch.directions_url }}" target="_blank" rel="noopener">{% icon 'navigation' 'icon--sm' %}مسیریابی</a>
+                {% if branch.neshan_url %}<a class="btn btn--ghost btn--sm" href="{{ branch.neshan_url }}" target="_blank" rel="noopener">نشان</a>{% endif %}
+                {% if branch.balad_url %}<a class="btn btn--ghost btn--sm" href="{{ branch.balad_url }}" target="_blank" rel="noopener">بلد</a>{% endif %}
+                {% if branches|length > 1 %}<button type="button" class="btn btn--ghost btn--sm" data-map-focus="{{ forloop.counter0 }}">{% icon 'map' 'icon--sm' %}روی نقشه</button>{% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+      {{ map_data|json_script:"map-data" }}
+    {% else %}
+      <div class="empty-state"><span class="empty-state__icon">{% icon 'map-pin' 'icon--lg' %}</span><p>آدرس فروشگاه هنوز ثبت نشده است.</p></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}{% if branches %}<script src="{% static 'vendor/leaflet/leaflet.js' %}" defer></script>{% endif %}{% endblock %}
