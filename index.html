@@ -1,398 +1,458 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="color">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>matin.sh — Matin Shirani, web developer</title>
-<meta name="description" content="Matin Shirani — a web developer from Iran. HTML, CSS, JavaScript and Git.">
-<meta name="color-scheme" content="dark">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0d0c'/%3E%3Cpath d='M8 10l7 6-7 6' fill='none' stroke='%237cf29c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M17 22h7' stroke='%237cf29c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matin Shirani — Web Developer</title>
+<meta name="description" content="Matin Shirani — a web developer from Iran. Portfolio and product page in four switchable styles.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%236d4aff'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='17' text-anchor='middle' fill='white'%3EM%3C/text%3E%3C/svg%3E">
 <style>
-  :root {
-    --bg: #0b0d0c;
-    --bg-2: #101312;
-    --panel: #131716;
-    --line: #232a27;
-    --line-2: #2f3834;
-    --text: #d7dfda;
-    --dim: #86938c;
-    --faint: #56615b;
-    --accent: #7cf29c;
-    --accent-dim: #2f6b42;
-    --amber: #f2c97c;
-    --blue: #7cc4f2;
-    --pink: #f27cb8;
-    --mono: ui-monospace, "JetBrains Mono", "SF Mono", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
+  /* ---------- Themes ---------- */
+  :root, [data-theme="color"] {
+    --bg: #f6f3ff; --surface: #ffffff; --text: #1b1535; --muted: #625c80; --line: #e4defa;
+    --accent: #6d4aff; --accent-2: #ff5fa2; --on-accent: #ffffff;
+    --radius: 24px; --btn-radius: 999px;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --head-font: var(--font); --head-weight: 800; --head-track: -.035em; --head-case: none;
+    --shadow: 0 14px 40px -18px rgba(80,50,200,.35);
+    --align: center; --border-w: 1px; --border-style: solid;
+    --h1: clamp(38px, 9vw, 72px);
   }
+  [data-theme="minimal"] {
+    --bg: #ffffff; --surface: #ffffff; --text: #141414; --muted: #6b6b6b; --line: #e3e3e3;
+    --accent: #141414; --accent-2: #141414; --on-accent: #ffffff;
+    --radius: 2px; --btn-radius: 2px;
+    --head-font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --head-weight: 400; --head-track: -.02em;
+    --shadow: none; --align: left;
+    --h1: clamp(38px, 8.5vw, 76px);
+  }
+  [data-theme="bold"] {
+    --bg: #0a0a0a; --surface: #141414; --text: #f5f2ea; --muted: #a39f95; --line: #f5f2ea;
+    --accent: #ff4d1c; --accent-2: #ffd21c; --on-accent: #0a0a0a;
+    --radius: 0px; --btn-radius: 0px;
+    --head-font: "Arial Black", "Helvetica Neue", Impact, system-ui, sans-serif;
+    --head-weight: 900; --head-track: -.05em; --head-case: uppercase;
+    --shadow: 6px 6px 0 var(--accent); --align: left; --border-w: 2px;
+    --h1: clamp(42px, 11.5vw, 104px);
+  }
+  [data-theme="mono"] {
+    --bg: #0f1420; --surface: #151b2b; --text: #dfe5f2; --muted: #8b95ab; --line: #2a3349;
+    --accent: #ffb454; --accent-2: #5ccfe6; --on-accent: #0f1420;
+    --radius: 8px; --btn-radius: 6px;
+    --font: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --head-weight: 700; --head-track: -.04em;
+    --shadow: none; --align: left; --border-style: dashed;
+    --h1: clamp(32px, 7.6vw, 62px);
+  }
+
+  /* ---------- Base ---------- */
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 15px;
-    line-height: 1.65;
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font); font-size: 16px; line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-  }
-  body::before {
-    content: "";
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(900px 500px at 50% -10%, rgba(124,242,156,.10), transparent 70%),
-      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 32px,
-      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 32px 100%;
-    opacity: .55;
-    -webkit-mask-image: linear-gradient(#000, transparent 75%);
-            mask-image: linear-gradient(#000, transparent 75%);
-    pointer-events: none;
-    z-index: -1;
+    padding-bottom: calc(86px + env(safe-area-inset-bottom));
+    transition: background .3s, color .3s;
+    overflow-x: hidden;
   }
   a { color: inherit; text-decoration: none; }
-  a:focus-visible, button:focus-visible, input:focus-visible {
-    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px;
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  ::selection { background: var(--accent); color: var(--on-accent); }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 20px; }
+  h1, h2, h3 {
+    font-family: var(--head-font); font-weight: var(--head-weight);
+    letter-spacing: var(--head-track); text-transform: var(--head-case);
+    line-height: 1.05; margin: 0; text-wrap: balance;
   }
-  ::selection { background: var(--accent); color: var(--bg); }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  p { margin: 0; text-wrap: pretty; }
 
-  /* nav */
-  header {
-    position: sticky; top: 0; z-index: 10;
-    background: rgba(11,13,12,.8);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
+  /* decorative background, per theme */
+  .deco { position: absolute; inset: 0 0 auto 0; height: 760px; z-index: -1; pointer-events: none; overflow: hidden; }
+  [data-theme="color"] .deco::before, [data-theme="color"] .deco::after {
+    content: ""; position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55;
   }
-  nav { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 16px; }
-  .logo { font-weight: 700; letter-spacing: -.02em; }
-  .logo b { color: var(--accent); }
-  .links { display: flex; gap: 22px; color: var(--dim); font-size: 14px; }
-  .links a:hover { color: var(--accent); }
-  .links a::before { content: "./"; color: var(--faint); }
+  [data-theme="color"] .deco::before { width: 460px; height: 460px; background: #a18bff; top: -160px; left: -120px; }
+  [data-theme="color"] .deco::after { width: 420px; height: 420px; background: #ffa3c9; top: -60px; right: -140px; }
+  [data-theme="mono"] .deco {
+    background: radial-gradient(var(--line) 1px, transparent 1.5px) 0 0 / 22px 22px;
+    -webkit-mask-image: linear-gradient(#000, transparent); mask-image: linear-gradient(#000, transparent);
+  }
+  [data-theme="bold"] .deco { height: 8px; background: repeating-linear-gradient(90deg, var(--accent) 0 40px, var(--accent-2) 40px 80px); }
 
-  /* hero */
-  .hero { padding: 88px 0 56px; text-align: center; }
-  .badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    border: 1px solid var(--line-2); border-radius: 999px;
-    padding: 4px 14px; font-size: 13px; color: var(--dim); background: var(--bg-2);
+  /* ---------- Header ---------- */
+  .top { position: relative; }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px; }
+  .brand { font-family: var(--head-font); font-weight: 800; font-size: 18px; letter-spacing: -.02em; text-transform: var(--head-case); }
+  .brand i { font-style: normal; color: var(--accent); }
+  .tabs {
+    display: flex; gap: 4px; padding: 4px;
+    background: var(--surface); border: var(--border-w) var(--border-style) var(--line); border-radius: var(--btn-radius);
   }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 2s infinite; }
-  @keyframes pulse { 50% { opacity: .35; } }
-  h1 {
-    font-size: clamp(34px, 7vw, 68px);
-    line-height: 1.05; letter-spacing: -.045em;
-    margin: 26px 0 18px; font-weight: 800; text-wrap: balance;
+  .tabs button {
+    border: 0; background: none; padding: 7px 14px; border-radius: var(--btn-radius);
+    font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap;
   }
+  .tabs button[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding-block: 56px 64px; text-align: var(--align); }
+  .eyebrow {
+    display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 18px;
+  }
+  [data-theme="color"] .eyebrow { background: var(--surface); padding: 6px 14px; border-radius: 999px; box-shadow: var(--shadow); letter-spacing: .04em; }
+  [data-theme="minimal"] .eyebrow { color: var(--muted); font-weight: 500; }
+  [data-theme="bold"] .eyebrow { background: var(--accent-2); color: #0a0a0a; padding: 4px 10px; }
+  [data-theme="mono"] .eyebrow { text-transform: none; letter-spacing: 0; font-weight: 400; }
+  [data-theme="mono"] .eyebrow::before { content: "// "; color: var(--muted); }
+  h1 { font-size: var(--h1); }
   h1 em { font-style: normal; color: var(--accent); }
-  .sub { color: var(--dim); max-width: 600px; margin: 0 auto; font-size: 16px; text-wrap: pretty; }
-  .cmd {
-    margin: 34px auto 0; max-width: 520px;
-    display: flex; align-items: center; gap: 12px;
-    background: var(--panel); border: 1px solid var(--line-2); border-radius: 10px;
-    padding: 12px 12px 12px 18px; text-align: left;
-    box-shadow: 0 0 0 4px rgba(124,242,156,.04);
+  [data-theme="color"] h1 em {
+    background: linear-gradient(100deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .cmd .ps { color: var(--accent); user-select: none; }
-  .cmd code { flex: 1; overflow-x: auto; white-space: nowrap; font: inherit; scrollbar-width: none; }
+  [data-theme="minimal"] h1 em { font-style: italic; }
+  .sub { color: var(--muted); font-size: clamp(16px, 2.4vw, 19px); max-width: 580px; margin-top: 20px; }
+  [data-theme="color"] .sub { margin-left: auto; margin-right: auto; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; justify-content: var(--align); }
+  [data-theme="color"] .actions { justify-content: center; }
   .btn {
-    font: inherit; font-size: 13px; cursor: pointer;
-    color: var(--text); background: var(--bg-2);
-    border: 1px solid var(--line-2); border-radius: 7px; padding: 5px 12px;
-    transition: .15s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 24px; font-weight: 700; font-size: 15px;
+    border-radius: var(--btn-radius); border: var(--border-w) solid var(--text);
+    background: transparent; transition: transform .15s, box-shadow .15s, background .15s;
+    text-transform: var(--head-case);
   }
-  .btn:hover { border-color: var(--accent); color: var(--accent); }
-  .cta { margin-top: 22px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .btn.big { padding: 10px 20px; font-size: 14px; }
-  .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
-  .btn.primary:hover { color: var(--bg); filter: brightness(1.1); }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); box-shadow: var(--shadow); }
+  [data-theme="color"] .btn { border-color: var(--line); background: var(--surface); }
+  [data-theme="color"] .btn.primary { background: linear-gradient(100deg, var(--accent), var(--accent-2)); border-color: transparent; }
+  [data-theme="bold"] .btn.primary { box-shadow: 6px 6px 0 var(--text); }
+  [data-theme="mono"] .btn { border-color: var(--line); }
 
-  /* terminal */
-  .term {
-    margin: 56px auto 0; max-width: 820px; text-align: left;
-    background: var(--panel); border: 1px solid var(--line-2); border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 30px 80px -20px rgba(0,0,0,.8), 0 0 60px -30px rgba(124,242,156,.35);
+  /* install box (product) */
+  .install {
+    display: flex; align-items: center; gap: 10px; max-width: 460px; margin-top: 30px;
+    padding: 10px 10px 10px 18px; text-align: left;
+    background: var(--surface); border: var(--border-w) var(--border-style) var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow);
   }
-  .bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--bg-2); }
-  .bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--line-2); }
-  .bar i:nth-child(1) { background: #f27c7c; } .bar i:nth-child(2) { background: var(--amber); } .bar i:nth-child(3) { background: var(--accent); }
-  .bar span { flex: 1; text-align: center; color: var(--faint); font-size: 12.5px; margin-right: 47px; }
-  .screen { padding: 16px 18px; height: 360px; overflow-y: auto; font-size: 14px; cursor: text; scrollbar-color: var(--line-2) transparent; }
-  .screen p { margin: 0; white-space: pre-wrap; word-break: break-word; }
-  .screen .out { color: var(--dim); margin-bottom: 10px; }
-  .screen a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
-  .ps { color: var(--accent); } .path { color: var(--blue); }
-  .k { color: var(--amber); } .g { color: var(--accent); } .p { color: var(--pink); } .b { color: var(--blue); }
-  .inrow { display: flex; gap: 8px; }
-  .inrow input {
-    flex: 1; min-width: 0; background: none; border: 0; outline: 0; padding: 0;
-    color: var(--text); font: inherit; caret-color: var(--accent);
+  [data-theme="color"] .install { margin-left: auto; margin-right: auto; border-radius: 18px; }
+  .install code {
+    flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px;
   }
-  .hint { text-align: center; color: var(--faint); font-size: 13px; margin-top: 14px; }
-  .hint kbd, .chip {
-    font: inherit; color: var(--dim); background: var(--bg-2);
-    border: 1px solid var(--line-2); border-radius: 5px; padding: 1px 8px; cursor: pointer;
+  .install button {
+    border: 0; background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 13px;
+    padding: 8px 14px; border-radius: var(--btn-radius); flex: none;
   }
-  .chip:hover { color: var(--accent); border-color: var(--accent); }
+  [data-theme="color"] .install button { border-radius: 12px; }
 
-  /* sections */
-  section { padding: 72px 0; border-top: 1px solid var(--line); }
-  .eyebrow { color: var(--accent); font-size: 13px; }
-  h2 { font-size: clamp(24px, 4vw, 36px); letter-spacing: -.035em; line-height: 1.15; margin: 8px 0 12px; }
-  .lead { color: var(--dim); max-width: 620px; margin: 0 0 36px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-  .card { background: var(--bg); padding: 24px; transition: background .2s; }
-  .card:hover { background: var(--panel); }
-  .card .ico { color: var(--accent); font-size: 13px; }
-  .card h3 { margin: 10px 0 6px; font-size: 16px; letter-spacing: -.01em; }
-  .card p { margin: 0; color: var(--dim); font-size: 14px; }
+  /* ---------- Sections ---------- */
+  section { padding: 64px 0; border-top: var(--border-w) var(--border-style) var(--line); }
+  [data-theme="color"] section { border-top: 0; padding: 48px 0; }
+  .head { margin-bottom: 32px; text-align: var(--align); }
+  h2 { font-size: clamp(28px, 5.6vw, 46px); }
+  .head p { color: var(--muted); margin-top: 12px; max-width: 560px; }
+  [data-theme="color"] .head p { margin-left: auto; margin-right: auto; }
 
-  .stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
-  .tool { border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; background: var(--bg-2); }
-  .tool header { all: unset; display: flex; justify-content: space-between; font-size: 14px; }
-  .tool header span:last-child { color: var(--faint); }
-  .meter { height: 6px; border-radius: 3px; background: var(--line); margin-top: 12px; overflow: hidden; }
-  .meter i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width 1.1s cubic-bezier(.2,.8,.2,1); }
-
-  .contact { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-  .contact a {
-    display: flex; flex-direction: column; gap: 4px;
-    border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; background: var(--bg-2); transition: .15s;
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .card {
+    background: var(--surface); padding: 26px;
+    border: var(--border-w) var(--border-style) var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); transition: transform .2s;
   }
-  .contact a:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .contact small { color: var(--faint); font-size: 12.5px; }
-  .contact span { overflow-wrap: anywhere; }
-  .contact a:hover span { color: var(--accent); }
+  .card:hover { transform: translateY(-3px); }
+  .card h3 { font-size: 20px; margin: 14px 0 8px; line-height: 1.2; }
+  .card p { color: var(--muted); font-size: 15px; }
+  .icon {
+    width: 46px; height: 46px; display: grid; place-items: center; font-weight: 800; font-size: 15px;
+    border-radius: calc(var(--radius) / 1.8); background: var(--accent); color: var(--on-accent);
+  }
+  [data-theme="color"] .card:nth-child(4n+1) .icon { background: #6d4aff; }
+  [data-theme="color"] .card:nth-child(4n+2) .icon { background: #ff5fa2; }
+  [data-theme="color"] .card:nth-child(4n+3) .icon { background: #12b886; }
+  [data-theme="color"] .card:nth-child(4n+4) .icon { background: #ff922b; }
+  [data-theme="minimal"] .grid { gap: 0; border-top: 1px solid var(--line); }
+  [data-theme="minimal"] .card { border: 0; border-bottom: 1px solid var(--line); padding: 26px 20px 26px 0; }
+  [data-theme="minimal"] .card:hover { transform: none; }
+  [data-theme="minimal"] .icon { background: none; color: var(--muted); width: auto; height: auto; justify-content: start; font-weight: 500; }
+  [data-theme="bold"] .card { box-shadow: none; }
+  [data-theme="bold"] .card:hover { box-shadow: var(--shadow); }
+  [data-theme="bold"] .icon { background: var(--accent-2); }
+  [data-theme="mono"] .icon { background: none; color: var(--accent); border: 1px dashed var(--accent); }
 
-  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--faint); font-size: 13px; }
-  footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  /* steps */
+  .steps { counter-reset: s; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .step { counter-increment: s; padding-top: 18px; border-top: 3px solid var(--accent); }
+  .step::before { content: "0" counter(s); font-family: var(--head-font); font-weight: var(--head-weight); font-size: 34px; color: var(--accent); letter-spacing: var(--head-track); }
+  .step h3 { font-size: 19px; margin: 6px 0 8px; }
+  .step p { color: var(--muted); font-size: 15px; }
 
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s, transform .6s; }
-  .reveal.in { opacity: 1; transform: none; }
+  /* faq */
+  details { border-bottom: var(--border-w) var(--border-style) var(--line); padding: 18px 0; }
+  details:first-of-type { border-top: var(--border-w) var(--border-style) var(--line); }
+  summary { font-weight: 700; font-size: 17px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--accent); font-size: 22px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--muted); margin-top: 10px; max-width: 640px; }
 
-  @media (max-width: 640px) {
-    .links { gap: 14px; font-size: 13px; }
-    .links a::before { content: ""; }
-    .hero { padding-top: 56px; }
-    .screen { height: 320px; font-size: 13px; }
-    section { padding: 56px 0; }
+  /* contact */
+  .links { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .links a { display: block; }
+  .links small { display: block; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .links span { font-weight: 700; font-size: 17px; overflow-wrap: anywhere; }
+  .links a:hover span { color: var(--accent); }
+
+  /* banner */
+  .banner {
+    padding: 44px 28px; border-radius: var(--radius); text-align: center;
+    background: var(--accent); color: var(--on-accent);
+  }
+  [data-theme="color"] .banner { background: linear-gradient(110deg, var(--accent), var(--accent-2)); }
+  [data-theme="minimal"] .banner { text-align: left; }
+  [data-theme="mono"] .banner { background: var(--surface); color: var(--text); border: 1px dashed var(--accent); text-align: left; }
+  .banner h2 { margin-bottom: 10px; }
+  .banner p { opacity: .85; }
+  .banner .btn { margin-top: 22px; background: var(--on-accent); color: var(--accent); border-color: var(--on-accent); box-shadow: none; }
+  [data-theme="mono"] .banner .btn { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+  footer { padding: 36px 0 20px; color: var(--muted); font-size: 14px; text-align: var(--align); }
+
+  /* ---------- Style switcher ---------- */
+  .switch {
+    position: fixed; left: 50%; transform: translateX(-50%); z-index: 20;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    display: flex; gap: 4px; padding: 6px; max-width: calc(100vw - 20px);
+    background: #16161c; border: 1px solid #34343f; border-radius: 999px;
+    box-shadow: 0 16px 40px -10px rgba(0,0,0,.55);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .switch button {
+    display: flex; align-items: center; gap: 7px; border: 0; background: none;
+    color: #b5b5c4; font-size: 13px; font-weight: 600; padding: 9px 13px; border-radius: 999px; white-space: nowrap;
+  }
+  .switch button[aria-pressed="true"] { background: #ffffff; color: #16161c; }
+  .switch .sw { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(128,128,128,.6); flex: none; }
+
+  .page[hidden] { display: none; }
+  .page { animation: in .35s ease both; }
+  @keyframes in { from { opacity: 0; transform: translateY(10px); } }
+
+  @media (max-width: 480px) {
+    .hero { padding-block: 36px 48px; }
+    section { padding: 48px 0; }
+    .btn { flex: 1 1 auto; }
+    .switch button { padding: 9px 10px; font-size: 12.5px; gap: 6px; }
+    .brand span { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-    .reveal { opacity: 1; transform: none; }
   }
 </style>
 </head>
 <body>
-
-<header>
-  <nav class="wrap">
-    <a class="logo" href="#top"><b>&gt;_</b> matin.sh</a>
-    <div class="links">
-      <a href="#about">about</a>
-      <a href="#stack">stack</a>
-      <a href="#contact">contact</a>
+<div class="top">
+  <div class="deco"></div>
+  <div class="wrap nav">
+    <a class="brand" href="#portfolio">M<i>.</i><span>Shirani</span></a>
+    <div class="tabs" role="tablist" aria-label="Page">
+      <button role="tab" data-page="portfolio" aria-selected="true">Portfolio</button>
+      <button role="tab" data-page="product" aria-selected="false">Product</button>
     </div>
-  </nav>
-</header>
+  </div>
 
-<main id="top">
-  <div class="wrap hero">
-    <span class="badge"><span class="dot"></span> available for web projects</span>
-    <h1>Matin Shirani.<br><em>Web developer</em> from Iran.</h1>
-    <p class="sub">I build fast, clean websites with plain HTML, CSS and JavaScript — no bloat, just the web platform.</p>
-
-    <div class="cmd">
-      <span class="ps">$</span>
-      <code id="cmd">curl -fsSL matin-shirani.chbkn.dev | open</code>
-      <button class="btn" id="copy" type="button">copy</button>
-    </div>
-    <div class="cta">
-      <a class="btn big primary" href="https://matin-shirani.chbkn.dev" target="_blank" rel="noopener">view projects →</a>
-      <a class="btn big" href="https://github.com/Matinsh2006" target="_blank" rel="noopener">github</a>
+  <!-- ================= PORTFOLIO ================= -->
+  <main class="page" id="page-portfolio">
+    <div class="wrap hero">
+      <span class="eyebrow">Web developer · Iran</span>
+      <h1>Hi, I'm Matin. I build <em>websites</em> people enjoy using.</h1>
+      <p class="sub">I'm Matin Shirani, a web developer from Iran working with HTML, CSS and JavaScript to make sites that are fast, clear and look good on every screen.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://matin-shirani.chbkn.dev" target="_blank" rel="noopener">See my projects →</a>
+        <a class="btn" href="#contact">Contact me</a>
+      </div>
     </div>
 
-    <div class="term" aria-label="Interactive terminal">
-      <div class="bar"><i></i><i></i><i></i><span>matin@web: ~</span></div>
-      <div class="screen" id="screen">
-        <div id="log" aria-live="polite"></div>
-        <div class="inrow">
-          <span><span class="ps">matin</span>:<span class="path">~</span>$</span>
-          <input id="in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal command">
+    <section>
+      <div class="wrap">
+        <div class="head">
+          <span class="eyebrow">Skills</span>
+          <h2>Languages and tools</h2>
+          <p>The core technologies of the web, and the tools I use to ship with them.</p>
+        </div>
+        <div class="grid">
+          <div class="card"><div class="icon">H5</div><h3>HTML5</h3><p>Semantic, accessible markup that search engines and screen readers understand.</p></div>
+          <div class="card"><div class="icon">C3</div><h3>CSS3</h3><p>Responsive layouts with Flexbox and Grid, animations and clean design systems.</p></div>
+          <div class="card"><div class="icon">JS</div><h3>JavaScript</h3><p>Interactive features and dynamic pages, written in plain modern JavaScript.</p></div>
+          <div class="card"><div class="icon">Git</div><h3>Git</h3><p>Version control with a clear history, so every change is tracked and reversible.</p></div>
         </div>
       </div>
-    </div>
-    <p class="hint">try
-      <button class="chip" data-c="help">help</button>
-      <button class="chip" data-c="whoami">whoami</button>
-      <button class="chip" data-c="projects">projects</button>
-      <button class="chip" data-c="contact">contact</button>
-    </p>
-  </div>
+    </section>
 
-  <section id="about">
-    <div class="wrap reveal">
-      <span class="eyebrow"># about</span>
-      <h2>Small tools, sharp results.</h2>
-      <p class="lead">I care about websites that load instantly, read clearly, and work everywhere. Here is how I approach every build.</p>
-      <div class="grid">
-        <div class="card"><span class="ico">[01]</span><h3>Platform first</h3><p>Semantic HTML, modern CSS and vanilla JavaScript before reaching for a framework.</p></div>
-        <div class="card"><span class="ico">[02]</span><h3>Fast by default</h3><p>Lean pages, few requests, no layout shift. Performance is a feature, not an afterthought.</p></div>
-        <div class="card"><span class="ico">[03]</span><h3>Responsive</h3><p>Layouts that hold up from a small phone to a wide desktop without special cases.</p></div>
-        <div class="card"><span class="ico">[04]</span><h3>Versioned</h3><p>Everything lives in Git — small commits, clear history, easy to review and roll back.</p></div>
+    <section>
+      <div class="wrap">
+        <div class="head">
+          <span class="eyebrow">How I work</span>
+          <h2>Simple process, solid results</h2>
+        </div>
+        <div class="steps">
+          <div class="step"><h3>Understand</h3><p>We talk about what you need, who it is for and what the site should achieve.</p></div>
+          <div class="step"><h3>Design and build</h3><p>I turn the idea into a responsive site, sharing progress as it takes shape.</p></div>
+          <div class="step"><h3>Launch</h3><p>I test on phones and desktops, fix the details and put it online.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="head">
+          <span class="eyebrow">Contact</span>
+          <h2>Let's work together</h2>
+          <p>Have a project in mind? Send me a message and I'll get back to you.</p>
+        </div>
+        <div class="links">
+          <a class="card" href="mailto:Matinshirani52@gmail.com"><small>Email</small><span>Matinshirani52@gmail.com</span></a>
+          <a class="card" href="https://t.me/iiamatindev" target="_blank" rel="noopener"><small>Telegram</small><span>@iiamatindev</span></a>
+          <a class="card" href="https://github.com/Matinsh2006" target="_blank" rel="noopener"><small>GitHub</small><span>Matinsh2006</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= PRODUCT ================= -->
+  <main class="page" id="page-product" hidden>
+    <div class="wrap hero">
+      <span class="eyebrow">Featherkit · v1.0</span>
+      <h1>Launch a fast website in <em>minutes</em>, not weeks.</h1>
+      <p class="sub">Featherkit is a tiny starter kit for building websites with plain HTML, CSS and JavaScript. No framework, no build step, nothing to configure.</p>
+      <div class="install">
+        <code id="cmd">npx featherkit new my-site</code>
+        <button type="button" id="copy">Copy</button>
+      </div>
+      <div class="actions">
+        <a class="btn primary" href="#features">Explore features</a>
+        <a class="btn" href="https://github.com/Matinsh2006" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
-  </section>
 
-  <section id="stack">
-    <div class="wrap reveal">
-      <span class="eyebrow"># stack</span>
-      <h2>Languages and tools.</h2>
-      <p class="lead">The core of the web, used well.</p>
-      <div class="stack">
-        <div class="tool"><header><span class="k">HTML5</span><span>markup</span></header><div class="meter"><i data-w="92"></i></div></div>
-        <div class="tool"><header><span class="b">CSS3</span><span>styling</span></header><div class="meter"><i data-w="88"></i></div></div>
-        <div class="tool"><header><span class="g">JavaScript</span><span>logic</span></header><div class="meter"><i data-w="80"></i></div></div>
-        <div class="tool"><header><span class="p">Git</span><span>versioning</span></header><div class="meter"><i data-w="75"></i></div></div>
+    <section id="features">
+      <div class="wrap">
+        <div class="head">
+          <span class="eyebrow">Features</span>
+          <h2>Everything you need, nothing you don't</h2>
+          <p>A small set of well-made pieces that cover a complete website.</p>
+        </div>
+        <div class="grid">
+          <div class="card"><div class="icon">01</div><h3>Zero dependencies</h3><p>Just files. Open them in a browser and they work, today and in ten years.</p></div>
+          <div class="card"><div class="icon">02</div><h3>Mobile first</h3><p>Every layout is designed for phones first and scales up to large screens.</p></div>
+          <div class="card"><div class="icon">03</div><h3>Themes built in</h3><p>Switch the whole look by changing a handful of CSS variables.</p></div>
+          <div class="card"><div class="icon">04</div><h3>Ready-made sections</h3><p>Hero, features, pricing, FAQ and contact blocks you can copy and paste.</p></div>
+          <div class="card"><div class="icon">05</div><h3>Accessible</h3><p>Semantic markup, keyboard support and readable contrast by default.</p></div>
+          <div class="card"><div class="icon">06</div><h3>Host anywhere</h3><p>Static files run on GitHub Pages, any shared host, or straight from your phone.</p></div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="contact">
-    <div class="wrap reveal">
-      <span class="eyebrow"># contact</span>
-      <h2>Let's build something.</h2>
-      <p class="lead">Have a project in mind, or just want to say hi? Pick a channel.</p>
-      <div class="contact">
-        <a href="mailto:Matinshirani52@gmail.com"><small>email</small><span>Matinshirani52@gmail.com</span></a>
-        <a href="https://t.me/iiamatindev" target="_blank" rel="noopener"><small>telegram</small><span>@iiamatindev</span></a>
-        <a href="https://matin-shirani.chbkn.dev" target="_blank" rel="noopener"><small>projects</small><span>matin-shirani.chbkn.dev</span></a>
+    <section>
+      <div class="wrap">
+        <div class="head">
+          <span class="eyebrow">How it works</span>
+          <h2>Three steps to online</h2>
+        </div>
+        <div class="steps">
+          <div class="step"><h3>Create</h3><p>Run one command to get a clean project folder with example pages.</p></div>
+          <div class="step"><h3>Customize</h3><p>Edit the text, pick a theme and remove the sections you don't need.</p></div>
+          <div class="step"><h3>Publish</h3><p>Upload the folder to any host. There is nothing to compile.</p></div>
+        </div>
       </div>
-    </div>
-  </section>
-</main>
+    </section>
 
-<footer>
-  <div class="wrap">
-    <span>© <span id="y"></span> Matin Shirani</span>
-    <span>built with html, css &amp; js — <span class="g">exit 0</span></span>
-  </div>
-</footer>
+    <section>
+      <div class="wrap">
+        <div class="head">
+          <span class="eyebrow">FAQ</span>
+          <h2>Questions and answers</h2>
+        </div>
+        <details open><summary>Do I need to know a framework?</summary><p>No. If you know basic HTML and CSS you can use Featherkit. JavaScript is only used for small interactions.</p></details>
+        <details><summary>Can I use it for client work?</summary><p>Yes. Use it for personal sites, client projects and anything else you build.</p></details>
+        <details><summary>Does it work without internet?</summary><p>Yes. Everything is local, so pages open straight from your device with no connection.</p></details>
+        <details><summary>How do I change the colors?</summary><p>Each theme is a short list of CSS variables at the top of the stylesheet. Change them once and the whole site follows.</p></details>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="banner">
+          <h2>Start building today</h2>
+          <p>One command, one folder, one fast website.</p>
+          <a class="btn" href="#top" id="again">Get started →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap">© <span id="y"></span> Matin Shirani · Built with HTML, CSS &amp; JavaScript</div></footer>
+</div>
+
+<div class="switch" role="group" aria-label="Design style">
+  <button data-theme-btn="color"><span class="sw" style="background:linear-gradient(135deg,#6d4aff,#ff5fa2)"></span>Colorful</button>
+  <button data-theme-btn="minimal"><span class="sw" style="background:#fff"></span>Minimal</button>
+  <button data-theme-btn="bold"><span class="sw" style="background:#ff4d1c"></span>Bold</button>
+  <button data-theme-btn="mono"><span class="sw" style="background:#ffb454"></span>Mono</button>
+</div>
 
 <script>
 (() => {
-  const $ = (s) => document.querySelector(s);
-  const log = $('#log'), input = $('#in'), screen = $('#screen');
-  $('#y').textContent = new Date().getFullYear();
-
-  const link = (href, text) => `<a href="${href}" target="_blank" rel="noopener">${text || href}</a>`;
-  const commands = {
-    help: () => `available commands:
-  <span class="g">whoami</span>     who is this
-  <span class="g">skills</span>     languages and tools
-  <span class="g">projects</span>   where to find my work
-  <span class="g">contact</span>    how to reach me
-  <span class="g">ls</span>         list files
-  <span class="g">cat</span> &lt;file&gt; print a file
-  <span class="g">date</span>       current date
-  <span class="g">clear</span>      clear the screen`,
-    whoami: () => `<span class="k">Matin Shirani</span> — a web developer from Iran.
-I build fast, clean websites with HTML, CSS and JavaScript.`,
-    skills: () => `<span class="k">html5</span>        ██████████████████░░  markup
-<span class="b">css3</span>         █████████████████░░░  styling
-<span class="g">javascript</span>   ████████████████░░░░  logic
-<span class="p">git</span>          ███████████████░░░░░  versioning`,
-    projects: () => `all of my projects live at:
-  ${link('https://matin-shirani.chbkn.dev')}
-source on github:
-  ${link('https://github.com/Matinsh2006')}`,
-    contact: () => `email     ${link('mailto:Matinshirani52@gmail.com', 'Matinshirani52@gmail.com')}
-telegram  ${link('https://t.me/iiamatindev', '@iiamatindev')}`,
-    ls: () => `<span class="b">about.txt</span>  <span class="b">skills.txt</span>  <span class="b">projects.txt</span>  <span class="b">contact.txt</span>`,
-    date: () => new Date().toString(),
-    pwd: () => '/home/matin',
-    echo: (a) => esc(a.join(' ')),
-    sudo: () => `matin is not in the sudoers file. This incident will be reported.`,
-    cat: (a) => {
-      const map = { 'about.txt': 'whoami', 'skills.txt': 'skills', 'projects.txt': 'projects', 'contact.txt': 'contact' };
-      if (!a[0]) return 'usage: cat &lt;file&gt;';
-      return map[a[0]] ? commands[map[a[0]]]() : `cat: ${esc(a[0])}: No such file or directory`;
-    },
+  const root = document.documentElement;
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
   };
-  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('y').textContent = new Date().getFullYear();
 
-  function print(html, cls) {
-    const p = document.createElement('p');
-    if (cls) p.className = cls;
-    p.innerHTML = html;
-    log.appendChild(p);
-    screen.scrollTop = screen.scrollHeight;
+  // style switcher
+  const themeBtns = document.querySelectorAll('[data-theme-btn]');
+  const themes = [...themeBtns].map((b) => b.dataset.themeBtn);
+  function setTheme(t) {
+    if (!themes.includes(t)) t = 'color';
+    root.dataset.theme = t;
+    themeBtns.forEach((b) => b.setAttribute('aria-pressed', b.dataset.themeBtn === t));
+    store.set('style', t);
   }
-  function run(raw) {
-    const line = raw.trim();
-    print(`<span class="ps">matin</span>:<span class="path">~</span>$ ${esc(line)}`);
-    if (!line) return;
-    const [name, ...args] = line.split(/\s+/);
-    if (name === 'clear') { log.innerHTML = ''; return; }
-    const fn = commands[name.toLowerCase()];
-    print(fn ? fn(args) : `command not found: ${esc(name)} — try <span class="g">help</span>`, 'out');
-  }
+  themeBtns.forEach((b) => b.addEventListener('click', () => setTheme(b.dataset.themeBtn)));
+  setTheme(store.get('style') || 'color');
 
-  const history = []; let hi = 0;
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      if (input.value.trim()) history.push(input.value);
-      hi = history.length;
-      run(input.value); input.value = '';
-    } else if (e.key === 'ArrowUp' && hi > 0) {
-      e.preventDefault(); input.value = history[--hi];
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault(); hi = Math.min(hi + 1, history.length); input.value = history[hi] || '';
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      const m = Object.keys(commands).concat('clear').filter((c) => c.startsWith(input.value));
-      if (input.value && m.length === 1) input.value = m[0];
-    } else if (e.key === 'l' && e.ctrlKey) {
-      e.preventDefault(); log.innerHTML = '';
+  // page tabs
+  const tabs = document.querySelectorAll('[data-page]');
+  function setPage(p, scroll) {
+    if (p !== 'product') p = 'portfolio';
+    tabs.forEach((t) => t.setAttribute('aria-selected', t.dataset.page === p));
+    document.getElementById('page-portfolio').hidden = p !== 'portfolio';
+    document.getElementById('page-product').hidden = p !== 'product';
+    store.set('page', p);
+    if (scroll) window.scrollTo(0, 0);
+  }
+  tabs.forEach((t) => t.addEventListener('click', () => setPage(t.dataset.page, true)));
+  document.querySelector('.brand').addEventListener('click', (e) => { e.preventDefault(); setPage('portfolio', true); });
+  document.getElementById('again').addEventListener('click', (e) => { e.preventDefault(); window.scrollTo(0, 0); });
+  setPage(store.get('page') || 'portfolio');
+
+  // copy command
+  const copy = document.getElementById('copy');
+  copy.addEventListener('click', async () => {
+    const text = document.getElementById('cmd').textContent;
+    try { await navigator.clipboard.writeText(text); copy.textContent = 'Copied ✓'; }
+    catch {
+      const r = document.createRange(); r.selectNodeContents(document.getElementById('cmd'));
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r); copy.textContent = 'Selected';
     }
+    setTimeout(() => (copy.textContent = 'Copy'), 1600);
   });
-  screen.addEventListener('click', () => { if (!getSelection().toString()) input.focus({ preventScroll: true }); });
-  document.querySelectorAll('.chip').forEach((b) => b.addEventListener('click', () => { run(b.dataset.c); }));
-
-  // intro: type the first commands automatically
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const intro = ['whoami', 'skills'];
-  let busy = true;
-  async function type(cmd) {
-    if (reduce) { run(cmd); return; }
-    for (const ch of cmd) { input.value += ch; await new Promise((r) => setTimeout(r, 70)); }
-    await new Promise((r) => setTimeout(r, 300));
-    run(cmd); input.value = '';
-    await new Promise((r) => setTimeout(r, 450));
-  }
-  (async () => {
-    input.readOnly = true;
-    print(`welcome to matin.sh — type <span class="g">help</span> to get started.`, 'out');
-    for (const c of intro) await type(c);
-    input.readOnly = false; busy = false;
-  })();
-
-  // copy button
-  $('#copy').addEventListener('click', async (e) => {
-    try { await navigator.clipboard.writeText($('#cmd').textContent); e.target.textContent = 'copied ✓'; }
-    catch { e.target.textContent = 'press ⌘C'; }
-    setTimeout(() => (e.target.textContent = 'copy'), 1600);
-  });
-
-  // reveal on scroll + skill meters
-  const io = new IntersectionObserver((entries) => {
-    for (const en of entries) if (en.isIntersecting) {
-      en.target.classList.add('in');
-      en.target.querySelectorAll('.meter i').forEach((m) => (m.style.width = m.dataset.w + '%'));
-      io.unobserve(en.target);
-    }
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 })();
 </script>
 </body>
